@@ -125,7 +125,7 @@ The server framework must maintain real-time telemetry points via standardized m
 
 ---
 
-## 5. Scope Boundaries (Out of Scope for Phase 1)
+## 5. Scope Boundaries
 
 To ensure rapid execution and clean architecture, the following enterprise capabilities are intentionally deferred to subsequent operational iterations:
 

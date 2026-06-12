@@ -1,0 +1,19 @@
+name: nexus-supply-chain
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: pg_enterprise_supply
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: supply_db
+      POSTGRES_USER: enterprise_admin
+      POSTGRES_PASSWORD: secure_dev_password
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+
+volumes:
+  pg_data:
