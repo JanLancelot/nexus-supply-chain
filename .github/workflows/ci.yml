@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  id-token: write # Required for Azure OIDC
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -46,6 +50,74 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build and run tests
+      - name: Build and run backend tests
         working-directory: backend
         run: ./mvnw clean verify
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  deploy-to-staging:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Azure Container Registry (ACR)
+        uses: azure/docker-login@v1
+        with:
+          login-server: pgsupplyregistry.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and Push Backend Docker Image
+        run: |
+          docker build -t pgsupplyregistry.azurecr.io/backend:${{ github.sha }} -t pgsupplyregistry.azurecr.io/backend:latest -f backend/Dockerfile backend
+          docker push pgsupplyregistry.azurecr.io/backend:${{ github.sha }}
+          docker push pgsupplyregistry.azurecr.io/backend:latest
+
+      - name: Build and Push Frontend Docker Image
+        run: |
+          docker build -t pgsupplyregistry.azurecr.io/frontend:${{ github.sha }} -t pgsupplyregistry.azurecr.io/frontend:latest -f frontend/Dockerfile frontend
+          docker push pgsupplyregistry.azurecr.io/frontend:${{ github.sha }}
+          docker push pgsupplyregistry.azurecr.io/frontend:latest
+
+      - name: Deploy Backend to Azure App Service (Staging Slot)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'pg-enterprise-supply-api'
+          slot-name: 'staging'
+          images: 'pgsupplyregistry.azurecr.io/backend:${{ github.sha }}'
+
+      - name: Deploy Frontend to Azure App Service (Staging Slot)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'pg-enterprise-supply-ui'
+          slot-name: 'staging'
+          images: 'pgsupplyregistry.azurecr.io/frontend:${{ github.sha }}'
