@@ -12,33 +12,169 @@
 
 The relational boundaries enforce cascade protections and tight data integrity. Foreign keys guarantee that an operational transaction or audit record cannot point to a non-existent product, order, or user account.
 
-```text
-  ┌───────────────┐                  ┌───────────────┐
-  │     users     │◄─────────────────┤  audit_logs   │
-  └───────┬───────┘                  └───────────────┘
-          │                                  ▲
-          │ 1                                │ 1
-          │                                  │
-          │ 0..* │ 0..*
-  ┌───────▼───────┐                  ┌───────┴───────┐
-  │    orders     │◄─────────────────┤  order_items  │
-  └───────┬───────┘ 1         0..* └───────┬───────┘
-          │                                  │
-          │ 1                                │ 0..*
-          │                                  │
-          │ 0..* │ 1
-  ┌───────▼───────┐                          │
-  │  order_items  │──────────────────────────┘
-  └───────┬───────┘ 0..* 1
-          │
-          ▼ 1
-  ┌───────────────┐
-  │   products    │
-  └───────────────┘
+```mermaid
+erDiagram
+    ROLES {
+        uuid id PK
+        string name "unique"
+        string description
+    }
 
+    USERS {
+        uuid id PK
+        string full_name
+        string email "unique"
+        string password_hash
+        uuid role_id FK
+        string status
+        timestamp_with_tz created_at
+        timestamp_with_tz updated_at
+    }
+
+    PRODUCT_CATEGORIES {
+        uuid id PK
+        string name "unique"
+        string description
+    }
+
+    WAREHOUSES {
+        uuid id PK
+        string name
+        string location
+        uuid manager_id FK
+    }
+
+    PRODUCTS {
+        uuid id PK
+        string sku "unique"
+        string name
+        string description
+        uuid category_id FK
+        decimal unit_price
+        integer stock_quantity
+        integer reorder_level
+        uuid warehouse_id FK
+        boolean is_active
+        timestamp_with_tz created_at
+        timestamp_with_tz updated_at
+    }
+
+    INVENTORY_TRANSACTIONS {
+        uuid id PK
+        uuid product_id FK
+        uuid warehouse_id FK
+        string type
+        integer quantity
+        string reference_type
+        uuid reference_id
+        uuid performed_by FK
+        timestamp_with_tz created_at
+    }
+
+    SUPPLIERS {
+        uuid id PK
+        string name "unique"
+        string contact_person
+        string email
+        string phone
+        string address
+        boolean is_active
+        timestamp_with_tz created_at
+    }
+
+    SUPPLIER_PRODUCTS {
+        uuid supplier_id PK, FK
+        uuid product_id PK, FK
+        decimal supply_price
+    }
+
+    ORDERS {
+        uuid id PK
+        string order_number "unique"
+        uuid supplier_id FK
+        uuid warehouse_id FK
+        string status
+        decimal total_amount
+        uuid created_by FK
+        timestamp_with_tz created_at
+        timestamp_with_tz updated_at
+    }
+
+    ORDER_ITEMS {
+        uuid id PK
+        uuid order_id FK
+        uuid product_id FK
+        integer quantity
+        decimal unit_price
+        decimal subtotal
+    }
+
+    SHIPMENTS {
+        uuid id PK
+        uuid order_id FK
+        string tracking_number "unique"
+        string carrier
+        string status
+        timestamp_with_tz shipped_at
+        timestamp_with_tz delivered_at
+    }
+
+    AUDIT_LOGS {
+        uuid id PK
+        uuid user_id FK
+        string entity_type
+        uuid entity_id
+        string action
+        jsonb old_value
+        jsonb new_value
+        timestamp_with_tz created_at
+    }
+
+    NOTIFICATIONS {
+        uuid id PK
+        uuid user_id FK
+        string type
+        string message
+        boolean is_read
+        timestamp_with_tz created_at
+    }
+
+    REFRESH_TOKENS {
+        uuid id PK
+        uuid user_id FK
+        text token "unique"
+        timestamp_with_tz expiry_date
+        boolean revoked
+        timestamp_with_tz created_at
+    }
+
+    %% Relationships
+    ROLES ||--o{ USERS : "has"
+    USERS ||--o{ WAREHOUSES : "manages"
+    USERS ||--o{ ORDERS : "creates"
+    USERS ||--o{ INVENTORY_TRANSACTIONS : "performs"
+    USERS ||--o{ AUDIT_LOGS : "generates"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    USERS ||--o{ REFRESH_TOKENS : "owns"
+    
+    PRODUCT_CATEGORIES ||--o{ PRODUCTS : "categorizes"
+    WAREHOUSES ||--o{ PRODUCTS : "stores"
+    WAREHOUSES ||--o{ ORDERS : "processes"
+    WAREHOUSES ||--o{ INVENTORY_TRANSACTIONS : "logs"
+
+    PRODUCTS ||--o{ ORDER_ITEMS : "included_in"
+    PRODUCTS ||--o{ SUPPLIER_PRODUCTS : "sourced_from"
+    PRODUCTS ||--o{ INVENTORY_TRANSACTIONS : "tracked_by"
+
+    SUPPLIERS ||--o{ ORDERS : "fulfills"
+    SUPPLIERS ||--o{ SUPPLIER_PRODUCTS : "offers"
+
+    ORDERS ||--o{ ORDER_ITEMS : "contains"
+    ORDERS ||--o{ SHIPMENTS : "generates"
 ```
 
 ---
+
 
 ## 2. Global Structural Standards
 
