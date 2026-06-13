@@ -4,9 +4,12 @@ import com.pg.supplychain.dto.CategoryRequest;
 import com.pg.supplychain.dto.CategoryResponse;
 import com.pg.supplychain.exception.BadRequestException;
 import com.pg.supplychain.exception.ResourceNotFoundException;
+import com.pg.supplychain.kafkalite.KafkaLiteBroker;
+import com.pg.supplychain.kafkalite.event.CategoryEvent;
 import com.pg.supplychain.model.Category;
 import com.pg.supplychain.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +22,16 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final KafkaLiteBroker kafkaLiteBroker;
 
+    @Cacheable(value = "categories", key = "'all'")
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "categories", key = "#id")
     public CategoryResponse getCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
@@ -44,6 +50,10 @@ public class CategoryService {
                 .build();
 
         Category saved = categoryRepository.save(category);
+        
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("category-events", new CategoryEvent(saved.getId(), "CREATED"));
+
         return mapToResponse(saved);
     }
 
@@ -62,6 +72,10 @@ public class CategoryService {
         category.setDescription(request.getDescription());
 
         Category updated = categoryRepository.save(category);
+
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("category-events", new CategoryEvent(updated.getId(), "UPDATED"));
+
         return mapToResponse(updated);
     }
 
@@ -70,6 +84,9 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
         categoryRepository.delete(category);
+
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("category-events", new CategoryEvent(id, "DELETED"));
     }
 
     private CategoryResponse mapToResponse(Category category) {

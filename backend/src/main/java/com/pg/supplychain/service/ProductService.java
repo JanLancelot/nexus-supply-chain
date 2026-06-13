@@ -5,6 +5,8 @@ import com.pg.supplychain.dto.ProductCreateRequest;
 import com.pg.supplychain.dto.ProductResponse;
 import com.pg.supplychain.exception.BadRequestException;
 import com.pg.supplychain.exception.ResourceNotFoundException;
+import com.pg.supplychain.kafkalite.KafkaLiteBroker;
+import com.pg.supplychain.kafkalite.event.ProductEvent;
 import com.pg.supplychain.model.Category;
 import com.pg.supplychain.model.Product;
 import com.pg.supplychain.model.Warehouse;
@@ -12,6 +14,7 @@ import com.pg.supplychain.repository.CategoryRepository;
 import com.pg.supplychain.repository.ProductRepository;
 import com.pg.supplychain.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final WarehouseRepository warehouseRepository;
     private final AuditService auditService;
+    private final KafkaLiteBroker kafkaLiteBroker;
 
     private static final Set<String> ALLOWED_REASON_CODES = Set.of(
             "CYCLIC_COUNT_DISCREPANCY",
@@ -38,6 +42,7 @@ public class ProductService {
             "SUPPLIER_SHORTAGE"
     );
 
+    @Cacheable(value = "products", key = "'all'")
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(this::mapToResponse)
@@ -85,6 +90,9 @@ public class ProductService {
                 mapToAuditState(savedProduct)
         );
 
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("product-events", new ProductEvent(savedProduct.getId(), "CREATED"));
+
         return mapToResponse(savedProduct);
     }
 
@@ -119,7 +127,10 @@ public class ProductService {
                 "ACTION_MANUAL_ADJUSTMENT",
                 oldState,
                 newState
-        );
+            );
+
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("product-events", new ProductEvent(id, "STOCK_ADJUSTED"));
 
         return mapToResponse(updatedProduct);
     }

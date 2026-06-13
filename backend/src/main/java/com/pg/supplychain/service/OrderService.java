@@ -3,6 +3,8 @@ package com.pg.supplychain.service;
 import com.pg.supplychain.dto.*;
 import com.pg.supplychain.exception.BadRequestException;
 import com.pg.supplychain.exception.ResourceNotFoundException;
+import com.pg.supplychain.kafkalite.KafkaLiteBroker;
+import com.pg.supplychain.kafkalite.event.OrderEvent;
 import com.pg.supplychain.model.*;
 import com.pg.supplychain.repository.*;
 import com.pg.supplychain.security.SecurityContextService;
@@ -35,6 +37,7 @@ public class OrderService {
     private final SupplierRepository supplierRepository;
     private final WarehouseRepository warehouseRepository;
     private final AuditService auditService;
+    private final KafkaLiteBroker kafkaLiteBroker;
 
     @Transactional
     public OrderResponse createOrder(OrderCreateRequest request) {
@@ -93,6 +96,9 @@ public class OrderService {
                 null,
                 mapToAuditState(savedOrder)
         );
+
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("order-events", new OrderEvent(savedOrder.getId(), savedOrder.getStatus().name()));
 
         return mapToResponse(savedOrder);
     }
@@ -189,6 +195,9 @@ public class OrderService {
                 oldOrderState,
                 newOrderState
         );
+
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("order-events", new OrderEvent(updatedOrder.getId(), updatedOrder.getStatus().name()));
 
         return mapToResponse(updatedOrder);
     }
