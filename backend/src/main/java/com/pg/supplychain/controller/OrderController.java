@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,6 +19,16 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
+
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable UUID id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
+    }
 
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderCreateRequest request) {

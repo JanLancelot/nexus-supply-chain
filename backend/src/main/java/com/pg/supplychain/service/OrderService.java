@@ -202,6 +202,20 @@ public class OrderService {
         return mapToResponse(updatedOrder);
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResponse getOrderById(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
+        return mapToResponse(order);
+    }
+
     private OrderResponse mapToResponse(Order order) {
         List<OrderItemResponse> items = order.getItems().stream().map(item ->
                 OrderItemResponse.builder()

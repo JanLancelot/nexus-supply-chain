@@ -38,6 +38,10 @@ public class SecurityConfig {
                 // Purchase Order rules
                 .requestMatchers(HttpMethod.POST, "/api/v1/orders").hasAnyAuthority("ROLE_STAFF", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/orders/*/status").hasAnyAuthority("ROLE_STAFF", "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/orders/**").hasAnyAuthority("ROLE_STAFF", "ROLE_ADMIN")
+                
+                // Supplier rules
+                .requestMatchers(HttpMethod.GET, "/api/v1/suppliers").hasAnyAuthority("ROLE_STAFF", "ROLE_ADMIN")
                 
                 // Notification rules
                 .requestMatchers("/api/v1/notifications/**").hasAnyAuthority("ROLE_STAFF", "ROLE_ADMIN")
