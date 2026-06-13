@@ -1,7 +1,7 @@
 package com.pg.supplychain.controller;
 
 import com.pg.supplychain.model.AuditLog;
-import com.pg.supplychain.repository.AuditLogRepository;
+import com.pg.supplychain.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuditLogController {
 
-    private final AuditLogRepository auditLogRepository;
+    private final AuditService auditService;
 
     @GetMapping
     public ResponseEntity<List<AuditLog>> getAllAuditLogs() {
-        return ResponseEntity.ok(auditLogRepository.findAll());
+        return ResponseEntity.ok(auditService.getAllAuditLogs());
     }
 }
+

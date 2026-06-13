@@ -1,5 +1,6 @@
 package com.pg.supplychain.config;
 
+import com.pg.supplychain.dto.ApiError;
 import com.pg.supplychain.exception.BadRequestException;
 import com.pg.supplychain.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -10,59 +11,57 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiError> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
-        Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
-        errorBody.put("error", "Bad Request");
-        errorBody.put("message", errorMessage);
-        errorBody.put("timestamp", OffsetDateTime.now().toString());
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(errorMessage)
+                .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex) {
-        Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
-        errorBody.put("error", "Bad Request");
-        errorBody.put("message", ex.getMessage());
-        errorBody.put("timestamp", OffsetDateTime.now().toString());
+    public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex) {
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(ex.getMessage())
+                .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
-        Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("status", HttpStatus.NOT_FOUND.value());
-        errorBody.put("error", "Not Found");
-        errorBody.put("message", ex.getMessage());
-        errorBody.put("timestamp", OffsetDateTime.now().toString());
+    public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex) {
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .error("Not Found")
+                .message(ex.getMessage())
+                .build();
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
-        Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("status", HttpStatus.FORBIDDEN.value());
-        errorBody.put("error", "Forbidden");
-        errorBody.put("message", "Access denied: insufficient permissions.");
-        errorBody.put("timestamp", OffsetDateTime.now().toString());
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.FORBIDDEN.value())
+                .error("Forbidden")
+                .message("Access denied: insufficient permissions.")
+                .build();
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorBody);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 }
+

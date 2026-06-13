@@ -33,9 +33,10 @@ public class Order {
     @JoinColumn(name = "warehouse_id", nullable = false)
     private Warehouse warehouse;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     @Builder.Default
-    private String status = "DRAFT";
+    private OrderStatus status = OrderStatus.DRAFT;
 
     @Column(name = "total_amount", nullable = false)
     @Builder.Default

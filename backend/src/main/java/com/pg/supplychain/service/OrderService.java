@@ -5,6 +5,7 @@ import com.pg.supplychain.exception.BadRequestException;
 import com.pg.supplychain.exception.ResourceNotFoundException;
 import com.pg.supplychain.model.*;
 import com.pg.supplychain.repository.*;
+import com.pg.supplychain.security.SecurityContextService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,14 +31,14 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final SecurityContextService securityContextService;
     private final SupplierRepository supplierRepository;
     private final WarehouseRepository warehouseRepository;
     private final AuditService auditService;
 
     @Transactional
     public OrderResponse createOrder(OrderCreateRequest request) {
-        User creator = getCurrentUser();
+        User creator = securityContextService.getCurrentUser();
         if (creator == null) {
             throw new AccessDeniedException("User is not authenticated");
         }
@@ -54,7 +55,7 @@ public class OrderService {
                 .orderNumber(orderNum)
                 .supplier(supplier)
                 .warehouse(warehouse)
-                .status("DRAFT")
+                .status(OrderStatus.DRAFT)
                 .createdBy(creator)
                 .totalAmount(BigDecimal.ZERO)
                 .build();
@@ -101,12 +102,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
 
-        OrderStatus currentStatus;
-        try {
-            currentStatus = OrderStatus.valueOf(order.getStatus().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            currentStatus = OrderStatus.DRAFT;
-        }
+        OrderStatus currentStatus = order.getStatus();
 
         OrderStatus targetStatus;
         try {
@@ -136,7 +132,7 @@ public class OrderService {
         }
 
         // Validate Role Privileges
-        User currentUser = getCurrentUser();
+        User currentUser = securityContextService.getCurrentUser();
         if (currentUser == null) {
             throw new AccessDeniedException("User is not authenticated");
         }
@@ -179,7 +175,7 @@ public class OrderService {
         Map<String, Object> oldOrderState = new HashMap<>();
         oldOrderState.put("status", currentStatus.name());
 
-        order.setStatus(targetStatus.name());
+        order.setStatus(targetStatus);
         Order updatedOrder = orderRepository.save(order);
 
         Map<String, Object> newOrderState = new HashMap<>();
@@ -195,18 +191,6 @@ public class OrderService {
         );
 
         return mapToResponse(updatedOrder);
-    }
-
-    private User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof Map) {
-            Map<?, ?> principal = (Map<?, ?>) auth.getPrincipal();
-            String userIdStr = (String) principal.get("userId");
-            if (userIdStr != null) {
-                return userRepository.findById(UUID.fromString(userIdStr)).orElse(null);
-            }
-        }
-        return null;
     }
 
     private OrderResponse mapToResponse(Order order) {
@@ -226,7 +210,7 @@ public class OrderService {
                 .supplierName(order.getSupplier().getName())
                 .warehouseId(order.getWarehouse().getId())
                 .warehouseName(order.getWarehouse().getName())
-                .status(order.getStatus())
+                .status(order.getStatus().name())
                 .totalAmount(order.getTotalAmount())
                 .createdBy(order.getCreatedBy() != null ? order.getCreatedBy().getId() : null)
                 .items(items)
@@ -236,7 +220,7 @@ public class OrderService {
     private Map<String, Object> mapToAuditState(Order order) {
         Map<String, Object> state = new HashMap<>();
         state.put("orderNumber", order.getOrderNumber());
-        state.put("status", order.getStatus());
+        state.put("status", order.getStatus().name());
         state.put("totalAmount", order.getTotalAmount());
         return state;
     }

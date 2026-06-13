@@ -3,16 +3,14 @@ package com.pg.supplychain.service;
 import com.pg.supplychain.model.AuditLog;
 import com.pg.supplychain.model.User;
 import com.pg.supplychain.repository.AuditLogRepository;
-import com.pg.supplychain.repository.UserRepository;
+import com.pg.supplychain.security.SecurityContextService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,7 +19,7 @@ import java.util.UUID;
 public class AuditService {
 
     private final AuditLogRepository auditLogRepository;
-    private final UserRepository userRepository;
+    private final SecurityContextService securityContextService;
     private final ObjectMapper objectMapper;
 
     public void logChange(String entityType, UUID entityId, String action, Object oldValue, Object newValue) {
@@ -39,7 +37,7 @@ public class AuditService {
             log.error("Failed to serialize audit log values for entity: " + entityType, e);
         }
 
-        User actor = getCurrentUser();
+        User actor = securityContextService.getCurrentUser();
 
         AuditLog auditLog = AuditLog.builder()
                 .user(actor)
@@ -54,19 +52,8 @@ public class AuditService {
         auditLogRepository.save(auditLog);
     }
 
-    private User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof Map) {
-            Map<?, ?> principal = (Map<?, ?>) auth.getPrincipal();
-            String userIdStr = (String) principal.get("userId");
-            if (userIdStr != null) {
-                try {
-                    return userRepository.findById(UUID.fromString(userIdStr)).orElse(null);
-                } catch (IllegalArgumentException e) {
-                    log.error("Invalid actor UUID format in security context: " + userIdStr);
-                }
-            }
-        }
-        return null;
+    public List<AuditLog> getAllAuditLogs() {
+        return auditLogRepository.findAll();
     }
 }
+
