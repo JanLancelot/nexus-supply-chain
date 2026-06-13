@@ -4,9 +4,7 @@ import com.pg.supplychain.dto.*;
 import com.pg.supplychain.exception.BadRequestException;
 import com.pg.supplychain.exception.ResourceNotFoundException;
 import com.pg.supplychain.model.*;
-import com.pg.supplychain.repository.OrderRepository;
-import com.pg.supplychain.repository.ProductRepository;
-import com.pg.supplychain.repository.UserRepository;
+import com.pg.supplychain.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final SupplierRepository supplierRepository;
+    private final WarehouseRepository warehouseRepository;
     private final AuditService auditService;
 
     @Transactional
@@ -39,24 +42,46 @@ public class OrderService {
             throw new AccessDeniedException("User is not authenticated");
         }
 
+        Supplier supplier = supplierRepository.findById(request.getSupplierId())
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with ID: " + request.getSupplierId()));
+
+        Warehouse warehouse = warehouseRepository.findById(request.getWarehouseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with ID: " + request.getWarehouseId()));
+
+        String orderNum = "ORD-" + System.currentTimeMillis();
+
         Order order = Order.builder()
-                .supplierName(request.getSupplierName())
-                .status(OrderStatus.DRAFT)
+                .orderNumber(orderNum)
+                .supplier(supplier)
+                .warehouse(warehouse)
+                .status("DRAFT")
                 .createdBy(creator)
+                .totalAmount(BigDecimal.ZERO)
                 .build();
 
-        List<OrderItem> items = request.getItems().stream().map(itemReq -> {
+        List<OrderItem> items = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (OrderItemRequest itemReq : request.getItems()) {
             Product product = productRepository.findById(itemReq.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + itemReq.getProductId()));
 
-            return OrderItem.builder()
+            BigDecimal unitPrice = product.getUnitPrice();
+            BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
+            total = total.add(subtotal);
+
+            items.add(OrderItem.builder()
                     .order(order)
                     .product(product)
                     .quantity(itemReq.getQuantity())
-                    .build();
-        }).collect(Collectors.toList());
+                    .unitPrice(unitPrice)
+                    .subtotal(subtotal)
+                    .build());
+        }
 
         order.setItems(items);
+        order.setTotalAmount(total);
+
         Order savedOrder = orderRepository.save(order);
 
         // Audit log order creation
@@ -76,7 +101,13 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
 
-        OrderStatus currentStatus = order.getStatus();
+        OrderStatus currentStatus;
+        try {
+            currentStatus = OrderStatus.valueOf(order.getStatus().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            currentStatus = OrderStatus.DRAFT;
+        }
+
         OrderStatus targetStatus;
         try {
             targetStatus = OrderStatus.valueOf(request.getStatus().toUpperCase());
@@ -110,7 +141,7 @@ public class OrderService {
             throw new AccessDeniedException("User is not authenticated");
         }
 
-        if (currentUser.getRole() == UserRole.ROLE_STAFF) {
+        if (currentUser.getRole().getName().equals("ROLE_STAFF")) {
             if (targetStatus == OrderStatus.APPROVED || targetStatus == OrderStatus.SHIPPED || targetStatus == OrderStatus.DELIVERED) {
                 throw new AccessDeniedException("Access denied: Staff cannot advance order to approved/shipped/delivered status");
             }
@@ -148,7 +179,7 @@ public class OrderService {
         Map<String, Object> oldOrderState = new HashMap<>();
         oldOrderState.put("status", currentStatus.name());
 
-        order.setStatus(targetStatus);
+        order.setStatus(targetStatus.name());
         Order updatedOrder = orderRepository.save(order);
 
         Map<String, Object> newOrderState = new HashMap<>();
@@ -183,22 +214,30 @@ public class OrderService {
                 OrderItemResponse.builder()
                         .productId(item.getProduct().getId())
                         .quantity(item.getQuantity())
+                        .unitPrice(item.getUnitPrice())
+                        .subtotal(item.getSubtotal())
                         .build()
         ).collect(Collectors.toList());
 
         return OrderResponse.builder()
                 .id(order.getId())
-                .supplierName(order.getSupplierName())
-                .status(order.getStatus().name())
-                .createdBy(order.getCreatedBy().getId())
+                .orderNumber(order.getOrderNumber())
+                .supplierId(order.getSupplier().getId())
+                .supplierName(order.getSupplier().getName())
+                .warehouseId(order.getWarehouse().getId())
+                .warehouseName(order.getWarehouse().getName())
+                .status(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .createdBy(order.getCreatedBy() != null ? order.getCreatedBy().getId() : null)
                 .items(items)
                 .build();
     }
 
     private Map<String, Object> mapToAuditState(Order order) {
         Map<String, Object> state = new HashMap<>();
-        state.put("supplierName", order.getSupplierName());
-        state.put("status", order.getStatus().name());
+        state.put("orderNumber", order.getOrderNumber());
+        state.put("status", order.getStatus());
+        state.put("totalAmount", order.getTotalAmount());
         return state;
     }
 }

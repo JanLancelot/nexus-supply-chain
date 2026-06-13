@@ -3,6 +3,7 @@ package com.pg.supplychain.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -28,4 +29,12 @@ public class OrderItem {
 
     @Column(nullable = false)
     private int quantity;
+
+    @Column(name = "unit_price", nullable = false)
+    @Builder.Default
+    private BigDecimal unitPrice = BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private BigDecimal subtotal = BigDecimal.ZERO;
 }

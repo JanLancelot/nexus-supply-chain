@@ -2,6 +2,8 @@ package com.pg.supplychain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -16,11 +18,15 @@ import java.util.UUID;
 public class AuditLog {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    @Column(name = "entity_name", nullable = false, length = 100)
-    private String entityName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name = "entity_type", nullable = false, length = 100)
+    private String entityType;
 
     @Column(name = "entity_id", nullable = false)
     private UUID entityId;
@@ -28,22 +34,21 @@ public class AuditLog {
     @Column(nullable = false, length = 50)
     private String action;
 
-    @Column(name = "old_value", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "old_value", columnDefinition = "jsonb")
     private String oldValue;
 
-    @Column(name = "new_value", columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "new_value", columnDefinition = "jsonb")
     private String newValue;
 
-    @Column(name = "actor_id")
-    private UUID actorId;
-
-    @Column(nullable = false)
-    private OffsetDateTime timestamp;
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        if (timestamp == null) {
-            timestamp = OffsetDateTime.now();
+        if (createdAt == null) {
+            createdAt = OffsetDateTime.now();
         }
     }
 }

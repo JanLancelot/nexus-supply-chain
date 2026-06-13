@@ -2,9 +2,8 @@ package com.pg.supplychain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +22,27 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "supplier_name", nullable = false)
-    private String supplierName;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "order_status")
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private OrderStatus status;
+    @Column(name = "order_number", nullable = false, unique = true)
+    private String orderNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by_id", nullable = false)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id", nullable = false)
+    private Warehouse warehouse;
+
+    @Column(nullable = false, length = 50)
+    @Builder.Default
+    private String status = "DRAFT";
+
+    @Column(name = "total_amount", nullable = false)
+    @Builder.Default
+    private BigDecimal totalAmount = BigDecimal.ZERO;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
     private User createdBy;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

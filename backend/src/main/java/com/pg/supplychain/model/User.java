@@ -2,8 +2,6 @@ package com.pg.supplychain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -21,16 +19,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
+
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 60)
     private String passwordHash;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, columnDefinition = "user_role")
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private UserRole role;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    @Column(nullable = false, length = 50)
+    @Builder.Default
+    private String status = "ACTIVE";
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
