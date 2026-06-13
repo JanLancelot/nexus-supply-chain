@@ -1,0 +1,55 @@
+name: nexus-supply-chain
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: pg_enterprise_supply
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: supply_db
+      POSTGRES_USER: enterprise_admin
+      POSTGRES_PASSWORD: secure_dev_password
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_enterprise_supply
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spring_backend_supply
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/supply_db
+      - SPRING_DATASOURCE_USERNAME=enterprise_admin
+      - SPRING_DATASOURCE_PASSWORD=secure_dev_password
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nginx_frontend_supply
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pg_data:
