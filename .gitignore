@@ -2,3 +2,10 @@ target/
 *.class
 .DS_Store
 .mvn/wrapper/maven-wrapper.jar
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json

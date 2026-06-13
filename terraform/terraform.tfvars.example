@@ -1,0 +1,13 @@
+# Azure Authentication Options
+azure_subscription_id = "your-azure-subscription-id-here"
+azure_tenant_id       = "your-azure-tenant-id-here"
+
+# Resource Naming & Location
+location     = "East US"
+project_name = "nexus-supply"
+environment  = "prod"
+acr_name     = "pgsupplyregistry"
+
+# Database Configuration
+postgres_admin_username = "enterprise_admin"
+postgres_admin_password = "replace-with-a-secure-password-123!"
