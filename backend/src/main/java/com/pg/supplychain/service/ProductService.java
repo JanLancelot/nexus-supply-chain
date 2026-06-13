@@ -42,6 +42,7 @@ public class ProductService {
             "SUPPLIER_SHORTAGE"
     );
 
+    @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'all'")
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()

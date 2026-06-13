@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,23 @@ class KafkaLiteTests {
 
     @Autowired
     private org.springframework.cache.CacheManager cacheManager;
+
+    @Autowired
+    private org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() throws InterruptedException {
+        // Allow background thread to quiescent
+        Thread.sleep(500);
+
+        redisTemplate.delete(java.util.List.of(
+                "kafka_topic_product-events",
+                "kafka_topic_order-events",
+                "kafka_topic_audit-events",
+                "kafka_topic_category-events",
+                "kafka_topic_warehouse-events"
+        ));
+    }
 
     @Test
     void testBrokerPublishAndSubscribe() throws InterruptedException {
@@ -88,7 +106,23 @@ class KafkaLiteTests {
         // Call Service to populate cache
         productService.getAllProducts();
 
+
         // Verify cache is populated
+        System.out.println("DEBUG: Cache object = " + cache);
+        if (cache != null) {
+            try {
+                org.springframework.cache.Cache.ValueWrapper wrapper = cache.get("all");
+                System.out.println("DEBUG: ValueWrapper = " + wrapper);
+                if (wrapper != null) {
+                    System.out.println("DEBUG: Cached value = " + wrapper.get());
+                } else {
+                    System.out.println("DEBUG: ValueWrapper is null!");
+                }
+            } catch (Exception e) {
+                System.out.println("DEBUG: Exception during cache.get('all')");
+                e.printStackTrace();
+            }
+        }
         assertNotNull(cache.get("all"), "Cache should be populated after retrieval");
 
         // Publish a product event indicating update

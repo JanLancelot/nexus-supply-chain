@@ -252,6 +252,75 @@ paths:
         '403':
           $ref: '#/components/responses/403Forbidden'
 
+  /notifications:
+    get:
+      summary: Retrieve Notifications List
+      description: Returns a collection of notifications for the currently logged in user. Accessible by ROLE_STAFF and ROLE_ADMIN.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of notifications.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /notifications/{id}/read:
+    put:
+      summary: Mark Notification as Read
+      description: Updates the specific notification as read. Accessible by ROLE_STAFF and ROLE_ADMIN.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Notification marked as read successfully.
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
+  /notifications/read-all:
+    put:
+      summary: Mark All Notifications as Read
+      description: Marks all notifications of the currently logged in user as read. Accessible by ROLE_STAFF and ROLE_ADMIN.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: All user notifications marked as read.
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /analytics/dashboard:
+    get:
+      summary: Retrieve Supply Chain Analytics Dashboard
+      description: Returns aggregate performance and tracking metrics. Restricted to ROLE_ADMIN.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard metrics compiled successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsDashboard'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+
 components:
   securitySchemes:
     BearerAuth:
@@ -347,6 +416,65 @@ components:
           type: string
           format: date-time
           example: '2026-06-12T16:21:15Z'
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d3b07384-d113-4c32-a52d-9c123456789a
+        userId:
+          type: string
+          format: uuid
+          example: c3b0a7e3-53d7-466d-a7a5-c6bf2d2c12cd
+        type:
+          type: string
+          example: LOW_STOCK
+        message:
+          type: string
+          example: 'Product PG-TIDE-001 is low in stock: 5 left (reorder level: 10)'
+        isRead:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-06-12T16:21:15Z'
+
+    AnalyticsDashboard:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+          example: 12500.50
+        orderStatusCounts:
+          type: object
+          additionalProperties:
+            type: integer
+          example: { "DRAFT": 2, "PENDING_APPROVAL": 5 }
+        lowStockCount:
+          type: integer
+          example: 3
+        totalInventoryValue:
+          type: number
+          example: 450000.00
+        warehouseStockCounts:
+          type: object
+          additionalProperties:
+            type: integer
+          example: { "Main Warehouse": 1200 }
+        topProducts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Tide Liquid Original
+              totalQuantityOrdered:
+                type: integer
+                example: 1500
 
     APIError:
       type: object
