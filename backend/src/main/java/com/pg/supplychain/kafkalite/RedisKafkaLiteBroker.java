@@ -29,14 +29,16 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
         this.objectMapper = objectMapper;
         this.executorService = Executors.newCachedThreadPool();
         
-        // Test connection on start
-        try {
-            redisTemplate.getConnectionFactory().getConnection().ping();
-            log.info("KafkaLite Broker: Successfully connected to Redis event queue broker.");
-        } catch (Exception e) {
-            log.warn("KafkaLite Broker: Redis is not available. Falling back to in-memory event queues. Error: {}", e.getMessage());
-            this.useFallback = true;
-        }
+        // Test connection on start asynchronously to avoid blocking startup
+        executorService.submit(() -> {
+            try (var connection = redisTemplate.getConnectionFactory().getConnection()) {
+                connection.ping();
+                log.info("KafkaLite Broker: Successfully connected to Redis event queue broker.");
+            } catch (Exception e) {
+                log.warn("KafkaLite Broker: Redis is not available. Falling back to in-memory event queues. Error: {}", e.getMessage());
+                this.useFallback = true;
+            }
+        });
     }
 
     @Override
