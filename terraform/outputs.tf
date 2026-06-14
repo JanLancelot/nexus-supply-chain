@@ -34,6 +34,6 @@ output "postgres_host" {
 }
 
 output "redis_host" {
-  value       = azurerm_redis_cache.redis.hostname
+  value       = azurerm_managed_redis.redis.hostname
   description = "The hostname of the Redis cache."
 }

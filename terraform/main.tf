@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0"
+      version = "~> 4.0"
     }
   }
 }
@@ -38,16 +38,16 @@ resource "azurerm_service_plan" "asp" {
   sku_name            = "S1"
 }
 
-# Azure Cache for Redis
-resource "azurerm_redis_cache" "redis" {
+# Azure Managed Redis (Replaces retired Azure Cache for Redis)
+resource "azurerm_managed_redis" "redis" {
   name                = "redis-${var.project_name}-${var.environment}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  capacity            = 0
-  family              = "C"
-  sku_name            = "Basic"
-  non_ssl_port_enabled = false
-  minimum_tls_version = "1.2"
+  sku_name            = "Balanced_B1"
+
+  default_database {
+    access_keys_authentication_enabled = true
+  }
 }
 
 # Azure Database for PostgreSQL Flexible Server
@@ -89,20 +89,20 @@ resource "azurerm_linux_web_app" "backend_api" {
   site_config {
     always_on = true
     application_stack {
-      docker_image     = "${azurerm_container_registry.acr.login_server}/backend"
-      docker_image_tag = "latest"
+      docker_image_name        = "backend:latest"
+      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
+      docker_registry_username = azurerm_container_registry.acr.admin_username
+      docker_registry_password = azurerm_container_registry.acr.admin_password
     }
   }
 
   app_settings = {
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://${azurerm_container_registry.acr.login_server}"
-    "DOCKER_REGISTRY_SERVER_USERNAME"     = azurerm_container_registry.acr.admin_username
-    "DOCKER_REGISTRY_SERVER_PASSWORD"     = azurerm_container_registry.acr.admin_password
     "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
-    "SPRING_REDIS_HOST"                   = azurerm_redis_cache.redis.hostname
-    "SPRING_REDIS_PORT"                   = tostring(azurerm_redis_cache.redis.ssl_port)
+    "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis.hostname
+    "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis.default_database[0].port)
+    "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis.default_database[0].primary_access_key
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
   }
@@ -116,20 +116,20 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
   site_config {
     always_on = true
     application_stack {
-      docker_image     = "${azurerm_container_registry.acr.login_server}/backend"
-      docker_image_tag = "latest"
+      docker_image_name        = "backend:latest"
+      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
+      docker_registry_username = azurerm_container_registry.acr.admin_username
+      docker_registry_password = azurerm_container_registry.acr.admin_password
     }
   }
 
   app_settings = {
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://${azurerm_container_registry.acr.login_server}"
-    "DOCKER_REGISTRY_SERVER_USERNAME"     = azurerm_container_registry.acr.admin_username
-    "DOCKER_REGISTRY_SERVER_PASSWORD"     = azurerm_container_registry.acr.admin_password
     "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
-    "SPRING_REDIS_HOST"                   = azurerm_redis_cache.redis.hostname
-    "SPRING_REDIS_PORT"                   = tostring(azurerm_redis_cache.redis.ssl_port)
+    "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis.hostname
+    "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis.default_database[0].port)
+    "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis.default_database[0].primary_access_key
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
   }
@@ -145,15 +145,14 @@ resource "azurerm_linux_web_app" "frontend_ui" {
   site_config {
     always_on = true
     application_stack {
-      docker_image     = "${azurerm_container_registry.acr.login_server}/frontend"
-      docker_image_tag = "latest"
+      docker_image_name        = "frontend:latest"
+      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
+      docker_registry_username = azurerm_container_registry.acr.admin_username
+      docker_registry_password = azurerm_container_registry.acr.admin_password
     }
   }
 
   app_settings = {
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://${azurerm_container_registry.acr.login_server}"
-    "DOCKER_REGISTRY_SERVER_USERNAME"     = azurerm_container_registry.acr.admin_username
-    "DOCKER_REGISTRY_SERVER_PASSWORD"     = azurerm_container_registry.acr.admin_password
     "WEBSITES_PORT"                       = "80"
   }
 }
@@ -166,15 +165,14 @@ resource "azurerm_linux_web_app_slot" "frontend_ui_staging" {
   site_config {
     always_on = true
     application_stack {
-      docker_image     = "${azurerm_container_registry.acr.login_server}/frontend"
-      docker_image_tag = "latest"
+      docker_image_name        = "frontend:latest"
+      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
+      docker_registry_username = azurerm_container_registry.acr.admin_username
+      docker_registry_password = azurerm_container_registry.acr.admin_password
     }
   }
 
   app_settings = {
-    "DOCKER_REGISTRY_SERVER_URL"          = "https://${azurerm_container_registry.acr.login_server}"
-    "DOCKER_REGISTRY_SERVER_USERNAME"     = azurerm_container_registry.acr.admin_username
-    "DOCKER_REGISTRY_SERVER_PASSWORD"     = azurerm_container_registry.acr.admin_password
     "WEBSITES_PORT"                       = "80"
   }
 }
