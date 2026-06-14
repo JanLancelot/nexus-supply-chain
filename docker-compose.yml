@@ -49,6 +49,7 @@ services:
       - "80:80"
     environment:
       - BACKEND_URL=http://backend:8080
+      - NGINX_ENVSUBST_FILTER=BACKEND_URL
     depends_on:
       - backend
     restart: unless-stopped

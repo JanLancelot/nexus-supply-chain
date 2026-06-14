@@ -154,6 +154,7 @@ resource "azurerm_linux_web_app" "frontend_ui" {
 
   app_settings = {
     "BACKEND_URL"                         = "https://${azurerm_linux_web_app.backend_api.default_hostname}"
+    "NGINX_ENVSUBST_FILTER"               = "BACKEND_URL"
     "WEBSITES_PORT"                       = "80"
   }
 }
@@ -175,6 +176,7 @@ resource "azurerm_linux_web_app_slot" "frontend_ui_staging" {
 
   app_settings = {
     "BACKEND_URL"                         = "https://${azurerm_linux_web_app_slot.backend_api_staging.default_hostname}"
+    "NGINX_ENVSUBST_FILTER"               = "BACKEND_URL"
     "WEBSITES_PORT"                       = "80"
   }
 }
