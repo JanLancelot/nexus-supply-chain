@@ -103,6 +103,7 @@ resource "azurerm_linux_web_app" "backend_api" {
     "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis.hostname
     "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis.default_database[0].port)
     "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis.default_database[0].primary_access_key
+    "SPRING_REDIS_SSL_ENABLED"            = "true"
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
   }
@@ -130,6 +131,7 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
     "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis.hostname
     "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis.default_database[0].port)
     "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis.default_database[0].primary_access_key
+    "SPRING_REDIS_SSL_ENABLED"            = "true"
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
   }
