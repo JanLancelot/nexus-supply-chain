@@ -1,0 +1,692 @@
+{
+  "version": 4,
+  "terraform_version": "1.15.6",
+  "serial": 10,
+  "lineage": "2184bed6-a015-b57f-444b-433dd1802171",
+  "outputs": {
+    "acr_login_server": {
+      "value": "pgsupplyregistry.azurecr.io",
+      "type": "string"
+    },
+    "frontend_staging_url": {
+      "value": "https://pg-enterprise-supply-ui-staging.azurewebsites.net",
+      "type": "string"
+    },
+    "frontend_url": {
+      "value": "https://pg-enterprise-supply-ui.azurewebsites.net",
+      "type": "string"
+    },
+    "postgres_host": {
+      "value": "postgres-nexus-supply-prod.postgres.database.azure.com",
+      "type": "string"
+    },
+    "resource_group_name": {
+      "value": "rg-nexus-supply-prod",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "azurerm_container_registry",
+      "name": "acr",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "admin_enabled": true,
+            "admin_password": "2WnNiuR5WiRGbyBOyYAWlWEdZSiVMVNb6SvZstBUPibmJHZyyfaZJQQJ99CFACqBBLyEqg7NAAACAZCRcgcF",
+            "admin_username": "pgsupplyregistry",
+            "anonymous_pull_enabled": false,
+            "data_endpoint_enabled": false,
+            "encryption": [
+              {
+                "enabled": false,
+                "identity_client_id": "",
+                "key_vault_key_id": ""
+              }
+            ],
+            "export_policy_enabled": true,
+            "georeplications": [],
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.ContainerRegistry/registries/pgsupplyregistry",
+            "identity": [],
+            "location": "southeastasia",
+            "login_server": "pgsupplyregistry.azurecr.io",
+            "name": "pgsupplyregistry",
+            "network_rule_bypass_option": "AzureServices",
+            "network_rule_set": [],
+            "public_network_access_enabled": true,
+            "quarantine_policy_enabled": false,
+            "resource_group_name": "rg-nexus-supply-prod",
+            "retention_policy": [
+              {
+                "days": 7,
+                "enabled": false
+              }
+            ],
+            "sku": "Standard",
+            "tags": null,
+            "timeouts": null,
+            "trust_policy": [
+              {
+                "enabled": false
+              }
+            ],
+            "zone_redundancy_enabled": false
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "admin_password"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIyIn0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_linux_web_app",
+      "name": "frontend_ui",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "app_settings": {
+              "DOCKER_REGISTRY_SERVER_PASSWORD": "2WnNiuR5WiRGbyBOyYAWlWEdZSiVMVNb6SvZstBUPibmJHZyyfaZJQQJ99CFACqBBLyEqg7NAAACAZCRcgcF",
+              "DOCKER_REGISTRY_SERVER_URL": "https://pgsupplyregistry.azurecr.io",
+              "DOCKER_REGISTRY_SERVER_USERNAME": "pgsupplyregistry",
+              "WEBSITES_PORT": "80"
+            },
+            "auth_settings": [],
+            "auth_settings_v2": [],
+            "backup": [],
+            "client_affinity_enabled": false,
+            "client_certificate_enabled": false,
+            "client_certificate_exclusion_paths": "",
+            "client_certificate_mode": "Required",
+            "connection_string": [],
+            "custom_domain_verification_id": "5C1A4BF2CA1BC336AFD5BACAAF65362471F8066256B7E51CAF0F8A541278A83B",
+            "default_hostname": "pg-enterprise-supply-ui.azurewebsites.net",
+            "enabled": true,
+            "ftp_publish_basic_authentication_enabled": true,
+            "hosting_environment_id": "",
+            "https_only": false,
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.Web/sites/pg-enterprise-supply-ui",
+            "identity": [],
+            "key_vault_reference_identity_id": "SystemAssigned",
+            "kind": "app,linux,container",
+            "location": "southeastasia",
+            "logs": [],
+            "name": "pg-enterprise-supply-ui",
+            "outbound_ip_address_list": [
+              "20.24.129.155",
+              "138.91.37.68",
+              "13.67.9.1"
+            ],
+            "outbound_ip_addresses": "20.24.129.155,138.91.37.68,13.67.9.1",
+            "possible_outbound_ip_address_list": [
+              "20.24.129.155",
+              "138.91.37.68",
+              "138.91.39.50",
+              "138.91.39.149",
+              "23.101.31.49",
+              "138.91.41.245",
+              "23.101.23.207",
+              "20.197.107.77",
+              "20.197.107.91",
+              "20.197.107.136",
+              "20.197.107.195",
+              "20.197.108.119",
+              "20.197.108.253",
+              "20.44.210.121",
+              "20.44.209.226",
+              "20.44.210.28",
+              "20.44.213.196",
+              "20.44.214.216",
+              "20.44.214.241",
+              "13.67.9.1"
+            ],
+            "possible_outbound_ip_addresses": "20.24.129.155,138.91.37.68,138.91.39.50,138.91.39.149,23.101.31.49,138.91.41.245,23.101.23.207,20.197.107.77,20.197.107.91,20.197.107.136,20.197.107.195,20.197.108.119,20.197.108.253,20.44.210.121,20.44.209.226,20.44.210.28,20.44.213.196,20.44.214.216,20.44.214.241,13.67.9.1",
+            "public_network_access_enabled": true,
+            "resource_group_name": "rg-nexus-supply-prod",
+            "service_plan_id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.Web/serverFarms/asp-nexus-supply-prod",
+            "site_config": [
+              {
+                "always_on": true,
+                "api_definition_url": "",
+                "api_management_api_id": "",
+                "app_command_line": "",
+                "application_stack": [
+                  {
+                    "docker_image": "pgsupplyregistry.azurecr.io/frontend",
+                    "docker_image_name": "",
+                    "docker_image_tag": "latest",
+                    "docker_registry_password": "",
+                    "docker_registry_url": "",
+                    "docker_registry_username": "",
+                    "dotnet_version": "",
+                    "go_version": "",
+                    "java_server": "",
+                    "java_server_version": "",
+                    "java_version": "",
+                    "node_version": "",
+                    "php_version": "",
+                    "python_version": "",
+                    "ruby_version": ""
+                  }
+                ],
+                "auto_heal_enabled": false,
+                "auto_heal_setting": [],
+                "container_registry_managed_identity_client_id": "",
+                "container_registry_use_managed_identity": false,
+                "cors": [],
+                "default_documents": [
+                  "Default.htm",
+                  "Default.html",
+                  "Default.asp",
+                  "index.htm",
+                  "index.html",
+                  "iisstart.htm",
+                  "default.aspx",
+                  "index.php",
+                  "hostingstart.html"
+                ],
+                "detailed_error_logging_enabled": false,
+                "ftps_state": "Disabled",
+                "health_check_eviction_time_in_min": 0,
+                "health_check_path": "",
+                "http2_enabled": false,
+                "ip_restriction": [],
+                "ip_restriction_default_action": "Allow",
+                "linux_fx_version": "DOCKER|pgsupplyregistry.azurecr.io/frontend:latest",
+                "load_balancing_mode": "LeastRequests",
+                "local_mysql_enabled": false,
+                "managed_pipeline_mode": "Integrated",
+                "minimum_tls_version": "1.2",
+                "remote_debugging_enabled": false,
+                "remote_debugging_version": "VS2022",
+                "scm_ip_restriction": [],
+                "scm_ip_restriction_default_action": "Allow",
+                "scm_minimum_tls_version": "1.2",
+                "scm_type": "None",
+                "scm_use_main_ip_restriction": false,
+                "use_32_bit_worker": true,
+                "vnet_route_all_enabled": false,
+                "websockets_enabled": false,
+                "worker_count": 1
+              }
+            ],
+            "site_credential": [
+              {
+                "name": "$pg-enterprise-supply-ui",
+                "password": "dYj5JyeC2HAkcwvJMollyRxassaP6fvpayspJu7bRC7wcn3fedgWSRKyihdv"
+              }
+            ],
+            "sticky_settings": [],
+            "storage_account": [],
+            "tags": null,
+            "timeouts": null,
+            "virtual_network_subnet_id": "",
+            "webdeploy_publish_basic_authentication_enabled": true,
+            "zip_deploy_file": ""
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "app_settings"
+              },
+              {
+                "type": "index",
+                "value": {
+                  "value": "DOCKER_REGISTRY_SERVER_PASSWORD",
+                  "type": "string"
+                }
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "custom_domain_verification_id"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "site_config"
+              },
+              {
+                "type": "index",
+                "value": {
+                  "value": 0,
+                  "type": "number"
+                }
+              },
+              {
+                "type": "get_attr",
+                "value": "application_stack"
+              },
+              {
+                "type": "index",
+                "value": {
+                  "value": 0,
+                  "type": "number"
+                }
+              },
+              {
+                "type": "get_attr",
+                "value": "docker_registry_password"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "site_credential"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "azurerm_container_registry.acr",
+            "azurerm_resource_group.rg",
+            "azurerm_service_plan.asp"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_linux_web_app_slot",
+      "name": "frontend_ui_staging",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "app_metadata": {},
+            "app_service_id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.Web/sites/pg-enterprise-supply-ui",
+            "app_settings": {
+              "DOCKER_REGISTRY_SERVER_PASSWORD": "2WnNiuR5WiRGbyBOyYAWlWEdZSiVMVNb6SvZstBUPibmJHZyyfaZJQQJ99CFACqBBLyEqg7NAAACAZCRcgcF",
+              "DOCKER_REGISTRY_SERVER_URL": "https://pgsupplyregistry.azurecr.io",
+              "DOCKER_REGISTRY_SERVER_USERNAME": "pgsupplyregistry",
+              "WEBSITES_PORT": "80"
+            },
+            "auth_settings": [],
+            "auth_settings_v2": [],
+            "backup": [],
+            "client_affinity_enabled": false,
+            "client_certificate_enabled": false,
+            "client_certificate_exclusion_paths": "",
+            "client_certificate_mode": "Required",
+            "connection_string": [],
+            "custom_domain_verification_id": "5C1A4BF2CA1BC336AFD5BACAAF65362471F8066256B7E51CAF0F8A541278A83B",
+            "default_hostname": "pg-enterprise-supply-ui-staging.azurewebsites.net",
+            "enabled": true,
+            "ftp_publish_basic_authentication_enabled": true,
+            "hosting_environment_id": "",
+            "https_only": false,
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.Web/sites/pg-enterprise-supply-ui/slots/staging",
+            "identity": [],
+            "key_vault_reference_identity_id": "SystemAssigned",
+            "kind": "app,linux,container",
+            "logs": [],
+            "name": "staging",
+            "outbound_ip_address_list": [
+              "20.24.129.155",
+              "138.91.37.68",
+              "13.67.9.1"
+            ],
+            "outbound_ip_addresses": "20.24.129.155,138.91.37.68,13.67.9.1",
+            "possible_outbound_ip_address_list": [
+              "20.24.129.155",
+              "138.91.37.68",
+              "138.91.39.50",
+              "138.91.39.149",
+              "23.101.31.49",
+              "138.91.41.245",
+              "23.101.23.207",
+              "20.197.107.77",
+              "20.197.107.91",
+              "20.197.107.136",
+              "20.197.107.195",
+              "20.197.108.119",
+              "20.197.108.253",
+              "20.44.210.121",
+              "20.44.209.226",
+              "20.44.210.28",
+              "20.44.213.196",
+              "20.44.214.216",
+              "20.44.214.241",
+              "13.67.9.1"
+            ],
+            "possible_outbound_ip_addresses": "20.24.129.155,138.91.37.68,138.91.39.50,138.91.39.149,23.101.31.49,138.91.41.245,23.101.23.207,20.197.107.77,20.197.107.91,20.197.107.136,20.197.107.195,20.197.108.119,20.197.108.253,20.44.210.121,20.44.209.226,20.44.210.28,20.44.213.196,20.44.214.216,20.44.214.241,13.67.9.1",
+            "public_network_access_enabled": true,
+            "service_plan_id": "",
+            "site_config": [
+              {
+                "always_on": true,
+                "api_definition_url": "",
+                "api_management_api_id": "",
+                "app_command_line": "",
+                "application_stack": [
+                  {
+                    "docker_image": "pgsupplyregistry.azurecr.io/frontend",
+                    "docker_image_name": "",
+                    "docker_image_tag": "latest",
+                    "docker_registry_password": "",
+                    "docker_registry_url": "",
+                    "docker_registry_username": "",
+                    "dotnet_version": "",
+                    "go_version": "",
+                    "java_server": "",
+                    "java_server_version": "",
+                    "java_version": "",
+                    "node_version": "",
+                    "php_version": "",
+                    "python_version": "",
+                    "ruby_version": ""
+                  }
+                ],
+                "auto_heal_enabled": false,
+                "auto_heal_setting": [],
+                "auto_swap_slot_name": "",
+                "container_registry_managed_identity_client_id": "",
+                "container_registry_use_managed_identity": false,
+                "cors": [],
+                "default_documents": [
+                  "Default.htm",
+                  "Default.html",
+                  "Default.asp",
+                  "index.htm",
+                  "index.html",
+                  "iisstart.htm",
+                  "default.aspx",
+                  "index.php",
+                  "hostingstart.html"
+                ],
+                "detailed_error_logging_enabled": false,
+                "ftps_state": "Disabled",
+                "health_check_eviction_time_in_min": 0,
+                "health_check_path": "",
+                "http2_enabled": false,
+                "ip_restriction": [],
+                "ip_restriction_default_action": "Allow",
+                "linux_fx_version": "DOCKER|pgsupplyregistry.azurecr.io/frontend:latest",
+                "load_balancing_mode": "LeastRequests",
+                "local_mysql_enabled": false,
+                "managed_pipeline_mode": "Integrated",
+                "minimum_tls_version": "1.2",
+                "remote_debugging_enabled": false,
+                "remote_debugging_version": "VS2022",
+                "scm_ip_restriction": [],
+                "scm_ip_restriction_default_action": "Allow",
+                "scm_minimum_tls_version": "1.2",
+                "scm_type": "None",
+                "scm_use_main_ip_restriction": false,
+                "use_32_bit_worker": true,
+                "vnet_route_all_enabled": false,
+                "websockets_enabled": false,
+                "worker_count": 1
+              }
+            ],
+            "site_credential": [
+              {
+                "name": "$pg-enterprise-supply-ui__staging",
+                "password": "bYt6o7e3KCD0lT7XwfGRfd6l61ybnkz4tTGadKCSpZeF4NSZiENBQnges38X"
+              }
+            ],
+            "storage_account": [],
+            "tags": null,
+            "timeouts": null,
+            "virtual_network_subnet_id": "",
+            "webdeploy_publish_basic_authentication_enabled": true,
+            "zip_deploy_file": ""
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "app_settings"
+              },
+              {
+                "type": "index",
+                "value": {
+                  "value": "DOCKER_REGISTRY_SERVER_PASSWORD",
+                  "type": "string"
+                }
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "custom_domain_verification_id"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "site_config"
+              },
+              {
+                "type": "index",
+                "value": {
+                  "value": 0,
+                  "type": "number"
+                }
+              },
+              {
+                "type": "get_attr",
+                "value": "application_stack"
+              },
+              {
+                "type": "index",
+                "value": {
+                  "value": 0,
+                  "type": "number"
+                }
+              },
+              {
+                "type": "get_attr",
+                "value": "docker_registry_password"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "site_credential"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "azurerm_container_registry.acr",
+            "azurerm_linux_web_app.frontend_ui",
+            "azurerm_resource_group.rg",
+            "azurerm_service_plan.asp"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_postgresql_flexible_server",
+      "name": "postgres",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "administrator_login": "enterprise_admin",
+            "administrator_password": "6rQ54Mz3sUHW0txqi97bSKSFI7Lo5l3h34KHzbWuIFQKNl1mE9",
+            "authentication": [
+              {
+                "active_directory_auth_enabled": false,
+                "password_auth_enabled": true,
+                "tenant_id": ""
+              }
+            ],
+            "auto_grow_enabled": false,
+            "backup_retention_days": 7,
+            "create_mode": null,
+            "customer_managed_key": [],
+            "delegated_subnet_id": "",
+            "fqdn": "postgres-nexus-supply-prod.postgres.database.azure.com",
+            "geo_redundant_backup_enabled": false,
+            "high_availability": [],
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.DBforPostgreSQL/flexibleServers/postgres-nexus-supply-prod",
+            "identity": [],
+            "location": "southeastasia",
+            "maintenance_window": [],
+            "name": "postgres-nexus-supply-prod",
+            "point_in_time_restore_time_in_utc": null,
+            "private_dns_zone_id": "",
+            "public_network_access_enabled": true,
+            "replication_role": "",
+            "resource_group_name": "rg-nexus-supply-prod",
+            "sku_name": "B_Standard_B1ms",
+            "source_server_id": null,
+            "storage_mb": 32768,
+            "storage_tier": "P4",
+            "tags": null,
+            "timeouts": null,
+            "version": "15",
+            "zone": "1"
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "administrator_password"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_postgresql_flexible_server_database",
+      "name": "db",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "charset": "UTF8",
+            "collation": "en_US.utf8",
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.DBforPostgreSQL/flexibleServers/postgres-nexus-supply-prod/databases/supply_db",
+            "name": "supply_db",
+            "server_id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.DBforPostgreSQL/flexibleServers/postgres-nexus-supply-prod",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_postgresql_flexible_server.postgres",
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_postgresql_flexible_server_firewall_rule",
+      "name": "allow_azure_services",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "end_ip_address": "0.0.0.0",
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.DBforPostgreSQL/flexibleServers/postgres-nexus-supply-prod/firewallRules/allow-azure-services",
+            "name": "allow-azure-services",
+            "server_id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.DBforPostgreSQL/flexibleServers/postgres-nexus-supply-prod",
+            "start_ip_address": "0.0.0.0",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_postgresql_flexible_server.postgres",
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_resource_group",
+      "name": "rg",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod",
+            "location": "southeastasia",
+            "managed_by": "",
+            "name": "rg-nexus-supply-prod",
+            "tags": null,
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo1NDAwMDAwMDAwMDAwLCJkZWxldGUiOjU0MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjo1NDAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_service_plan",
+      "name": "asp",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "app_service_environment_id": "",
+            "id": "/subscriptions/7dc2780f-c9cd-429c-b6a5-1c29b932dd72/resourceGroups/rg-nexus-supply-prod/providers/Microsoft.Web/serverFarms/asp-nexus-supply-prod",
+            "kind": "linux",
+            "location": "southeastasia",
+            "maximum_elastic_worker_count": 1,
+            "name": "asp-nexus-supply-prod",
+            "os_type": "Linux",
+            "per_site_scaling_enabled": false,
+            "reserved": true,
+            "resource_group_name": "rg-nexus-supply-prod",
+            "sku_name": "S1",
+            "tags": null,
+            "timeouts": null,
+            "worker_count": 1,
+            "zone_balancing_enabled": false
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

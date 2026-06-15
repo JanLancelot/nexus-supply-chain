@@ -161,8 +161,10 @@ class AnalyticsAndNotificationTests {
         // Verify notification attributes
         List<Notification> notifications = notificationRepository.findAll();
         assertFalse(notifications.isEmpty());
-        Notification sample = notifications.get(0);
-        assertEquals("LOW_STOCK", sample.getType());
+        Notification sample = notifications.stream()
+                .filter(n -> "LOW_STOCK".equals(n.getType()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Expected LOW_STOCK notification not found"));
         assertTrue(sample.getMessage().contains("low in stock"));
     }
 

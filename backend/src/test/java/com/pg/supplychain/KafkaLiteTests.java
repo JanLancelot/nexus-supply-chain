@@ -104,13 +104,15 @@ class KafkaLiteTests {
         }
 
         // Call Service to populate cache
-        productService.getAllProducts();
-
+        var products = productService.getAllProducts();
+        System.out.println("DEBUG: productService.getAllProducts() returned: " + products);
 
         // Verify cache is populated
         System.out.println("DEBUG: Cache object = " + cache);
         if (cache != null) {
             try {
+                cache.put("test-key", "test-value");
+                System.out.println("DEBUG: Direct cache get (test-key) = " + (cache.get("test-key") != null ? cache.get("test-key").get() : null));
                 org.springframework.cache.Cache.ValueWrapper wrapper = cache.get("all");
                 System.out.println("DEBUG: ValueWrapper = " + wrapper);
                 if (wrapper != null) {

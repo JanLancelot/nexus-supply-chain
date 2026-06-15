@@ -103,6 +103,65 @@ public class OrderService {
         return mapToResponse(savedOrder);
     }
 
+    @Transactional
+    public OrderResponse createSystemOrder(UUID supplierId, UUID warehouseId, List<OrderItemRequest> itemRequests) {
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with ID: " + supplierId));
+
+        Warehouse warehouse = warehouseRepository.findById(warehouseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with ID: " + warehouseId));
+
+        String orderNum = "ORD-SYS-" + System.currentTimeMillis();
+
+        Order order = Order.builder()
+                .orderNumber(orderNum)
+                .supplier(supplier)
+                .warehouse(warehouse)
+                .status(OrderStatus.DRAFT)
+                .expectedDeliveryDate(OffsetDateTime.now().plusDays(supplier.getLeadTimeDays()))
+                .totalAmount(BigDecimal.ZERO)
+                .build();
+
+        List<OrderItem> items = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (OrderItemRequest itemReq : itemRequests) {
+            Product product = productRepository.findById(itemReq.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + itemReq.getProductId()));
+
+            BigDecimal unitPrice = product.getUnitPrice();
+            BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
+            total = total.add(subtotal);
+
+            items.add(OrderItem.builder()
+                    .order(order)
+                    .product(product)
+                    .quantity(itemReq.getQuantity())
+                    .unitPrice(unitPrice)
+                    .subtotal(subtotal)
+                    .build());
+        }
+
+        order.setItems(items);
+        order.setTotalAmount(total);
+
+        Order savedOrder = orderRepository.save(order);
+
+        // Audit log order creation
+        auditService.logChange(
+                "Order",
+                savedOrder.getId(),
+                "ACTION_CREATE_SYSTEM_ORDER",
+                null,
+                mapToAuditState(savedOrder)
+        );
+
+        // Publish event to kafka-lite
+        kafkaLiteBroker.send("order-events", new OrderEvent(savedOrder.getId(), savedOrder.getStatus().name()));
+
+        return mapToResponse(savedOrder);
+    }
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public OrderResponse updateOrderStatus(UUID orderId, OrderStatusUpdateRequest request) {
         Order order = orderRepository.findById(orderId)
@@ -151,6 +210,7 @@ public class OrderService {
 
         // Perform transactional increments when order moves to DELIVERED
         if (targetStatus == OrderStatus.DELIVERED) {
+            order.setActualDeliveryDate(OffsetDateTime.now());
             for (OrderItem item : order.getItems()) {
                 Product product = item.getProduct();
                 int oldStock = product.getStockQuantity();

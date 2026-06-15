@@ -33,6 +33,10 @@ public class Supplier {
     @Builder.Default
     private boolean isActive = true;
 
+    @Column(name = "lead_time_days", nullable = false)
+    @Builder.Default
+    private int leadTimeDays = 3;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 

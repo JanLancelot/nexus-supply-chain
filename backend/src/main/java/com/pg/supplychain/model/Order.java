@@ -46,6 +46,12 @@ public class Order {
     @JoinColumn(name = "created_by")
     private User createdBy;
 
+    @Column(name = "expected_delivery_date")
+    private OffsetDateTime expectedDeliveryDate;
+
+    @Column(name = "actual_delivery_date")
+    private OffsetDateTime actualDeliveryDate;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
