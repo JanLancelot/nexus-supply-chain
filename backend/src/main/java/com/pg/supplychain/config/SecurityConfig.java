@@ -35,6 +35,7 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/v1/auth/login").permitAll()
+                .requestMatchers("/error").permitAll()
                 
                 // Inventory Catalog rules
                 .requestMatchers(HttpMethod.GET, "/api/v1/inventory/products").hasAnyAuthority("ROLE_STAFF", "ROLE_ADMIN")

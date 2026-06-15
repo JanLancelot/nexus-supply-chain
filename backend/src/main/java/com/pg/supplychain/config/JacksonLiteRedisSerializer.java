@@ -2,14 +2,23 @@ package com.pg.supplychain.config;
 
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
+import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DefaultTyping;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
 
 public class JacksonLiteRedisSerializer implements RedisSerializer<Object> {
     
     private final ObjectMapper objectMapper;
 
     public JacksonLiteRedisSerializer(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfBaseType(Object.class)
+                .build();
+        this.objectMapper = JsonMapper.builder()
+                .activateDefaultTyping(ptv, DefaultTyping.NON_FINAL, com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY)
+                .build();
     }
 
     @Override
