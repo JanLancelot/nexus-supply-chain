@@ -106,6 +106,7 @@ resource "azurerm_linux_web_app" "backend_api" {
     "SPRING_REDIS_SSL_ENABLED"            = "true"
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
+    "WEBSITES_CONTAINER_START_TIME_LIMIT" = "1800"
   }
 }
 
@@ -134,6 +135,7 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
     "SPRING_REDIS_SSL_ENABLED"            = "true"
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
+    "WEBSITES_CONTAINER_START_TIME_LIMIT" = "1800"
   }
 }
 

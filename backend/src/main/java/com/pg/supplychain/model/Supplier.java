@@ -33,7 +33,7 @@ public class Supplier {
     @Builder.Default
     private boolean isActive = true;
 
-    @Column(name = "lead_time_days", nullable = false)
+    @Column(name = "lead_time_days")
     @Builder.Default
     private int leadTimeDays = 3;
 
