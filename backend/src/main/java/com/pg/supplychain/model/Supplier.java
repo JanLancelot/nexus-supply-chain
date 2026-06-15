@@ -35,7 +35,7 @@ public class Supplier {
 
     @Column(name = "lead_time_days")
     @Builder.Default
-    private int leadTimeDays = 3;
+    private Integer leadTimeDays = 3;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

@@ -18,6 +18,8 @@ public class JacksonLiteRedisSerializer implements RedisSerializer<Object> {
                 .build();
         this.objectMapper = JsonMapper.builder()
                 .activateDefaultTyping(ptv, DefaultTyping.NON_FINAL, com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY)
+                .configure(tools.jackson.databind.DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+                .configure(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .build();
     }
 

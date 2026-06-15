@@ -16,10 +16,10 @@ public class ProductResponse {
     private UUID categoryId;
     private String categoryName;
     private BigDecimal unitPrice;
-    private int stockQuantity;
-    private int reorderLevel;
+    private Integer stockQuantity;
+    private Integer reorderLevel;
     private UUID warehouseId;
     private String warehouseName;
-    private boolean lowStockIndicator;
-    private boolean isActive;
+    private Boolean lowStockIndicator;
+    private Boolean isActive;
 }
