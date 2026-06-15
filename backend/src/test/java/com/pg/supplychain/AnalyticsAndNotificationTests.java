@@ -68,7 +68,7 @@ class AnalyticsAndNotificationTests {
     private User adminUser;
     private User staffUser;
 
-    @Autowired
+    @Autowired(required = false)
     private org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
 
     @BeforeEach
@@ -76,14 +76,20 @@ class AnalyticsAndNotificationTests {
         // Allow background thread to quiescent
         Thread.sleep(500);
 
-        // Clear Redis event queues to isolate test runs
-        redisTemplate.delete(List.of(
-                "kafka_topic_product-events",
-                "kafka_topic_order-events",
-                "kafka_topic_audit-events",
-                "kafka_topic_category-events",
-                "kafka_topic_warehouse-events"
-        ));
+        // Clear Redis event queues to isolate test runs (skip if Redis unavailable)
+        if (redisTemplate != null) {
+            try {
+                redisTemplate.delete(List.of(
+                        "kafka_topic_product-events",
+                        "kafka_topic_order-events",
+                        "kafka_topic_audit-events",
+                        "kafka_topic_category-events",
+                        "kafka_topic_warehouse-events"
+                ));
+            } catch (Exception e) {
+                // Redis not available in test environment — safe to ignore
+            }
+        }
 
         adminUser = userRepository.findByEmail("admin@pg.com").orElse(null);
         staffUser = userRepository.findByEmail("staff@pg.com").orElse(null);

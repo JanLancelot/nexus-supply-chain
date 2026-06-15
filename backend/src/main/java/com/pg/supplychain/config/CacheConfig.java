@@ -1,7 +1,10 @@
 package com.pg.supplychain.config;
 
 import tools.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -14,6 +17,7 @@ import java.time.Duration;
 
 @Configuration
 @EnableCaching
+@Slf4j
 public class CacheConfig {
 
     @Bean
@@ -26,9 +30,17 @@ public class CacheConfig {
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
-        return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(cacheConfiguration(objectMapper))
-                .build();
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+        try {
+            // Test the connection before building the Redis cache manager
+            connectionFactory.getConnection().close();
+            log.info("CacheConfig: Redis is available. Using RedisCacheManager.");
+            return RedisCacheManager.builder(connectionFactory)
+                    .cacheDefaults(cacheConfiguration(objectMapper))
+                    .build();
+        } catch (Exception e) {
+            log.warn("CacheConfig: Redis is not available ({}). Falling back to in-memory ConcurrentMapCacheManager.", e.getMessage());
+            return new ConcurrentMapCacheManager();
+        }
     }
 }

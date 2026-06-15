@@ -35,11 +35,11 @@ public class AuditLog {
     private String action;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "old_value", columnDefinition = "jsonb")
+    @Column(name = "old_value")
     private String oldValue;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "new_value", columnDefinition = "jsonb")
+    @Column(name = "new_value")
     private String newValue;
 
     @Column(name = "created_at", nullable = false)
