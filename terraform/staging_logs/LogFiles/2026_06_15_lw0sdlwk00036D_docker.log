@@ -1,0 +1,563 @@
+2026-06-15T08:01:29.1661686Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T08:01:32.7389256Z State: Starting, Action: EstablishingSiteNetworks, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: , DetailsLevel: WARN
+2026-06-15T08:01:32.7881812Z State: Stopping, Action: StoppingSite, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: , DetailsLevel: WARN
+2026-06-15T08:01:32.7897413Z State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: , DetailsLevel: WARN
+2026-06-15T08:01:32.7900956Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:01:55.3966040Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/14/2026 07:25:56, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/14/2026 07:30:33 (UTC), DetailsLevel: INFO
+2026-06-15T08:01:55.5060472Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/14/2026 07:25:56, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/14/2026 07:30:33 (UTC), DetailsLevel: INFO
+2026-06-15T08:01:55.5151879Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:01:55.7398409Z Stop and delete container. Retry count = 0
+2026-06-15T08:01:55.7399809Z Stopping container: 80de3c32ee3f_pg-enterprise-supply-api_4724.
+2026-06-15T08:02:01.3443776Z Deleting container: 80de3c32ee3f_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T08:02:01.8734712Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:02:01.8738349Z Container is terminated. Total time elapsed: 6358 ms.
+2026-06-15T08:02:02.0288641Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:02:27.2829042Z State: Starting, Action: EstablishingSiteNetworks, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Site stopped at 06/15/2026 08:01:33 (UTC), DetailsLevel: WARN
+2026-06-15T08:02:41.8644626Z State: Starting, Action: StartingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Site stopped at 06/15/2026 08:01:33 (UTC), DetailsLevel: WARN
+2026-06-15T08:02:41.8646276Z Container start method called.
+2026-06-15T08:02:41.8646791Z State: Starting, Action: PullingImage, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:02:41.8647890Z Establishing network.
+2026-06-15T08:02:41.8649235Z Pulling image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:03:35.2394346Z Image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T08:03:35.2396361Z Container is starting.
+2026-06-15T08:03:35.2397172Z State: Starting, Action: MountingVolumes, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:03:35.3766966Z Establishing user namespace if not established already.
+2026-06-15T08:03:35.3770983Z Establishing network if not established already.
+2026-06-15T08:03:35.3954604Z Mounting volumes.
+2026-06-15T08:03:35.3957469Z Nested mountpoint 
+2026-06-15T08:03:35.5023058Z Nested mountpoint volatile/logs
+2026-06-15T08:03:35.7490086Z Nested mountpoint 
+2026-06-15T08:03:36.4032902Z State: Starting, Action: CreatingContainer, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:03:36.4872488Z Creating container.
+2026-06-15T08:03:36.4874208Z Creating pipes for streaming container io.
+2026-06-15T08:03:36.4876546Z Creating stdout named pipe at /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stdout_123ee591fae64c6fa6a853b639ec3ebe.
+2026-06-15T08:03:36.4879400Z Successfully created stdout named pipe at: /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stdout_123ee591fae64c6fa6a853b639ec3ebe.
+2026-06-15T08:03:36.4880470Z Opening named pipe /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stdout_123ee591fae64c6fa6a853b639ec3ebe for reading in non-blocking mode.
+2026-06-15T08:03:36.4881856Z Successfully opened named pipe: /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stdout_123ee591fae64c6fa6a853b639ec3ebe.
+2026-06-15T08:03:36.4882877Z Successfully removed non-blocking flag from /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stdout_123ee591fae64c6fa6a853b639ec3ebe.
+2026-06-15T08:03:36.5068492Z Creating stderr named pipe at /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stderr_635a6ae32483480683f94bc4addda8db.
+2026-06-15T08:03:36.5073093Z Successfully created stderr named pipe at: /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stderr_635a6ae32483480683f94bc4addda8db.
+2026-06-15T08:03:36.5074387Z Opening named pipe /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stderr_635a6ae32483480683f94bc4addda8db for reading in non-blocking mode.
+2026-06-15T08:03:36.5075806Z Successfully opened named pipe: /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stderr_635a6ae32483480683f94bc4addda8db.
+2026-06-15T08:03:36.5076926Z Successfully removed non-blocking flag from /podr/container/pipe/73d47e98f5ad_pg-enterprise-supply-api_4724/stderr_635a6ae32483480683f94bc4addda8db.
+2026-06-15T08:03:36.5078365Z Creating container with image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:03:39.8041495Z Starting container: 73d47e98f5ad_pg-enterprise-supply-api_4724.
+2026-06-15T08:03:40.0312354Z Starting watchers and probes.
+2026-06-15T08:03:40.0322629Z Starting metrics collection.
+2026-06-15T08:03:40.0403437Z Container is running.
+2026-06-15T08:03:40.0404496Z State: Starting, Action: CreatingContainer, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:03:40.1785748Z Container start method finished after 58313 ms.
+2026-06-15T08:03:40.1788225Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:03:40.1788533Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:05:37.2407949Z Container has finished running with exit code: 1.
+2026-06-15T08:05:37.2409705Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:05:37.2418785Z Stop and delete container. Retry count = 0
+2026-06-15T08:05:37.2420076Z Stopping container: 73d47e98f5ad_pg-enterprise-supply-api_4724.
+2026-06-15T08:05:37.3803271Z Deleting container: 73d47e98f5ad_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T08:05:37.7763908Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:05:37.7840286Z Container is terminated. Total time elapsed: 535 ms.
+2026-06-15T08:05:37.7852570Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T08:05:37.7941042Z State: Stopping, Action: CancellingStartup, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:01:32, LastErrorDetails: , Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:05:37.8252154Z Site startup probe failed after 117.6450926 seconds.
+2026-06-15T08:05:38.0278946Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:05:38.0761879Z Failed to start site. Revert by stopping site.
+2026-06-15T08:05:38.0765987Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:05:38.0769117Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:05:38.0769264Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:05:38.0948316Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:05:38.5717646Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:05:39.2910227Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:05:39 (UTC), DetailsLevel: ERR
+2026-06-15T08:05:40.2085877Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:05:39 (UTC), DetailsLevel: ERR
+2026-06-15T08:06:46.9955763Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:05:39 (UTC), DetailsLevel: ERR
+2026-06-15T08:06:49.0840624Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:05:39 (UTC), DetailsLevel: ERR
+2026-06-15T08:06:49.0920527Z Container start method called.
+2026-06-15T08:06:49.0929472Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:06:49.0937872Z Establishing network.
+2026-06-15T08:06:49.0943688Z Pulling image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:06:49.5313865Z Container is starting.
+2026-06-15T08:06:49.5314808Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:06:49.5316254Z Establishing user namespace if not established already.
+2026-06-15T08:06:49.5317492Z Establishing network if not established already.
+2026-06-15T08:06:49.5318746Z Mounting volumes.
+2026-06-15T08:06:49.5320286Z Nested mountpoint 
+2026-06-15T08:06:49.5986060Z Nested mountpoint volatile/logs
+2026-06-15T08:06:49.6573541Z Nested mountpoint 
+2026-06-15T08:06:49.7545507Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:06:49.7547146Z Creating container.
+2026-06-15T08:06:49.7548314Z Creating pipes for streaming container io.
+2026-06-15T08:06:49.7549474Z Creating stdout named pipe at /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stdout_601b446944184990a42e4f0e889d9745.
+2026-06-15T08:06:49.7551872Z Successfully created stdout named pipe at: /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stdout_601b446944184990a42e4f0e889d9745.
+2026-06-15T08:06:49.7552933Z Opening named pipe /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stdout_601b446944184990a42e4f0e889d9745 for reading in non-blocking mode.
+2026-06-15T08:06:49.7554316Z Successfully opened named pipe: /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stdout_601b446944184990a42e4f0e889d9745.
+2026-06-15T08:06:49.7555360Z Successfully removed non-blocking flag from /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stdout_601b446944184990a42e4f0e889d9745.
+2026-06-15T08:06:49.7807337Z Creating stderr named pipe at /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stderr_b4e30c8f99714317a282f65584e4cfeb.
+2026-06-15T08:06:49.7809688Z Successfully created stderr named pipe at: /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stderr_b4e30c8f99714317a282f65584e4cfeb.
+2026-06-15T08:06:49.7810807Z Opening named pipe /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stderr_b4e30c8f99714317a282f65584e4cfeb for reading in non-blocking mode.
+2026-06-15T08:06:49.7834198Z Successfully opened named pipe: /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stderr_b4e30c8f99714317a282f65584e4cfeb.
+2026-06-15T08:06:49.8099356Z Successfully removed non-blocking flag from /podr/container/pipe/95323af775bb_pg-enterprise-supply-api_4724/stderr_b4e30c8f99714317a282f65584e4cfeb.
+2026-06-15T08:06:49.8113219Z Creating container with image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:06:50.4696406Z Starting container: 95323af775bb_pg-enterprise-supply-api_4724.
+2026-06-15T08:06:50.5948193Z Starting watchers and probes.
+2026-06-15T08:06:50.5954071Z Starting metrics collection.
+2026-06-15T08:06:50.6040667Z Container is running.
+2026-06-15T08:06:50.6041867Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:06:50.8801938Z Container start method finished after 1787 ms.
+2026-06-15T08:06:50.8804550Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:06:50.8993196Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:08:57.5763428Z Container has finished running with exit code: 1.
+2026-06-15T08:08:57.5765811Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:08:57.5786821Z Stop and delete container. Retry count = 0
+2026-06-15T08:08:57.5873696Z Stopping container: 95323af775bb_pg-enterprise-supply-api_4724.
+2026-06-15T08:08:57.6958869Z Deleting container: 95323af775bb_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T08:08:57.8358485Z Container get mounts received unexpected exception.
+2026-06-15T08:08:57.9032838Z Container get processes received unexpected exception.
+2026-06-15T08:08:58.1277801Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:08:58.1290024Z Container is terminated. Total time elapsed: 549 ms.
+2026-06-15T08:08:58.1372877Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T08:08:58.1374794Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:05:38, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:08:58.1778194Z Site startup probe failed after 127.2778691 seconds.
+2026-06-15T08:08:58.3617698Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:08:58.4015932Z Failed to start site. Revert by stopping site.
+2026-06-15T08:08:58.4020462Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:08:58.4214490Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:08:58.4214743Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:08:58.4496308Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:08:58.8894725Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:08:59.6051519Z Site: pg-enterprise-supply-api__4724 will be blocked for 1 minutes till 06/15/2026 08:09:59
+2026-06-15T08:08:59.6064883Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: pg-enterprise-supply-api__4724 will be blocked for 1 minutes till 06/15/2026 08:09:59, DetailsLevel: WARN
+2026-06-15T08:08:59.6353048Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:08:59 (UTC), DetailsLevel: WARN
+2026-06-15T08:09:00.4369307Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:08:59 (UTC), DetailsLevel: WARN
+2026-06-15T08:09:59.5753538Z Site: pg-enterprise-supply-api__4724 is unblocked.
+2026-06-15T08:10:14.8948747Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:08:59 (UTC), DetailsLevel: WARN
+2026-06-15T08:10:17.3526469Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:08:59 (UTC), DetailsLevel: WARN
+2026-06-15T08:10:17.3529554Z Container start method called.
+2026-06-15T08:10:17.3530267Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:10:17.3541749Z Establishing network.
+2026-06-15T08:10:17.3546890Z Pulling image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:10:18.0684576Z Container is starting.
+2026-06-15T08:10:18.0685554Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:10:18.0686618Z Establishing user namespace if not established already.
+2026-06-15T08:10:18.0687759Z Establishing network if not established already.
+2026-06-15T08:10:18.0689039Z Mounting volumes.
+2026-06-15T08:10:18.0690584Z Nested mountpoint 
+2026-06-15T08:10:18.1087465Z Nested mountpoint volatile/logs
+2026-06-15T08:10:18.2277928Z Nested mountpoint 
+2026-06-15T08:10:18.4994342Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:10:18.4996582Z Creating container.
+2026-06-15T08:10:18.4998363Z Creating pipes for streaming container io.
+2026-06-15T08:10:18.5003031Z Creating stdout named pipe at /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stdout_8ac0ffc7f8154a19a36c647fc2b0b3b5.
+2026-06-15T08:10:18.5007338Z Successfully created stdout named pipe at: /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stdout_8ac0ffc7f8154a19a36c647fc2b0b3b5.
+2026-06-15T08:10:18.5009064Z Opening named pipe /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stdout_8ac0ffc7f8154a19a36c647fc2b0b3b5 for reading in non-blocking mode.
+2026-06-15T08:10:18.5690448Z Successfully opened named pipe: /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stdout_8ac0ffc7f8154a19a36c647fc2b0b3b5.
+2026-06-15T08:10:18.5695503Z Successfully removed non-blocking flag from /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stdout_8ac0ffc7f8154a19a36c647fc2b0b3b5.
+2026-06-15T08:10:18.6088338Z Creating stderr named pipe at /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stderr_ac6e2402f08c48378e965af5aa995991.
+2026-06-15T08:10:18.6159978Z Successfully created stderr named pipe at: /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stderr_ac6e2402f08c48378e965af5aa995991.
+2026-06-15T08:10:18.6163445Z Opening named pipe /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stderr_ac6e2402f08c48378e965af5aa995991 for reading in non-blocking mode.
+2026-06-15T08:10:18.6167103Z Successfully opened named pipe: /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stderr_ac6e2402f08c48378e965af5aa995991.
+2026-06-15T08:10:18.6169918Z Successfully removed non-blocking flag from /podr/container/pipe/fd1c4cc16264_pg-enterprise-supply-api_4724/stderr_ac6e2402f08c48378e965af5aa995991.
+2026-06-15T08:10:18.6175147Z Creating container with image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:10:19.6704841Z Starting container: fd1c4cc16264_pg-enterprise-supply-api_4724.
+2026-06-15T08:10:19.8542586Z Starting watchers and probes.
+2026-06-15T08:10:19.8546154Z Starting metrics collection.
+2026-06-15T08:10:19.8549914Z Container is running.
+2026-06-15T08:10:19.8550904Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:10:20.0797100Z Container start method finished after 2726 ms.
+2026-06-15T08:10:20.0801520Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:10:20.0802435Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:11:51.3494095Z Container has finished running with exit code: 1.
+2026-06-15T08:11:51.3504623Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:11:51.3525314Z Stop and delete container. Retry count = 0
+2026-06-15T08:11:51.3526542Z Stopping container: fd1c4cc16264_pg-enterprise-supply-api_4724.
+2026-06-15T08:11:51.4216857Z Deleting container: fd1c4cc16264_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T08:11:51.7719132Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:11:51.7733964Z Container is terminated. Total time elapsed: 420 ms.
+2026-06-15T08:11:51.7788516Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T08:11:51.7812711Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:08:58, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:11:51.8221364Z Site startup probe failed after 91.6637158 seconds.
+2026-06-15T08:11:52.0409343Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:11:52.0613039Z Failed to start site. Revert by stopping site.
+2026-06-15T08:11:52.0615204Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:11:52.0620677Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:11:52.0620871Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:11:52.0831527Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:11:52.5014271Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:11:53.1861745Z Site: pg-enterprise-supply-api__4724 will be blocked for 1 minutes till 06/15/2026 08:12:53
+2026-06-15T08:11:53.1864041Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: pg-enterprise-supply-api__4724 will be blocked for 1 minutes till 06/15/2026 08:12:53, DetailsLevel: WARN
+2026-06-15T08:11:53.1866937Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:11:53 (UTC), DetailsLevel: WARN
+2026-06-15T08:11:53.9790851Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:11:53 (UTC), DetailsLevel: WARN
+2026-06-15T08:12:53.1837807Z Site: pg-enterprise-supply-api__4724 is unblocked.
+2026-06-15T08:15:38.6445529Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:11:53 (UTC), DetailsLevel: WARN
+2026-06-15T08:15:41.0071762Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:11:53 (UTC), DetailsLevel: WARN
+2026-06-15T08:15:41.0074276Z Container start method called.
+2026-06-15T08:15:41.0074857Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:15:41.0076055Z Establishing network.
+2026-06-15T08:15:41.0259293Z Pulling image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:15:42.8590246Z Container is starting.
+2026-06-15T08:15:42.8597412Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:15:42.8608983Z Establishing user namespace if not established already.
+2026-06-15T08:15:42.8676984Z Establishing network if not established already.
+2026-06-15T08:15:42.8680797Z Mounting volumes.
+2026-06-15T08:15:42.8695225Z Nested mountpoint 
+2026-06-15T08:15:42.9077980Z Nested mountpoint volatile/logs
+2026-06-15T08:15:42.9853632Z Nested mountpoint 
+2026-06-15T08:15:43.3109070Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:15:43.3119259Z Creating container.
+2026-06-15T08:15:43.3121029Z Creating pipes for streaming container io.
+2026-06-15T08:15:43.3130774Z Creating stdout named pipe at /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stdout_9c101958040941b6ab96020f9fe2ebb6.
+2026-06-15T08:15:43.3206127Z Successfully created stdout named pipe at: /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stdout_9c101958040941b6ab96020f9fe2ebb6.
+2026-06-15T08:15:43.3207629Z Opening named pipe /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stdout_9c101958040941b6ab96020f9fe2ebb6 for reading in non-blocking mode.
+2026-06-15T08:15:43.3209123Z Successfully opened named pipe: /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stdout_9c101958040941b6ab96020f9fe2ebb6.
+2026-06-15T08:15:43.3465774Z Successfully removed non-blocking flag from /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stdout_9c101958040941b6ab96020f9fe2ebb6.
+2026-06-15T08:15:43.3550974Z Creating stderr named pipe at /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stderr_e7a624c3720e412ca59324a588f5d995.
+2026-06-15T08:15:43.3562734Z Successfully created stderr named pipe at: /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stderr_e7a624c3720e412ca59324a588f5d995.
+2026-06-15T08:15:43.3568510Z Opening named pipe /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stderr_e7a624c3720e412ca59324a588f5d995 for reading in non-blocking mode.
+2026-06-15T08:15:43.3575457Z Successfully opened named pipe: /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stderr_e7a624c3720e412ca59324a588f5d995.
+2026-06-15T08:15:43.3577348Z Successfully removed non-blocking flag from /podr/container/pipe/243c1a2aa909_pg-enterprise-supply-api_4724/stderr_e7a624c3720e412ca59324a588f5d995.
+2026-06-15T08:15:43.3579506Z Creating container with image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:15:44.4625408Z Starting container: 243c1a2aa909_pg-enterprise-supply-api_4724.
+2026-06-15T08:15:44.5858343Z Starting watchers and probes.
+2026-06-15T08:15:44.6365909Z Starting metrics collection.
+2026-06-15T08:15:44.6367850Z Container is running.
+2026-06-15T08:15:44.6456800Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:15:44.8413368Z Container start method finished after 3833 ms.
+2026-06-15T08:15:44.8502610Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:15:44.8503185Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:17:56.1242239Z Container has finished running with exit code: 1.
+2026-06-15T08:17:56.1249604Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:17:56.1347628Z Stop and delete container. Retry count = 0
+2026-06-15T08:17:56.1353772Z Stopping container: 243c1a2aa909_pg-enterprise-supply-api_4724.
+2026-06-15T08:17:56.2239673Z Deleting container: 243c1a2aa909_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T08:17:56.6393176Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:17:56.6701424Z Container is terminated. Total time elapsed: 543 ms.
+2026-06-15T08:17:56.6709536Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T08:17:56.7001916Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:11:52, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:17:56.7561280Z Site startup probe failed after 131.859299 seconds.
+2026-06-15T08:17:57.1519411Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:17:57.2025846Z Failed to start site. Revert by stopping site.
+2026-06-15T08:17:57.2209883Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:17:57.2219276Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:17:57.2219460Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:17:57.2497254Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:17:58.0115559Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:17:58.6106965Z Site: pg-enterprise-supply-api__4724 will be blocked for 2 minutes till 06/15/2026 08:19:58
+2026-06-15T08:17:58.6111299Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: pg-enterprise-supply-api__4724 will be blocked for 2 minutes till 06/15/2026 08:19:58, DetailsLevel: WARN
+2026-06-15T08:17:58.6293883Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:17:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:17:59.3459854Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:17:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:19:58.6130936Z Site: pg-enterprise-supply-api__4724 is unblocked.
+2026-06-15T08:21:31.6944201Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:17:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:21:34.1122410Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:17:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:21:34.1125143Z Container start method called.
+2026-06-15T08:21:34.1147067Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:21:34.1216800Z Establishing network.
+2026-06-15T08:21:34.1243146Z Pulling image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:21:34.6583221Z Container is starting.
+2026-06-15T08:21:34.6584359Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:21:34.6585792Z Establishing user namespace if not established already.
+2026-06-15T08:21:34.6587071Z Establishing network if not established already.
+2026-06-15T08:21:34.6588364Z Mounting volumes.
+2026-06-15T08:21:34.6589937Z Nested mountpoint 
+2026-06-15T08:21:34.7367494Z Nested mountpoint volatile/logs
+2026-06-15T08:21:34.8146372Z Nested mountpoint 
+2026-06-15T08:21:35.0224223Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:21:35.0229355Z Creating container.
+2026-06-15T08:21:35.0254590Z Creating pipes for streaming container io.
+2026-06-15T08:21:35.1711020Z Creating stdout named pipe at /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stdout_3b0173b0e488415dbb7ee134389edbbb.
+2026-06-15T08:21:35.1812261Z Successfully created stdout named pipe at: /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stdout_3b0173b0e488415dbb7ee134389edbbb.
+2026-06-15T08:21:35.1819331Z Opening named pipe /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stdout_3b0173b0e488415dbb7ee134389edbbb for reading in non-blocking mode.
+2026-06-15T08:21:35.1840975Z Successfully opened named pipe: /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stdout_3b0173b0e488415dbb7ee134389edbbb.
+2026-06-15T08:21:35.2036975Z Successfully removed non-blocking flag from /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stdout_3b0173b0e488415dbb7ee134389edbbb.
+2026-06-15T08:21:35.2131460Z Creating stderr named pipe at /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stderr_2badef3f6a5a4fe595f30bbc14a742ef.
+2026-06-15T08:21:35.2195858Z Successfully created stderr named pipe at: /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stderr_2badef3f6a5a4fe595f30bbc14a742ef.
+2026-06-15T08:21:35.2199433Z Opening named pipe /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stderr_2badef3f6a5a4fe595f30bbc14a742ef for reading in non-blocking mode.
+2026-06-15T08:21:35.2219403Z Successfully opened named pipe: /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stderr_2badef3f6a5a4fe595f30bbc14a742ef.
+2026-06-15T08:21:35.2222389Z Successfully removed non-blocking flag from /podr/container/pipe/3214076ab34a_pg-enterprise-supply-api_4724/stderr_2badef3f6a5a4fe595f30bbc14a742ef.
+2026-06-15T08:21:35.2236241Z Creating container with image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:21:35.9556745Z Starting container: 3214076ab34a_pg-enterprise-supply-api_4724.
+2026-06-15T08:21:36.0513401Z Starting watchers and probes.
+2026-06-15T08:21:36.0597581Z Starting metrics collection.
+2026-06-15T08:21:36.0616558Z Container is running.
+2026-06-15T08:21:36.0704218Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:21:36.2986967Z Container start method finished after 2183 ms.
+2026-06-15T08:21:36.2989160Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:21:36.2989470Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:23:56.5052509Z Container has finished running with exit code: 1.
+2026-06-15T08:23:56.5068763Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:23:56.5377629Z Stop and delete container. Retry count = 0
+2026-06-15T08:23:56.5384036Z Stopping container: 3214076ab34a_pg-enterprise-supply-api_4724.
+2026-06-15T08:23:56.6135081Z Deleting container: 3214076ab34a_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T08:23:56.9678258Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:23:56.9707834Z Container is terminated. Total time elapsed: 463 ms.
+2026-06-15T08:23:56.9786811Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T08:23:56.9800969Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:17:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:23:57.0089653Z Site startup probe failed after 140.5829827 seconds.
+2026-06-15T08:23:57.2377653Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:23:57.2981083Z Failed to start site. Revert by stopping site.
+2026-06-15T08:23:57.3651734Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:23:57.5119411Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:23:57.5142082Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:23:57.5528911Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:23:58.1713337Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:23:58.7015629Z Site: pg-enterprise-supply-api__4724 will be blocked for 2 minutes till 06/15/2026 08:25:58
+2026-06-15T08:23:58.7033441Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: pg-enterprise-supply-api__4724 will be blocked for 2 minutes till 06/15/2026 08:25:58, DetailsLevel: WARN
+2026-06-15T08:23:58.7125516Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:23:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:23:59.4003433Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:23:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:25:58.7015739Z Site: pg-enterprise-supply-api__4724 is unblocked.
+2026-06-15T08:31:35.1618627Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:23:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:31:37.6148937Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:23:58 (UTC), DetailsLevel: WARN
+2026-06-15T08:31:37.6150459Z Container start method called.
+2026-06-15T08:31:37.6151129Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:31:37.6152208Z Establishing network.
+2026-06-15T08:31:37.6153471Z Pulling image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:31:38.6944386Z Container is starting.
+2026-06-15T08:31:38.6946044Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T08:31:38.6947329Z Establishing user namespace if not established already.
+2026-06-15T08:31:38.6948765Z Establishing network if not established already.
+2026-06-15T08:31:38.6954709Z Mounting volumes.
+2026-06-15T08:31:38.6956580Z Nested mountpoint 
+2026-06-15T08:31:38.7849614Z Nested mountpoint volatile/logs
+2026-06-15T08:31:38.8224096Z Nested mountpoint 
+2026-06-15T08:31:38.9001168Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:31:38.9002726Z Creating container.
+2026-06-15T08:31:38.9003793Z Creating pipes for streaming container io.
+2026-06-15T08:31:38.9004972Z Creating stdout named pipe at /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stdout_1467d800517543a0968d7ace95de4f8f.
+2026-06-15T08:31:38.9007196Z Successfully created stdout named pipe at: /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stdout_1467d800517543a0968d7ace95de4f8f.
+2026-06-15T08:31:38.9008425Z Opening named pipe /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stdout_1467d800517543a0968d7ace95de4f8f for reading in non-blocking mode.
+2026-06-15T08:31:38.9009821Z Successfully opened named pipe: /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stdout_1467d800517543a0968d7ace95de4f8f.
+2026-06-15T08:31:38.9010801Z Successfully removed non-blocking flag from /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stdout_1467d800517543a0968d7ace95de4f8f.
+2026-06-15T08:31:38.9398874Z Creating stderr named pipe at /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stderr_92703e1c241042249f7a39710df0de7d.
+2026-06-15T08:31:38.9401190Z Successfully created stderr named pipe at: /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stderr_92703e1c241042249f7a39710df0de7d.
+2026-06-15T08:31:38.9402377Z Opening named pipe /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stderr_92703e1c241042249f7a39710df0de7d for reading in non-blocking mode.
+2026-06-15T08:31:38.9403737Z Successfully opened named pipe: /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stderr_92703e1c241042249f7a39710df0de7d.
+2026-06-15T08:31:38.9404926Z Successfully removed non-blocking flag from /podr/container/pipe/62a0ad26b7d5_pg-enterprise-supply-api_4724/stderr_92703e1c241042249f7a39710df0de7d.
+2026-06-15T08:31:38.9765024Z Creating container with image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:31:40.5164935Z Starting container: 62a0ad26b7d5_pg-enterprise-supply-api_4724.
+2026-06-15T08:31:40.6870420Z Starting watchers and probes.
+2026-06-15T08:31:40.6873679Z Starting metrics collection.
+2026-06-15T08:31:40.7245128Z Container is running.
+2026-06-15T08:31:40.7257730Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:31:40.8623904Z Container start method finished after 3240 ms.
+2026-06-15T08:31:40.8962755Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:31:40.9513500Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:34:01.0366782Z Container has finished running with exit code: 1.
+2026-06-15T08:34:01.0387092Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:34:01.0670593Z Stop and delete container. Retry count = 0
+2026-06-15T08:34:01.0761185Z Stopping container: 62a0ad26b7d5_pg-enterprise-supply-api_4724.
+2026-06-15T08:34:01.2060948Z Deleting container: 62a0ad26b7d5_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T08:34:01.6932905Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:34:01.7103307Z Container is terminated. Total time elapsed: 667 ms.
+2026-06-15T08:34:01.7120655Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T08:34:01.7208094Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:23:57, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:34:01.7664747Z Site startup probe failed after 140.6986196 seconds.
+2026-06-15T08:34:02.4411005Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:34:02.5679352Z Failed to start site. Revert by stopping site.
+2026-06-15T08:34:02.5872407Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:34:02.6070312Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:34:02.6085365Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T08:34:02.7142499Z State: Stopping, Action: UnmountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:34:03.5575191Z State: Stopping, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:34:04.6027630Z Site: pg-enterprise-supply-api__4724 will be blocked for 2 minutes till 06/15/2026 08:36:04
+2026-06-15T08:34:04.6031855Z State: Blocked, Action: StoppingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site: pg-enterprise-supply-api__4724 will be blocked for 2 minutes till 06/15/2026 08:36:04, DetailsLevel: WARN
+2026-06-15T08:34:04.7561573Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:34:04 (UTC), DetailsLevel: WARN
+2026-06-15T08:34:05.8702131Z State: Stopped, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:34:04 (UTC), DetailsLevel: WARN
+2026-06-15T08:36:04.5963608Z Site: pg-enterprise-supply-api__4724 is unblocked.
+2026-06-15T09:06:50.7404106Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:34:04 (UTC), DetailsLevel: WARN
+2026-06-15T09:06:52.9788733Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 08:34:04 (UTC), DetailsLevel: WARN
+2026-06-15T09:06:52.9809040Z Container start method called.
+2026-06-15T09:06:52.9819675Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:06:52.9874993Z Establishing network.
+2026-06-15T09:06:52.9884256Z Pulling image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T09:06:53.4729370Z Container is starting.
+2026-06-15T09:06:53.4740275Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:06:53.4808908Z Establishing user namespace if not established already.
+2026-06-15T09:06:53.4821119Z Establishing network if not established already.
+2026-06-15T09:06:53.4822984Z Mounting volumes.
+2026-06-15T09:06:53.4923994Z Nested mountpoint 
+2026-06-15T09:06:53.6281406Z Nested mountpoint volatile/logs
+2026-06-15T09:06:53.6799699Z Nested mountpoint 
+2026-06-15T09:06:53.8494307Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:06:53.8584644Z Creating container.
+2026-06-15T09:06:53.8606186Z Creating pipes for streaming container io.
+2026-06-15T09:06:53.8907461Z Creating stdout named pipe at /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stdout_c0e566338abb4c9d83ad951be6f4619c.
+2026-06-15T09:06:53.9283921Z Successfully created stdout named pipe at: /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stdout_c0e566338abb4c9d83ad951be6f4619c.
+2026-06-15T09:06:53.9369116Z Opening named pipe /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stdout_c0e566338abb4c9d83ad951be6f4619c for reading in non-blocking mode.
+2026-06-15T09:06:53.9792897Z Successfully opened named pipe: /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stdout_c0e566338abb4c9d83ad951be6f4619c.
+2026-06-15T09:06:53.9885107Z Successfully removed non-blocking flag from /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stdout_c0e566338abb4c9d83ad951be6f4619c.
+2026-06-15T09:06:53.9977283Z Creating stderr named pipe at /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stderr_2ae8909eb5384f368c188baf67f4af00.
+2026-06-15T09:06:54.0071178Z Successfully created stderr named pipe at: /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stderr_2ae8909eb5384f368c188baf67f4af00.
+2026-06-15T09:06:54.0375107Z Opening named pipe /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stderr_2ae8909eb5384f368c188baf67f4af00 for reading in non-blocking mode.
+2026-06-15T09:06:54.0383985Z Successfully opened named pipe: /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stderr_2ae8909eb5384f368c188baf67f4af00.
+2026-06-15T09:06:54.0390672Z Successfully removed non-blocking flag from /podr/container/pipe/e404b290b16b_pg-enterprise-supply-api_4724/stderr_2ae8909eb5384f368c188baf67f4af00.
+2026-06-15T09:06:54.0570108Z Creating container with image: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T09:06:55.4753892Z Starting container: e404b290b16b_pg-enterprise-supply-api_4724.
+2026-06-15T09:06:55.5800069Z Starting watchers and probes.
+2026-06-15T09:06:55.5884923Z Starting metrics collection.
+2026-06-15T09:06:55.6471879Z Container is running.
+2026-06-15T09:06:55.6478566Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:06:56.3269470Z Container start method finished after 3345 ms.
+2026-06-15T09:06:56.3640929Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:06:56.3722886Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:09:01.0680483Z Container has finished running with exit code: 1.
+2026-06-15T09:09:01.0801733Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:09:01.1084333Z Stop and delete container. Retry count = 0
+2026-06-15T09:09:01.1110669Z Stopping container: e404b290b16b_pg-enterprise-supply-api_4724.
+2026-06-15T09:09:01.1811685Z Deleting container: e404b290b16b_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T09:09:01.6774575Z Container spec TerminationMessagePolicy  path 
+2026-06-15T09:09:01.7960812Z Container is terminated. Total time elapsed: 697 ms.
+2026-06-15T09:09:01.8042754Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T09:09:01.8160214Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 08:34:02, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T09:09:02.6503307Z Site startup probe failed after 126.0871929 seconds.
+2026-06-15T09:09:03.1004826Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T09:09:03.2295270Z Failed to start site. Revert by stopping site.
+2026-06-15T09:09:03.2475460Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T09:09:03.2493324Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T09:09:03.2565714Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T09:41:42.6496693Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 09:09:04 (UTC), DetailsLevel: WARN
+2026-06-15T09:41:44.8537075Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 09:09:04 (UTC), DetailsLevel: WARN
+2026-06-15T09:41:44.8538889Z Container start method called.
+2026-06-15T09:41:44.8613690Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:78411d0d95b05987830936515879f1927c4f7cd3 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:41:44.8615566Z Establishing network.
+2026-06-15T09:41:44.8827809Z Pulling image: pgsupplyregistry.azurecr.io/backend:78411d0d95b05987830936515879f1927c4f7cd3.
+2026-06-15T09:41:52.2381552Z Image pgsupplyregistry.azurecr.io/backend:78411d0d95b05987830936515879f1927c4f7cd3 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:41:52.2392431Z Container is starting.
+2026-06-15T09:41:52.2393925Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:41:52.2395269Z Establishing user namespace if not established already.
+2026-06-15T09:41:52.2396536Z Establishing network if not established already.
+2026-06-15T09:41:52.2397806Z Mounting volumes.
+2026-06-15T09:41:52.2601452Z Nested mountpoint 
+2026-06-15T09:41:52.2970613Z Nested mountpoint volatile/logs
+2026-06-15T09:41:52.4030829Z Nested mountpoint 
+2026-06-15T09:41:52.5429862Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:41:52.5853467Z Creating container.
+2026-06-15T09:41:52.5855124Z Creating pipes for streaming container io.
+2026-06-15T09:41:52.6023071Z Creating stdout named pipe at /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stdout_f5bf6cc585564827b12921188c1ca732.
+2026-06-15T09:41:52.6048584Z Successfully created stdout named pipe at: /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stdout_f5bf6cc585564827b12921188c1ca732.
+2026-06-15T09:41:52.6050528Z Opening named pipe /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stdout_f5bf6cc585564827b12921188c1ca732 for reading in non-blocking mode.
+2026-06-15T09:41:52.6053447Z Successfully opened named pipe: /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stdout_f5bf6cc585564827b12921188c1ca732.
+2026-06-15T09:41:52.6125288Z Successfully removed non-blocking flag from /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stdout_f5bf6cc585564827b12921188c1ca732.
+2026-06-15T09:41:52.6132254Z Creating stderr named pipe at /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stderr_357e5b1fe6fb4ced83d9b81b51975c89.
+2026-06-15T09:41:52.6135049Z Successfully created stderr named pipe at: /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stderr_357e5b1fe6fb4ced83d9b81b51975c89.
+2026-06-15T09:41:52.6145560Z Opening named pipe /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stderr_357e5b1fe6fb4ced83d9b81b51975c89 for reading in non-blocking mode.
+2026-06-15T09:41:52.6235508Z Successfully opened named pipe: /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stderr_357e5b1fe6fb4ced83d9b81b51975c89.
+2026-06-15T09:41:52.6253625Z Successfully removed non-blocking flag from /podr/container/pipe/3854f2a6671f_pg-enterprise-supply-api_4724/stderr_357e5b1fe6fb4ced83d9b81b51975c89.
+2026-06-15T09:41:52.6431909Z Creating container with image: pgsupplyregistry.azurecr.io/backend:78411d0d95b05987830936515879f1927c4f7cd3 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:78411d0d95b05987830936515879f1927c4f7cd3
+2026-06-15T09:41:53.3692433Z Starting container: 3854f2a6671f_pg-enterprise-supply-api_4724.
+2026-06-15T09:41:53.5053958Z Starting watchers and probes.
+2026-06-15T09:41:53.5159903Z Starting metrics collection.
+2026-06-15T09:41:53.5357335Z Container is running.
+2026-06-15T09:41:53.5365217Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:41:53.7641571Z Container start method finished after 8910 ms.
+2026-06-15T09:41:53.7643895Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:41:53.8244399Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:09:03, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:45:44.3378047Z Site startup probe failed after 230.4242982 seconds.
+2026-06-15T09:45:45.6756614Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-06-15T09:45:46.0038108Z Failed to start site. Revert by stopping site.
+2026-06-15T09:45:46.0417585Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-06-15T09:45:46.0824253Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: ERR
+2026-06-15T09:45:46.1003111Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:45:47.0300546Z Stop and delete container. Retry count = 0
+2026-06-15T09:45:47.0588450Z Stopping container: 3854f2a6671f_pg-enterprise-supply-api_4724.
+2026-06-15T09:45:52.4669647Z Deleting container: 3854f2a6671f_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T09:45:53.8290806Z Container spec TerminationMessagePolicy  path 
+2026-06-15T09:45:53.8477407Z Container is terminated. Total time elapsed: 7747 ms.
+2026-06-15T09:45:53.8684820Z Site container: pg-enterprise-supply-api_4724 terminated during site startup.
+2026-06-15T09:45:53.9344409Z State: Stopping, Action: CancellingStartup, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site container: pg-enterprise-supply-api_4724 terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T09:45:53.9651278Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T09:57:13.0030190Z State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 09:45:55 (UTC), DetailsLevel: ERR
+2026-06-15T09:57:18.8893362Z State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 09:45:55 (UTC), DetailsLevel: ERR
+2026-06-15T09:57:18.8952990Z Container start method called.
+2026-06-15T09:57:18.8959603Z State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:57:18.8963676Z Establishing network.
+2026-06-15T09:57:18.8965946Z Pulling image: pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6.
+2026-06-15T09:58:04.7142388Z Image pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:58:04.7143861Z Container is starting.
+2026-06-15T09:58:04.7222357Z State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:58:04.7228194Z Establishing user namespace if not established already.
+2026-06-15T09:58:04.7229842Z Establishing network if not established already.
+2026-06-15T09:58:04.7231480Z Mounting volumes.
+2026-06-15T09:58:04.7233458Z Nested mountpoint 
+2026-06-15T09:58:04.7343794Z Nested mountpoint volatile/logs
+2026-06-15T09:58:04.8923717Z Nested mountpoint 
+2026-06-15T09:58:05.3685076Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:58:05.4659127Z Creating container.
+2026-06-15T09:58:05.4663832Z Creating pipes for streaming container io.
+2026-06-15T09:58:05.4717113Z Creating stdout named pipe at /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.4840450Z Successfully created stdout named pipe at: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.6025046Z Opening named pipe /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14 for reading in non-blocking mode.
+2026-06-15T09:58:05.6112099Z Successfully opened named pipe: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.6117919Z Successfully removed non-blocking flag from /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.6520684Z Creating stderr named pipe at /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.6526391Z Successfully created stderr named pipe at: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.6527684Z Opening named pipe /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac for reading in non-blocking mode.
+2026-06-15T09:58:05.6529618Z Successfully opened named pipe: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.7393542Z Successfully removed non-blocking flag from /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.7417557Z Creating container with image: pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6
+2026-06-15T09:58:10.0792623Z Starting container: 6a58b92eb1f5_pg-enterprise-supply-api_4724.
+2026-06-15T09:58:10.4124545Z Starting watchers and probes.
+2026-06-15T09:58:10.4318475Z Starting metrics collection.
+2026-06-15T09:58:10.4321223Z Container is running.
+2026-06-15T09:58:10.4349299Z State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:58:10.9965682Z Container start method finished after 52100 ms.
+2026-06-15T09:58:10.9968107Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:58:10.9968441Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T10:08:18.6751290Z Site startup probe succeeded after 607.5764575 seconds.
+2026-06-15T10:08:19.9388256Z State: Starting, Action: WarmUpProbeSucceeded, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site startup probe succeeded after 607.5764575 seconds., DetailsLevel: INFO
+2026-06-15T10:08:25.0171017Z Site is running with deployment version: a3a16ac04ed746309f9730c003bad4cb30d486b61781517249787
+2026-06-15T10:08:25.1722007Z Site started.
+2026-06-15T10:08:25.1947642Z State: Started, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/15/2026 10:08:25 (UTC), DetailsLevel: INFO
+2026-06-15T10:08:37.5900798Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T10:08:41.7060481Z State: Starting, Action: EstablishingSiteNetworks, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: , DetailsLevel: ERR
+2026-06-15T10:08:41.7525353Z Failed to start site. Revert by stopping site.
+2026-06-15T10:08:41.7609451Z State: Stopping, Action: StoppingSite, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: , DetailsLevel: ERR
+2026-06-15T10:08:41.7741756Z State: Stopping, Action: StoppingSiteContainers, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: , DetailsLevel: ERR
+2026-06-15T10:08:41.7742676Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T10:09:05.6473519Z State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/15/2026 10:08:25 (UTC), DetailsLevel: INFO
+2026-06-15T10:09:05.7081636Z State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/15/2026 10:08:25 (UTC), DetailsLevel: INFO
+2026-06-15T10:09:05.7084375Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T10:09:06.0784826Z Stop and delete container. Retry count = 0
+2026-06-15T10:09:06.0802135Z Stopping container: 6a58b92eb1f5_pg-enterprise-supply-api_4724.
+2026-06-15T10:09:12.8701084Z Deleting container: 6a58b92eb1f5_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T10:09:14.1038710Z Container spec TerminationMessagePolicy  path 
+2026-06-15T10:09:14.1157652Z Container is terminated. Total time elapsed: 8395 ms.
+2026-06-15T10:09:14.1159289Z Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T10:13:34.6084886Z State: Starting, Action: EstablishingSiteNetworks, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site stopped at 06/15/2026 10:08:42 (UTC), DetailsLevel: ERR
+2026-06-15T10:13:37.4146866Z State: Starting, Action: StartingSiteContainers, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site stopped at 06/15/2026 10:08:42 (UTC), DetailsLevel: ERR
+2026-06-15T10:13:37.4177694Z Container start method called.
+2026-06-15T10:13:37.4252266Z State: Starting, Action: PullingImage, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Pulling image pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T10:13:37.4270945Z Establishing network.
+2026-06-15T10:13:37.4345778Z Pulling image: pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76.
+2026-06-15T10:13:48.4967412Z Image pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T10:13:48.4997028Z Container is starting.
+2026-06-15T10:13:48.5062822Z State: Starting, Action: MountingVolumes, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T10:13:48.5087475Z Establishing user namespace if not established already.
+2026-06-15T10:13:48.5497759Z Establishing network if not established already.
+2026-06-15T10:13:48.5509928Z Mounting volumes.
+2026-06-15T10:13:48.5806983Z Nested mountpoint 
+2026-06-15T10:13:48.6733939Z Nested mountpoint volatile/logs
+2026-06-15T10:13:48.8983324Z Nested mountpoint 
+2026-06-15T10:13:49.1402092Z State: Starting, Action: CreatingContainer, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T10:13:49.1417745Z Creating container.
+2026-06-15T10:13:49.1696293Z Creating pipes for streaming container io.
+2026-06-15T10:13:49.1862682Z Creating stdout named pipe at /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2157389Z Successfully created stdout named pipe at: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2320240Z Opening named pipe /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89 for reading in non-blocking mode.
+2026-06-15T10:13:49.2430065Z Successfully opened named pipe: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2436822Z Successfully removed non-blocking flag from /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2807558Z Creating stderr named pipe at /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2820930Z Successfully created stderr named pipe at: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2879589Z Opening named pipe /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23 for reading in non-blocking mode.
+2026-06-15T10:13:49.2884163Z Successfully opened named pipe: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2885680Z Successfully removed non-blocking flag from /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2892037Z Creating container with image: pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76
+2026-06-15T10:13:51.1072615Z Starting container: edafe1e261c1_pg-enterprise-supply-api_4724.
+2026-06-15T10:13:51.2738109Z Starting watchers and probes.
+2026-06-15T10:13:51.2922412Z Starting metrics collection.
+2026-06-15T10:13:51.3017366Z Container is running.
+2026-06-15T10:13:51.3112985Z State: Starting, Action: CreatingContainer, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T10:13:51.5344836Z Container start method finished after 14109 ms.
+2026-06-15T10:13:51.6194369Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T10:13:51.6195018Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T10:17:58.6804009Z Site startup probe succeeded after 246.9464216 seconds.
+2026-06-15T10:17:59.4726544Z State: Starting, Action: WarmUpProbeSucceeded, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site startup probe succeeded after 246.9464216 seconds., DetailsLevel: INFO
+2026-06-15T10:18:01.7359118Z Site is running with deployment version: aec9e57018d2609f1b916c9ed1169791384e3d761781518090812
+2026-06-15T10:18:01.8325341Z Site started.
+2026-06-15T10:18:01.8332762Z State: Started, Action: None, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site started at 06/15/2026 10:18:01 (UTC), DetailsLevel: INFO

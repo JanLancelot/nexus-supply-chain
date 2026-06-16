@@ -29,7 +29,7 @@ public class WarehouseService {
     @Transactional(readOnly = true)
     @Cacheable(value = "warehouses", key = "'all'")
     public List<WarehouseResponse> getAllWarehouses() {
-        return warehouseRepository.findAll().stream()
+        return warehouseRepository.findAllWithManager().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

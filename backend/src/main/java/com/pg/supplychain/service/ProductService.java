@@ -45,7 +45,14 @@ public class ProductService {
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "'all'")
     public List<ProductResponse> getAllProducts() {
-        return productRepository.findAll().stream()
+        return productRepository.findAllWithCategoryAndWarehouse().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getAllProducts(org.springframework.data.domain.Pageable pageable) {
+        return productRepository.findAllWithCategoryAndWarehouse(pageable).getContent().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

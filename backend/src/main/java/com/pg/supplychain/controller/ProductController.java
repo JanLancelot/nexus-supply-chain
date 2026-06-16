@@ -21,8 +21,13 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<List<ProductResponse>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        int limitSize = Math.min(size, 200);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, limitSize);
+        return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
     @PostMapping

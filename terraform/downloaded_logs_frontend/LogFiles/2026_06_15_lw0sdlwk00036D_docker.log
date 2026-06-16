@@ -1,0 +1,276 @@
+2026-06-15T08:02:17.0742092Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T08:02:26.6268986Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T08:02:26.6359032Z Container start method called.
+2026-06-15T08:02:26.6360418Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:61e13e31f3429b165a2faab772b53fdf9018306b for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T08:02:26.6445402Z Establishing network.
+2026-06-15T08:02:26.6531457Z Pulling image: pgsupplyregistry.azurecr.io/frontend:61e13e31f3429b165a2faab772b53fdf9018306b.
+2026-06-15T08:02:27.0850574Z Container pull image interrupted. Revert by terminate.
+2026-06-15T08:02:27.1042519Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:02:27.1045216Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:02:27.1046551Z Container is terminated. Total time elapsed: 0 ms.
+2026-06-15T08:02:27.1047878Z Site container: pg-enterprise-supply-ui_218d terminated during site startup.
+2026-06-15T08:02:27.1160254Z State: Stopping, Action: CancellingStartup, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site container: pg-enterprise-supply-ui_218d terminated during site startup. Cancelling site startup., DetailsLevel: ERR
+2026-06-15T08:02:27.1442059Z State: Stopping, Action: CancellingStartup, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:02:27, LastErrorDetails: , Details: Site container: pg-enterprise-supply-ui_218d terminated during site startup. Cancelling site startup., DetailsLevel: WARN
+2026-06-15T08:02:27.6449651Z State: Stopping, Action: StoppingSite, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:02:27, LastErrorDetails: , Details: Site container: pg-enterprise-supply-ui_218d terminated during site startup. Cancelling site startup., DetailsLevel: WARN
+2026-06-15T08:02:27.6459770Z State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 08:02:27, LastErrorDetails: , Details: Site container: pg-enterprise-supply-ui_218d terminated during site startup. Cancelling site startup., DetailsLevel: WARN
+2026-06-15T08:02:27.6459946Z Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T08:02:35.7690529Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T08:02:49.8001832Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T08:02:49.8298501Z Container start method called.
+2026-06-15T08:02:49.8309377Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T08:02:49.8311144Z Establishing network.
+2026-06-15T08:02:49.8312572Z Pulling image: pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:02:58.4569812Z Image pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T08:02:58.4590758Z Container is starting.
+2026-06-15T08:02:58.4855798Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T08:02:58.4870325Z Establishing user namespace if not established already.
+2026-06-15T08:02:58.4873016Z Establishing network if not established already.
+2026-06-15T08:02:58.5231060Z Mounting volumes.
+2026-06-15T08:02:58.5234998Z Nested mountpoint 
+2026-06-15T08:02:59.2536163Z Nested mountpoint volatile/logs
+2026-06-15T08:02:59.3323131Z Nested mountpoint 
+2026-06-15T08:03:00.4528050Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:03:00.6744589Z Creating container.
+2026-06-15T08:03:00.6746467Z Creating pipes for streaming container io.
+2026-06-15T08:03:00.6747630Z Creating stdout named pipe at /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.6750469Z Successfully created stdout named pipe at: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.6751449Z Opening named pipe /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b for reading in non-blocking mode.
+2026-06-15T08:03:00.6752853Z Successfully opened named pipe: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.6753866Z Successfully removed non-blocking flag from /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.7234006Z Creating stderr named pipe at /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7237217Z Successfully created stderr named pipe at: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7238652Z Opening named pipe /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b for reading in non-blocking mode.
+2026-06-15T08:03:00.7240014Z Successfully opened named pipe: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7241029Z Successfully removed non-blocking flag from /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7242526Z Creating container with image: pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:03:05.2510331Z Starting container: 48c836460402_pg-enterprise-supply-ui_218d.
+2026-06-15T08:03:05.6215934Z Starting watchers and probes.
+2026-06-15T08:03:05.6389610Z Starting metrics collection.
+2026-06-15T08:03:05.6391662Z Container is running.
+2026-06-15T08:03:05.6396197Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:03:06.1116535Z Container start method finished after 16281 ms.
+2026-06-15T08:03:06.1976643Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:03:06.1977794Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:03:08.6753463Z Site startup probe succeeded after 2.1615111 seconds.
+2026-06-15T08:03:10.0237546Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 2.1615111 seconds., DetailsLevel: INFO
+2026-06-15T08:03:11.2384728Z Site is running with deployment version: 52360e2d0a708a45d03a27fdb21962c3e2f09a971781510497251
+2026-06-15T08:03:11.2387633Z Site started.
+2026-06-15T08:03:11.2455556Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 06/15/2026 08:03:11 (UTC), DetailsLevel: INFO
+2026-06-15T08:03:31.6055269Z State: Stopping, Action: StoppingSite, LastError: VNETFailure, LastErrorTimestamp: 06/14/2026 07:26:24, LastErrorDetails: There was an issue setting up VNet., Details: Site started at 06/14/2026 07:27:40 (UTC), DetailsLevel: INFO
+2026-06-15T08:03:31.6060108Z State: Stopping, Action: StoppingSiteContainers, LastError: VNETFailure, LastErrorTimestamp: 06/14/2026 07:26:24, LastErrorDetails: There was an issue setting up VNet., Details: Site started at 06/14/2026 07:27:40 (UTC), DetailsLevel: INFO
+2026-06-15T08:03:31.6061573Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T08:03:32.0304480Z Stop and delete container. Retry count = 0
+2026-06-15T08:03:32.0306372Z Stopping container: b50557c73c9a_pg-enterprise-supply-ui_218d.
+2026-06-15T08:03:33.6360701Z Deleting container: b50557c73c9a_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T08:03:36.3246368Z Container spec TerminationMessagePolicy  path 
+2026-06-15T08:03:36.3249606Z Container is terminated. Total time elapsed: 4689 ms.
+2026-06-15T08:03:36.3251018Z Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:41:11.6648961Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:41:12.7549616Z State: Starting, Action: EstablishingSiteNetworks, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: , DetailsLevel: WARN
+2026-06-15T09:41:12.8429189Z State: Stopping, Action: StoppingSite, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: , DetailsLevel: WARN
+2026-06-15T09:41:12.8523599Z State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: , DetailsLevel: WARN
+2026-06-15T09:41:12.8533245Z Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:41:34.3118458Z State: Stopping, Action: StoppingSite, LastError: VNETFailure, LastErrorTimestamp: 06/14/2026 07:26:24, LastErrorDetails: There was an issue setting up VNet., Details: Site started at 06/15/2026 08:03:11 (UTC), DetailsLevel: INFO
+2026-06-15T09:41:34.3231057Z State: Stopping, Action: StoppingSiteContainers, LastError: VNETFailure, LastErrorTimestamp: 06/14/2026 07:26:24, LastErrorDetails: There was an issue setting up VNet., Details: Site started at 06/15/2026 08:03:11 (UTC), DetailsLevel: INFO
+2026-06-15T09:41:34.3238748Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:41:34.3725837Z Stop and delete container. Retry count = 0
+2026-06-15T09:41:34.3747078Z Stopping container: 48c836460402_pg-enterprise-supply-ui_218d.
+2026-06-15T09:41:34.5733214Z Deleting container: 48c836460402_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T09:41:34.9464026Z Container spec TerminationMessagePolicy  path 
+2026-06-15T09:41:34.9477844Z Container is terminated. Total time elapsed: 622 ms.
+2026-06-15T09:41:34.9565315Z Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:41:56.5138717Z State: Starting, Action: EstablishingSiteNetworks, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site stopped at 06/15/2026 09:41:13 (UTC), DetailsLevel: WARN
+2026-06-15T09:41:59.6482669Z State: Starting, Action: StartingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site stopped at 06/15/2026 09:41:13 (UTC), DetailsLevel: WARN
+2026-06-15T09:41:59.6484032Z Container start method called.
+2026-06-15T09:41:59.6484508Z State: Starting, Action: PullingImage, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3 for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:41:59.6485663Z Establishing network.
+2026-06-15T09:41:59.6486904Z Pulling image: pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3.
+2026-06-15T09:42:00.6583693Z Image pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:42:00.6597398Z Container is starting.
+2026-06-15T09:42:00.6606812Z State: Starting, Action: MountingVolumes, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:42:00.6868252Z Establishing user namespace if not established already.
+2026-06-15T09:42:00.6899511Z Establishing network if not established already.
+2026-06-15T09:42:00.6902591Z Mounting volumes.
+2026-06-15T09:42:00.6909500Z Nested mountpoint 
+2026-06-15T09:42:00.7873576Z Nested mountpoint volatile/logs
+2026-06-15T09:42:00.8149259Z Nested mountpoint 
+2026-06-15T09:42:01.1388063Z State: Starting, Action: CreatingContainer, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:42:01.1427595Z Creating container.
+2026-06-15T09:42:01.2010182Z Creating pipes for streaming container io.
+2026-06-15T09:42:01.2211816Z Creating stdout named pipe at /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2471259Z Successfully created stdout named pipe at: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2482740Z Opening named pipe /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae for reading in non-blocking mode.
+2026-06-15T09:42:01.2485609Z Successfully opened named pipe: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2513570Z Successfully removed non-blocking flag from /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2786952Z Creating stderr named pipe at /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2791772Z Successfully created stderr named pipe at: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2793172Z Opening named pipe /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc for reading in non-blocking mode.
+2026-06-15T09:42:01.2794588Z Successfully opened named pipe: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2795638Z Successfully removed non-blocking flag from /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2797495Z Creating container with image: pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3
+2026-06-15T09:42:03.1190549Z Starting container: d2be1ee33f7e_pg-enterprise-supply-ui_218d.
+2026-06-15T09:42:03.3296216Z Starting watchers and probes.
+2026-06-15T09:42:03.3307226Z Starting metrics collection.
+2026-06-15T09:42:03.3309497Z Container is running.
+2026-06-15T09:42:03.3311118Z State: Starting, Action: CreatingContainer, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:42:03.4883006Z Container start method finished after 3839 ms.
+2026-06-15T09:42:03.4895572Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:42:03.4896485Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:42:05.6720359Z Site startup probe succeeded after 2.0821198 seconds.
+2026-06-15T09:42:06.3179237Z State: Starting, Action: WarmUpProbeSucceeded, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site startup probe succeeded after 2.0821198 seconds., DetailsLevel: INFO
+2026-06-15T09:42:07.3356984Z Site is running with deployment version: 78411d0d95b05987830936515879f1927c4f7cd31781516463197
+2026-06-15T09:42:07.3744757Z Site started.
+2026-06-15T09:42:07.3751701Z State: Started, Action: None, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:42:07 (UTC), DetailsLevel: INFO
+2026-06-15T09:53:03.7418371Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:53:09.1698165Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:53:09.1699513Z Container start method called.
+2026-06-15T09:53:09.1699951Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:latest for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:53:09.2101927Z Establishing network.
+2026-06-15T09:53:09.2104794Z Pulling image: pgsupplyregistry.azurecr.io/frontend:latest.
+2026-06-15T09:53:10.3482707Z Image pgsupplyregistry.azurecr.io/frontend:latest is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:53:10.3484087Z Container is starting.
+2026-06-15T09:53:10.3484945Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:53:10.3486049Z Establishing user namespace if not established already.
+2026-06-15T09:53:10.3569245Z Establishing network if not established already.
+2026-06-15T09:53:10.3572072Z Mounting volumes.
+2026-06-15T09:53:10.3576383Z Nested mountpoint 
+2026-06-15T09:53:10.5033646Z Nested mountpoint volatile/logs
+2026-06-15T09:53:10.6638366Z Nested mountpoint 
+2026-06-15T09:53:11.0836213Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:53:11.1410308Z Creating container.
+2026-06-15T09:53:11.1803501Z Creating pipes for streaming container io.
+2026-06-15T09:53:11.2395448Z Creating stdout named pipe at /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2416080Z Successfully created stdout named pipe at: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2577319Z Opening named pipe /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35 for reading in non-blocking mode.
+2026-06-15T09:53:11.2579789Z Successfully opened named pipe: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2581320Z Successfully removed non-blocking flag from /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2583012Z Creating stderr named pipe at /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2585035Z Successfully created stderr named pipe at: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2586070Z Opening named pipe /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64 for reading in non-blocking mode.
+2026-06-15T09:53:11.2587349Z Successfully opened named pipe: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2588346Z Successfully removed non-blocking flag from /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2589670Z Creating container with image: pgsupplyregistry.azurecr.io/frontend:latest from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:latest
+2026-06-15T09:53:13.7726163Z Starting container: 201482bb57a5_pg-enterprise-supply-ui_218d.
+2026-06-15T09:53:13.9826552Z Starting watchers and probes.
+2026-06-15T09:53:14.0014078Z Starting metrics collection.
+2026-06-15T09:53:14.0110719Z Container is running.
+2026-06-15T09:53:14.0118570Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:53:14.3826003Z Container start method finished after 5212 ms.
+2026-06-15T09:53:14.3828229Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:53:14.3828504Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:53:17.5889023Z Site startup probe succeeded after 3.2053461 seconds.
+2026-06-15T09:53:19.0399064Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 3.2053461 seconds., DetailsLevel: INFO
+2026-06-15T09:53:20.6129889Z Site is running with deployment version: 78411d0d95b05987830936515879f1927c4f7cd31781516463197
+2026-06-15T09:53:20.6956750Z Site started.
+2026-06-15T09:53:20.7485541Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 06/15/2026 09:53:20 (UTC), DetailsLevel: INFO
+2026-06-15T09:53:41.1697318Z State: Stopping, Action: StoppingSite, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:42:07 (UTC), DetailsLevel: INFO
+2026-06-15T09:53:41.1876941Z State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:42:07 (UTC), DetailsLevel: INFO
+2026-06-15T09:53:41.2165756Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:53:41.6920819Z Stop and delete container. Retry count = 0
+2026-06-15T09:53:41.6947962Z Stopping container: d2be1ee33f7e_pg-enterprise-supply-ui_218d.
+2026-06-15T09:53:42.2796587Z Deleting container: d2be1ee33f7e_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T09:53:43.1325419Z Container spec TerminationMessagePolicy  path 
+2026-06-15T09:53:43.1349205Z Container is terminated. Total time elapsed: 1917 ms.
+2026-06-15T09:53:43.1418172Z Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:54:19.2800153Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:54:26.3069684Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:54:26.3071287Z Container start method called.
+2026-06-15T09:54:26.3071758Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:latest for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:54:26.3072896Z Establishing network.
+2026-06-15T09:54:26.3074218Z Pulling image: pgsupplyregistry.azurecr.io/frontend:latest.
+2026-06-15T09:54:34.4058817Z Image pgsupplyregistry.azurecr.io/frontend:latest is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:54:34.4060210Z Container is starting.
+2026-06-15T09:54:34.4061557Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:54:34.4062740Z Establishing user namespace if not established already.
+2026-06-15T09:54:34.4063894Z Establishing network if not established already.
+2026-06-15T09:54:34.4065124Z Mounting volumes.
+2026-06-15T09:54:34.4066630Z Nested mountpoint 
+2026-06-15T09:54:34.9198315Z Nested mountpoint volatile/logs
+2026-06-15T09:54:35.2725690Z Nested mountpoint 
+2026-06-15T09:54:35.4075027Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:54:35.4079084Z Creating container.
+2026-06-15T09:54:35.4080389Z Creating pipes for streaming container io.
+2026-06-15T09:54:35.4081729Z Creating stdout named pipe at /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4084333Z Successfully created stdout named pipe at: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4085317Z Opening named pipe /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6 for reading in non-blocking mode.
+2026-06-15T09:54:35.4086697Z Successfully opened named pipe: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4087754Z Successfully removed non-blocking flag from /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4652475Z Creating stderr named pipe at /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4654871Z Successfully created stderr named pipe at: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4655945Z Opening named pipe /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741 for reading in non-blocking mode.
+2026-06-15T09:54:35.4657387Z Successfully opened named pipe: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4658607Z Successfully removed non-blocking flag from /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4759766Z Creating container with image: pgsupplyregistry.azurecr.io/frontend:latest from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:latest
+2026-06-15T09:54:39.9544281Z Starting container: 75a826fb2487_pg-enterprise-supply-ui_218d.
+2026-06-15T09:54:40.2661643Z Starting watchers and probes.
+2026-06-15T09:54:40.2672273Z Starting metrics collection.
+2026-06-15T09:54:40.2675098Z Container is running.
+2026-06-15T09:54:40.2676601Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:54:40.8674751Z Container start method finished after 14560 ms.
+2026-06-15T09:54:40.8677018Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:54:40.8677324Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:54:48.2020827Z Site startup probe succeeded after 7.327106 seconds.
+2026-06-15T09:54:50.9203135Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 7.327106 seconds., DetailsLevel: INFO
+2026-06-15T09:54:53.6493250Z Site is running with deployment version: 78411d0d95b05987830936515879f1927c4f7cd31781516463197
+2026-06-15T09:54:53.6780711Z Site started.
+2026-06-15T09:54:53.7641644Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 06/15/2026 09:54:53 (UTC), DetailsLevel: INFO
+2026-06-15T09:55:14.1596827Z State: Stopping, Action: StoppingSite, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:53:20 (UTC), DetailsLevel: INFO
+2026-06-15T09:55:14.1604249Z State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:53:20 (UTC), DetailsLevel: INFO
+2026-06-15T09:55:14.1606875Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:55:14.1888103Z Stop and delete container. Retry count = 0
+2026-06-15T09:55:14.1889444Z Stopping container: 201482bb57a5_pg-enterprise-supply-ui_218d.
+2026-06-15T09:55:14.6336594Z Deleting container: 201482bb57a5_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T09:55:15.2398885Z Container spec TerminationMessagePolicy  path 
+2026-06-15T09:55:15.2404780Z Container is terminated. Total time elapsed: 1079 ms.
+2026-06-15T09:55:15.2406182Z Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:56:38.6377970Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:56:45.9690917Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:56:45.9784467Z Container start method called.
+2026-06-15T09:56:45.9785521Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6 for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:56:45.9786788Z Establishing network.
+2026-06-15T09:56:45.9950145Z Pulling image: pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6.
+2026-06-15T09:56:58.2788102Z Image pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:56:58.2796072Z Container is starting.
+2026-06-15T09:56:58.2799783Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:56:58.2977767Z Establishing user namespace if not established already.
+2026-06-15T09:56:58.2990496Z Establishing network if not established already.
+2026-06-15T09:56:58.2994308Z Mounting volumes.
+2026-06-15T09:56:58.3070330Z Nested mountpoint 
+2026-06-15T09:56:58.3823045Z Nested mountpoint volatile/logs
+2026-06-15T09:56:58.4403137Z Nested mountpoint 
+2026-06-15T09:56:58.6607669Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:56:58.6622572Z Creating container.
+2026-06-15T09:56:58.6624486Z Creating pipes for streaming container io.
+2026-06-15T09:56:58.6625879Z Creating stdout named pipe at /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.6707969Z Successfully created stdout named pipe at: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.6710217Z Opening named pipe /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda for reading in non-blocking mode.
+2026-06-15T09:56:58.6711991Z Successfully opened named pipe: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.6713118Z Successfully removed non-blocking flag from /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.8553257Z Creating stderr named pipe at /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8733215Z Successfully created stderr named pipe at: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8736287Z Opening named pipe /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41 for reading in non-blocking mode.
+2026-06-15T09:56:58.8739021Z Successfully opened named pipe: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8816064Z Successfully removed non-blocking flag from /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8838169Z Creating container with image: pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6
+2026-06-15T09:57:00.7911150Z Starting container: 03bd29637df3_pg-enterprise-supply-ui_218d.
+2026-06-15T09:57:00.9279975Z Starting watchers and probes.
+2026-06-15T09:57:00.9289557Z Starting metrics collection.
+2026-06-15T09:57:00.9294335Z Container is running.
+2026-06-15T09:57:00.9296918Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:57:01.3285012Z Container start method finished after 15349 ms.
+2026-06-15T09:57:01.4027782Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:57:01.4028714Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:57:04.8363854Z Site startup probe succeeded after 3.413631 seconds.
+2026-06-15T09:57:06.2087719Z State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 3.413631 seconds., DetailsLevel: INFO
+2026-06-15T09:57:07.4430933Z Site is running with deployment version: a3a16ac04ed746309f9730c003bad4cb30d486b61781517259091
+2026-06-15T09:57:07.4611670Z Site started.
+2026-06-15T09:57:07.4615392Z State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 06/15/2026 09:57:07 (UTC), DetailsLevel: INFO
+2026-06-15T09:57:27.7917720Z State: Stopping, Action: StoppingSite, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:54:53 (UTC), DetailsLevel: INFO
+2026-06-15T09:57:27.8102116Z State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:54:53 (UTC), DetailsLevel: INFO
+2026-06-15T09:57:27.8694745Z Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:57:29.6639322Z Stop and delete container. Retry count = 0
+2026-06-15T09:57:29.7416427Z Stopping container: 75a826fb2487_pg-enterprise-supply-ui_218d.
+2026-06-15T09:57:34.3806093Z Deleting container: 75a826fb2487_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T09:57:36.2519834Z Container spec TerminationMessagePolicy  path 
+2026-06-15T09:57:36.3185696Z Container is terminated. Total time elapsed: 8448 ms.
+2026-06-15T09:57:36.3370416Z Site: pg-enterprise-supply-ui__218d stopped.

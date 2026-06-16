@@ -1,0 +1,37 @@
+2026-06-15T10:39:51.3725895Z State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T10:39:57.2896362Z State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T10:39:57.2897943Z Container start method called.
+2026-06-15T10:39:57.2898765Z State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/backend:180b45a41bf532144f7a92e47bb76937b7676a34 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T10:39:57.3464763Z Establishing network.
+2026-06-15T10:39:57.3469131Z Pulling image: pgsupplyregistry.azurecr.io/backend:180b45a41bf532144f7a92e47bb76937b7676a34.
+2026-06-15T10:40:44.2054868Z Image pgsupplyregistry.azurecr.io/backend:180b45a41bf532144f7a92e47bb76937b7676a34 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T10:40:44.2072896Z Container is starting.
+2026-06-15T10:40:44.2144730Z State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T10:40:44.2148351Z Establishing user namespace if not established already.
+2026-06-15T10:40:44.2156774Z Establishing network if not established already.
+2026-06-15T10:40:44.2159676Z Mounting volumes.
+2026-06-15T10:40:44.2173178Z Nested mountpoint 
+2026-06-15T10:40:44.3246220Z Nested mountpoint volatile/logs
+2026-06-15T10:40:44.3930501Z Nested mountpoint 
+2026-06-15T10:40:44.8301620Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T10:40:44.8304957Z Creating container.
+2026-06-15T10:40:44.8306377Z Creating pipes for streaming container io.
+2026-06-15T10:40:44.8307567Z Creating stdout named pipe at /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stdout_5d5aaad9be3749c8ab17329c99694d66.
+2026-06-15T10:40:44.8776547Z Successfully created stdout named pipe at: /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stdout_5d5aaad9be3749c8ab17329c99694d66.
+2026-06-15T10:40:44.8778738Z Opening named pipe /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stdout_5d5aaad9be3749c8ab17329c99694d66 for reading in non-blocking mode.
+2026-06-15T10:40:44.8795529Z Successfully opened named pipe: /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stdout_5d5aaad9be3749c8ab17329c99694d66.
+2026-06-15T10:40:44.8797564Z Successfully removed non-blocking flag from /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stdout_5d5aaad9be3749c8ab17329c99694d66.
+2026-06-15T10:40:44.8978863Z Creating stderr named pipe at /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stderr_74997f6279304fbaa03e2eaa6f415e19.
+2026-06-15T10:40:44.8981071Z Successfully created stderr named pipe at: /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stderr_74997f6279304fbaa03e2eaa6f415e19.
+2026-06-15T10:40:44.8982161Z Opening named pipe /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stderr_74997f6279304fbaa03e2eaa6f415e19 for reading in non-blocking mode.
+2026-06-15T10:40:44.8983473Z Successfully opened named pipe: /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stderr_74997f6279304fbaa03e2eaa6f415e19.
+2026-06-15T10:40:44.8984578Z Successfully removed non-blocking flag from /podr/container/pipe/67011c4124c0_pg-enterprise-supply-api_4724/stderr_74997f6279304fbaa03e2eaa6f415e19.
+2026-06-15T10:40:44.9458367Z Creating container with image: pgsupplyregistry.azurecr.io/backend:180b45a41bf532144f7a92e47bb76937b7676a34 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:180b45a41bf532144f7a92e47bb76937b7676a34
+2026-06-15T10:40:48.2860385Z Starting container: 67011c4124c0_pg-enterprise-supply-api_4724.
+2026-06-15T10:40:48.4650806Z Starting watchers and probes.
+2026-06-15T10:40:48.4923968Z Starting metrics collection.
+2026-06-15T10:40:48.6408214Z Container is running.
+2026-06-15T10:40:48.6409948Z State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T10:40:48.7694624Z Container start method finished after 51477 ms.
+2026-06-15T10:40:48.7697837Z State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T10:40:48.7698605Z State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO

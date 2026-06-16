@@ -80,10 +80,7 @@ public class AutoReplenishmentService {
                     Supplier supplier = supplierRepository.findPreferredSupplierForProduct(productId).orElse(null);
                     if (supplier == null) {
                         log.warn("AutoReplenishmentService: No preferred supplier found for product {}. Searching for default active supplier.", product.getSku());
-                        supplier = supplierRepository.findAll().stream()
-                                .filter(Supplier::isActive)
-                                .findFirst()
-                                .orElse(null);
+                        supplier = supplierRepository.findFirstByIsActiveTrue().orElse(null);
                     }
 
                     if (supplier == null) {
@@ -95,7 +92,7 @@ public class AutoReplenishmentService {
                     Warehouse destinationWarehouse = product.getWarehouse();
                     if (destinationWarehouse == null) {
                         log.warn("AutoReplenishmentService: Product {} does not have a warehouse assigned. Defaulting to first warehouse.", product.getSku());
-                        destinationWarehouse = warehouseRepository.findAll().stream().findFirst().orElse(null);
+                        destinationWarehouse = warehouseRepository.findFirstByOrderByIdAsc().orElse(null);
                     }
 
                     if (destinationWarehouse == null) {

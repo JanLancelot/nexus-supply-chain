@@ -17,4 +17,6 @@ public interface SupplierRepository extends JpaRepository<Supplier, UUID> {
         "WHERE sp.product_id = :productId AND s.is_active = true " +
         "LIMIT 1", nativeQuery = true)
     Optional<Supplier> findPreferredSupplierForProduct(java.util.UUID productId);
+
+    Optional<Supplier> findFirstByIsActiveTrue();
 }

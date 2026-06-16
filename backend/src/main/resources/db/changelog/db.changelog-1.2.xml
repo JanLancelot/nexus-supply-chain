@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1.2-performance-indexes" author="nexus-supply-chain">
+        <!-- Index FK on users -->
+        <createIndex tableName="users" indexName="idx_users_role_id">
+            <column name="role_id"/>
+        </createIndex>
+
+        <!-- Index FK on warehouses -->
+        <createIndex tableName="warehouses" indexName="idx_warehouses_manager_id">
+            <column name="manager_id"/>
+        </createIndex>
+
+        <!-- Index FK on products -->
+        <createIndex tableName="products" indexName="idx_products_category_id">
+            <column name="category_id"/>
+        </createIndex>
+        <createIndex tableName="products" indexName="idx_products_warehouse_id">
+            <column name="warehouse_id"/>
+        </createIndex>
+
+        <!-- Index second column of composite PK on supplier_products -->
+        <createIndex tableName="supplier_products" indexName="idx_supplier_products_product_id">
+            <column name="product_id"/>
+        </createIndex>
+
+        <!-- Index FK and queried columns on orders -->
+        <createIndex tableName="orders" indexName="idx_orders_supplier_id">
+            <column name="supplier_id"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_warehouse_id">
+            <column name="warehouse_id"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_status">
+            <column name="status"/>
+        </createIndex>
+
+        <!-- Index FK on order_items -->
+        <createIndex tableName="order_items" indexName="idx_order_items_order_id">
+            <column name="order_id"/>
+        </createIndex>
+        <createIndex tableName="order_items" indexName="idx_order_items_product_id">
+            <column name="product_id"/>
+        </createIndex>
+
+        <!-- Index FK on shipments -->
+        <createIndex tableName="shipments" indexName="idx_shipments_order_id">
+            <column name="order_id"/>
+        </createIndex>
+
+        <!-- Index FK on audit_logs -->
+        <createIndex tableName="audit_logs" indexName="idx_audit_logs_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <!-- Index for sorting audit_logs by created_at DESC -->
+        <createIndex tableName="audit_logs" indexName="idx_audit_logs_created_at">
+            <column name="created_at" descending="true"/>
+        </createIndex>
+
+        <!-- Index FK and sorting on notifications -->
+        <createIndex tableName="notifications" indexName="idx_notifications_user_created_at">
+            <column name="user_id"/>
+            <column name="created_at" descending="true"/>
+        </createIndex>
+
+        <!-- Index FK on refresh_tokens -->
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_tokens_user_id">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

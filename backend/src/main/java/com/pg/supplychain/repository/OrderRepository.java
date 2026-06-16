@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
@@ -24,4 +26,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Query("SELECT COUNT(o) FROM Order o JOIN o.items oi WHERE oi.product.id = :productId AND o.status NOT IN (com.pg.supplychain.model.OrderStatus.DELIVERED, com.pg.supplychain.model.OrderStatus.CANCELLED)")
     long countOpenOrdersForProduct(UUID productId);
+
+    @Query(value = "SELECT o FROM Order o LEFT JOIN FETCH o.supplier LEFT JOIN FETCH o.warehouse",
+           countQuery = "SELECT COUNT(o) FROM Order o")
+    Page<Order> findAllWithDetails(Pageable pageable);
 }

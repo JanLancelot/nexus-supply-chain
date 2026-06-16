@@ -1,0 +1,356 @@
+2026-06-15T08:02:35.7690529+00:00 ContainerStatus: State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T08:02:49.8001832+00:00 ContainerStatus: State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T08:02:49.8298501+00:00 ContainerStatus: Container start method called.
+2026-06-15T08:02:49.8309377+00:00 ContainerStatus: State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T08:02:49.8311144+00:00 ContainerStatus: Establishing network.
+2026-06-15T08:02:49.8312572+00:00 ContainerStatus: Pulling image: pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97.
+2026-06-15T08:02:58.4569812+00:00 ContainerStatus: Image pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T08:02:58.4590758+00:00 ContainerStatus: Container is starting.
+2026-06-15T08:02:58.4855798+00:00 ContainerStatus: State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T08:02:58.4870325+00:00 ContainerStatus: Establishing user namespace if not established already.
+2026-06-15T08:02:58.4873016+00:00 ContainerStatus: Establishing network if not established already.
+2026-06-15T08:02:58.5231060+00:00 ContainerStatus: Mounting volumes.
+2026-06-15T08:02:58.5234998+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T08:02:59.2536163+00:00 ContainerStatus: Nested mountpoint volatile/logs
+2026-06-15T08:02:59.3323131+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T08:03:00.4528050+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T08:03:00.6744589+00:00 ContainerStatus: Creating container.
+2026-06-15T08:03:00.6746467+00:00 ContainerStatus: Creating pipes for streaming container io.
+2026-06-15T08:03:00.6747630+00:00 ContainerStatus: Creating stdout named pipe at /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.6750469+00:00 ContainerStatus: Successfully created stdout named pipe at: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.6751449+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b for reading in non-blocking mode.
+2026-06-15T08:03:00.6752853+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.6753866+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stdout_9fe3cee1b32d4bd69c892679bfc38d8b.
+2026-06-15T08:03:00.7234006+00:00 ContainerStatus: Creating stderr named pipe at /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7237217+00:00 ContainerStatus: Successfully created stderr named pipe at: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7238652+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b for reading in non-blocking mode.
+2026-06-15T08:03:00.7240014+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7241029+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/48c836460402_pg-enterprise-supply-ui_218d/stderr_88879768bc0545d2bc6a479dc1591c7b.
+2026-06-15T08:03:00.7242526+00:00 ContainerStatus: Creating container with image: pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:52360e2d0a708a45d03a27fdb21962c3e2f09a97
+2026-06-15T08:03:05.2510331+00:00 ContainerStatus: Starting container: 48c836460402_pg-enterprise-supply-ui_218d.
+2026-06-15T08:03:05.6215934+00:00 ContainerStatus: Starting watchers and probes.
+2026-06-15T08:03:05.6389610+00:00 ContainerStatus: Starting metrics collection.
+2026-06-15T08:03:05.6391662+00:00 ContainerStatus: Container is running.
+2026-06-15T08:03:05.6396197+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:03:06.1116535+00:00 ContainerStatus: Container start method finished after 16281 ms.
+2026-06-15T08:03:06.1976643+00:00 ContainerStatus: State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T08:03:06.1977794+00:00 ContainerStatus: State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T08:03:06.3547905+00:00 ContainerStream: /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2026-06-15T08:03:06.3550321+00:00 ContainerStream: /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+2026-06-15T08:03:06.4771546+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+2026-06-15T08:03:06.7005786+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+2026-06-15T08:03:07.6755978+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+2026-06-15T08:03:07.6756484+00:00 ContainerStream: /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+2026-06-15T08:03:07.6756531+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+2026-06-15T08:03:07.7856403+00:00 ContainerStream: 20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf
+2026-06-15T08:03:07.9497863+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+2026-06-15T08:03:07.9517436+00:00 ContainerStream: /docker-entrypoint.sh: Configuration complete; ready for start up
+2026-06-15T08:03:08.3330016+00:00 ContainerStream: 2026/06/15 08:03:08 [notice] 1#1: using the "epoll" event method
+2026-06-15T08:03:08.3330485+00:00 ContainerStream: 2026/06/15 08:03:08 [notice] 1#1: nginx/1.31.1
+2026-06-15T08:03:08.3330532+00:00 ContainerStream: 2026/06/15 08:03:08 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026-06-15T08:03:08.3330572+00:00 ContainerStream: 2026/06/15 08:03:08 [notice] 1#1: OS: Linux 6.6.138.1-1.azl3
+2026-06-15T08:03:08.3330881+00:00 ContainerStream: 2026/06/15 08:03:08 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 131072:131072
+2026-06-15T08:03:08.3330950+00:00 ContainerStream: 2026/06/15 08:03:08 [notice] 1#1: start worker processes
+2026-06-15T08:03:08.3330981+00:00 ContainerStream: 2026/06/15 08:03:08 [notice] 1#1: start worker process 36
+2026-06-15T08:03:08.5290144+00:00 ContainerStream: 169.254.130.1 - - [15/Jun/2026:08:03:08 +0000] "GET /robots933456.txt HTTP/1.1" 200 458 "-" "HealthCheck/1.0" "-"
+2026-06-15T08:03:08.6753463+00:00 ContainerStatus: Site startup probe succeeded after 2.1615111 seconds.
+2026-06-15T08:03:10.0237546+00:00 ContainerStatus: State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 2.1615111 seconds., DetailsLevel: INFO
+2026-06-15T08:03:11.2384728+00:00 ContainerStatus: Site is running with deployment version: 52360e2d0a708a45d03a27fdb21962c3e2f09a971781510497251
+2026-06-15T08:03:11.2387633+00:00 ContainerStatus: Site started.
+2026-06-15T08:03:11.2455556+00:00 ContainerStatus: State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 06/15/2026 08:03:11 (UTC), DetailsLevel: INFO
+========== New Cold Start Attempt (2026-06-15T09:41:34.3231057+00:00) ==========
+2026-06-15T09:41:34.3231057+00:00 ContainerStatus: State: Stopping, Action: StoppingSiteContainers, LastError: VNETFailure, LastErrorTimestamp: 06/14/2026 07:26:24, LastErrorDetails: There was an issue setting up VNet., Details: Site started at 06/15/2026 08:03:11 (UTC), DetailsLevel: INFO
+2026-06-15T09:41:34.3238748+00:00 ContainerStatus: Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:41:34.3725837+00:00 ContainerStatus: Stop and delete container. Retry count = 0
+2026-06-15T09:41:34.3747078+00:00 ContainerStatus: Stopping container: 48c836460402_pg-enterprise-supply-ui_218d.
+2026-06-15T09:41:34.4516138+00:00 ContainerStream: [Previous Container] 2026/06/15 09:41:34 [notice] 36#36: gracefully shutting down
+2026-06-15T09:41:34.4623447+00:00 ContainerStream: [Previous Container] 2026/06/15 09:41:34 [notice] 36#36: exiting
+2026-06-15T09:41:34.4771361+00:00 ContainerStream: [Previous Container] 2026/06/15 09:41:34 [notice] 36#36: exit
+2026-06-15T09:41:34.5250336+00:00 ContainerStream: [Previous Container] 2026/06/15 09:41:34 [notice] 1#1: signal 17 (SIGCHLD) received from 36
+2026-06-15T09:41:34.5314282+00:00 ContainerStream: [Previous Container] 2026/06/15 09:41:34 [notice] 1#1: worker process 36 exited with code 0
+2026-06-15T09:41:34.5317164+00:00 ContainerStream: [Previous Container] 2026/06/15 09:41:34 [notice] 1#1: exit
+2026-06-15T09:41:34.5733214+00:00 ContainerStatus: Deleting container: 48c836460402_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T09:41:34.9464026+00:00 ContainerStatus: Container spec TerminationMessagePolicy  path 
+2026-06-15T09:41:34.9477844+00:00 ContainerStatus: Container is terminated. Total time elapsed: 622 ms.
+2026-06-15T09:41:34.9565315+00:00 ContainerStatus: Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:41:56.5138717+00:00 ContainerStatus: State: Starting, Action: EstablishingSiteNetworks, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site stopped at 06/15/2026 09:41:13 (UTC), DetailsLevel: WARN
+2026-06-15T09:41:59.6482669+00:00 ContainerStatus: State: Starting, Action: StartingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site stopped at 06/15/2026 09:41:13 (UTC), DetailsLevel: WARN
+2026-06-15T09:41:59.6484032+00:00 ContainerStatus: Container start method called.
+2026-06-15T09:41:59.6484508+00:00 ContainerStatus: State: Starting, Action: PullingImage, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3 for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:41:59.6485663+00:00 ContainerStatus: Establishing network.
+2026-06-15T09:41:59.6486904+00:00 ContainerStatus: Pulling image: pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3.
+2026-06-15T09:42:00.6583693+00:00 ContainerStatus: Image pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:42:00.6597398+00:00 ContainerStatus: Container is starting.
+2026-06-15T09:42:00.6606812+00:00 ContainerStatus: State: Starting, Action: MountingVolumes, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:42:00.6868252+00:00 ContainerStatus: Establishing user namespace if not established already.
+2026-06-15T09:42:00.6899511+00:00 ContainerStatus: Establishing network if not established already.
+2026-06-15T09:42:00.6902591+00:00 ContainerStatus: Mounting volumes.
+2026-06-15T09:42:00.6909500+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:42:00.7873576+00:00 ContainerStatus: Nested mountpoint volatile/logs
+2026-06-15T09:42:00.8149259+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:42:01.1388063+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:42:01.1427595+00:00 ContainerStatus: Creating container.
+2026-06-15T09:42:01.2010182+00:00 ContainerStatus: Creating pipes for streaming container io.
+2026-06-15T09:42:01.2211816+00:00 ContainerStatus: Creating stdout named pipe at /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2471259+00:00 ContainerStatus: Successfully created stdout named pipe at: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2482740+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae for reading in non-blocking mode.
+2026-06-15T09:42:01.2485609+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2513570+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stdout_85d6b357b0224ab0972dac959843dcae.
+2026-06-15T09:42:01.2786952+00:00 ContainerStatus: Creating stderr named pipe at /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2791772+00:00 ContainerStatus: Successfully created stderr named pipe at: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2793172+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc for reading in non-blocking mode.
+2026-06-15T09:42:01.2794588+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2795638+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/d2be1ee33f7e_pg-enterprise-supply-ui_218d/stderr_31e2b59a9cdc43e8bb8b3646be399bfc.
+2026-06-15T09:42:01.2797495+00:00 ContainerStatus: Creating container with image: pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:78411d0d95b05987830936515879f1927c4f7cd3
+2026-06-15T09:42:03.1190549+00:00 ContainerStatus: Starting container: d2be1ee33f7e_pg-enterprise-supply-ui_218d.
+2026-06-15T09:42:03.3296216+00:00 ContainerStatus: Starting watchers and probes.
+2026-06-15T09:42:03.3307226+00:00 ContainerStatus: Starting metrics collection.
+2026-06-15T09:42:03.3309497+00:00 ContainerStatus: Container is running.
+2026-06-15T09:42:03.3311118+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:42:03.4883006+00:00 ContainerStatus: Container start method finished after 3839 ms.
+2026-06-15T09:42:03.4895572+00:00 ContainerStatus: State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:42:03.4896485+00:00 ContainerStatus: State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:42:03.7681460+00:00 ContainerStream: /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2026-06-15T09:42:03.8241484+00:00 ContainerStream: /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+2026-06-15T09:42:03.8242626+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+2026-06-15T09:42:03.8953422+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+2026-06-15T09:42:04.6357815+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+2026-06-15T09:42:04.6660393+00:00 ContainerStream: /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+2026-06-15T09:42:04.6676319+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+2026-06-15T09:42:04.9039815+00:00 ContainerStream: 20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf
+2026-06-15T09:42:05.0698827+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+2026-06-15T09:42:05.0699999+00:00 ContainerStream: /docker-entrypoint.sh: Configuration complete; ready for start up
+2026-06-15T09:42:05.3868890+00:00 ContainerStream: 2026/06/15 09:42:05 [notice] 1#1: using the "epoll" event method
+2026-06-15T09:42:05.4055910+00:00 ContainerStream: 2026/06/15 09:42:05 [notice] 1#1: nginx/1.31.1
+2026-06-15T09:42:05.4056406+00:00 ContainerStream: 2026/06/15 09:42:05 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026-06-15T09:42:05.4056455+00:00 ContainerStream: 2026/06/15 09:42:05 [notice] 1#1: OS: Linux 6.6.138.1-1.azl3
+2026-06-15T09:42:05.4056486+00:00 ContainerStream: 2026/06/15 09:42:05 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 131072:131072
+2026-06-15T09:42:05.4056522+00:00 ContainerStream: 2026/06/15 09:42:05 [notice] 1#1: start worker processes
+2026-06-15T09:42:05.4056606+00:00 ContainerStream: 2026/06/15 09:42:05 [notice] 1#1: start worker process 36
+2026-06-15T09:42:05.5448174+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:42:05 +0000] "GET /robots933456.txt HTTP/1.1" 200 458 "-" "HealthCheck/1.0" "-"
+2026-06-15T09:42:05.6720359+00:00 ContainerStatus: Site startup probe succeeded after 2.0821198 seconds.
+2026-06-15T09:42:06.3179237+00:00 ContainerStatus: State: Starting, Action: WarmUpProbeSucceeded, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site startup probe succeeded after 2.0821198 seconds., DetailsLevel: INFO
+========== New Cold Start Attempt (2026-06-15T09:42:07.3356984+00:00) ==========
+2026-06-15T09:42:07.3356984+00:00 ContainerStatus: Site is running with deployment version: 78411d0d95b05987830936515879f1927c4f7cd31781516463197
+2026-06-15T09:42:07.3744757+00:00 ContainerStatus: Site started.
+2026-06-15T09:42:07.3751701+00:00 ContainerStatus: State: Started, Action: None, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:42:07 (UTC), DetailsLevel: INFO
+2026-06-15T09:45:43.8976601+00:00 ContainerStream: 2026/06/15 09:45:43 [error] 36#36: *2 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 169.254.131.1, server: localhost, request: "POST /api/v1/auth/login HTTP/1.1", upstream: "https://13.67.9.1:443/api/v1/auth/login", host: "pg-enterprise-supply-ui-staging.azurewebsites.net", referrer: "https://pg-enterprise-supply-ui-staging.azurewebsites.net/login"
+2026-06-15T09:45:43.9639055+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:45:43 +0000] "POST /api/v1/auth/login HTTP/1.1" 504 497 "https://pg-enterprise-supply-ui-staging.azurewebsites.net/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "138.84.77.142:43750"
+2026-06-15T09:46:22.8896031+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:46:22 +0000] "GET / HTTP/1.1" 200 458 "-" "AlwaysOn" "127.0.0.1:19938"
+2026-06-15T09:51:23.2225405+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:51:23 +0000] "GET / HTTP/1.1" 200 458 "-" "AlwaysOn" "127.0.0.1:5802"
+2026-06-15T09:53:03.4251699+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:53:03 +0000] "GET / HTTP/1.1" 200 458 "-" "AlwaysOn" "127.0.0.1:5868"
+2026-06-15T09:53:03.7418371+00:00 ContainerStatus: State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:53:09.1698165+00:00 ContainerStatus: State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:53:09.1699513+00:00 ContainerStatus: Container start method called.
+2026-06-15T09:53:09.1699951+00:00 ContainerStatus: State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:latest for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:53:09.2101927+00:00 ContainerStatus: Establishing network.
+2026-06-15T09:53:09.2104794+00:00 ContainerStatus: Pulling image: pgsupplyregistry.azurecr.io/frontend:latest.
+2026-06-15T09:53:10.3482707+00:00 ContainerStatus: Image pgsupplyregistry.azurecr.io/frontend:latest is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:53:10.3484087+00:00 ContainerStatus: Container is starting.
+2026-06-15T09:53:10.3484945+00:00 ContainerStatus: State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:53:10.3486049+00:00 ContainerStatus: Establishing user namespace if not established already.
+2026-06-15T09:53:10.3569245+00:00 ContainerStatus: Establishing network if not established already.
+2026-06-15T09:53:10.3572072+00:00 ContainerStatus: Mounting volumes.
+2026-06-15T09:53:10.3576383+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:53:10.5033646+00:00 ContainerStatus: Nested mountpoint volatile/logs
+2026-06-15T09:53:10.6638366+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:53:11.0836213+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:53:11.1410308+00:00 ContainerStatus: Creating container.
+2026-06-15T09:53:11.1803501+00:00 ContainerStatus: Creating pipes for streaming container io.
+2026-06-15T09:53:11.2395448+00:00 ContainerStatus: Creating stdout named pipe at /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2416080+00:00 ContainerStatus: Successfully created stdout named pipe at: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2577319+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35 for reading in non-blocking mode.
+2026-06-15T09:53:11.2579789+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2581320+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stdout_2498b2ce9892406d894065fbc69efb35.
+2026-06-15T09:53:11.2583012+00:00 ContainerStatus: Creating stderr named pipe at /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2585035+00:00 ContainerStatus: Successfully created stderr named pipe at: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2586070+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64 for reading in non-blocking mode.
+2026-06-15T09:53:11.2587349+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2588346+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/201482bb57a5_pg-enterprise-supply-ui_218d/stderr_cf301db67e5445f5a54adc77bfc6fa64.
+2026-06-15T09:53:11.2589670+00:00 ContainerStatus: Creating container with image: pgsupplyregistry.azurecr.io/frontend:latest from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:latest
+2026-06-15T09:53:13.4050519+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:53:13 +0000] "GET / HTTP/1.1" 200 458 "-" "AlwaysOn" "127.0.0.1:5869"
+2026-06-15T09:53:13.7726163+00:00 ContainerStatus: Starting container: 201482bb57a5_pg-enterprise-supply-ui_218d.
+2026-06-15T09:53:13.9826552+00:00 ContainerStatus: Starting watchers and probes.
+2026-06-15T09:53:14.0014078+00:00 ContainerStatus: Starting metrics collection.
+2026-06-15T09:53:14.0110719+00:00 ContainerStatus: Container is running.
+2026-06-15T09:53:14.0118570+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:53:14.3826003+00:00 ContainerStatus: Container start method finished after 5212 ms.
+2026-06-15T09:53:14.3828229+00:00 ContainerStatus: State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:53:14.3828504+00:00 ContainerStatus: State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:53:14.5718739+00:00 ContainerStream: /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2026-06-15T09:53:14.5720481+00:00 ContainerStream: /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+2026-06-15T09:53:14.6679364+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+2026-06-15T09:53:14.8637304+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+2026-06-15T09:53:16.0078778+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+2026-06-15T09:53:16.0079588+00:00 ContainerStream: /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+2026-06-15T09:53:16.0079652+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+2026-06-15T09:53:16.2709368+00:00 ContainerStream: 20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf
+2026-06-15T09:53:16.4309897+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+2026-06-15T09:53:16.7585615+00:00 ContainerStream: /docker-entrypoint.sh: Configuration complete; ready for start up
+2026-06-15T09:53:17.2851505+00:00 ContainerStream: 2026/06/15 09:53:17 [notice] 1#1: using the "epoll" event method
+2026-06-15T09:53:17.3224524+00:00 ContainerStream: 2026/06/15 09:53:17 [notice] 1#1: nginx/1.31.1
+2026-06-15T09:53:17.3225848+00:00 ContainerStream: 2026/06/15 09:53:17 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026-06-15T09:53:17.3225909+00:00 ContainerStream: 2026/06/15 09:53:17 [notice] 1#1: OS: Linux 6.6.138.1-1.azl3
+2026-06-15T09:53:17.3225943+00:00 ContainerStream: 2026/06/15 09:53:17 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 131072:131072
+2026-06-15T09:53:17.3225973+00:00 ContainerStream: 2026/06/15 09:53:17 [notice] 1#1: start worker processes
+2026-06-15T09:53:17.3226111+00:00 ContainerStream: 2026/06/15 09:53:17 [notice] 1#1: start worker process 36
+2026-06-15T09:53:17.4892914+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:53:17 +0000] "GET /robots933456.txt HTTP/1.1" 200 458 "-" "HealthCheck/1.0" "-"
+2026-06-15T09:53:17.5889023+00:00 ContainerStatus: Site startup probe succeeded after 3.2053461 seconds.
+2026-06-15T09:53:19.0399064+00:00 ContainerStatus: State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 3.2053461 seconds., DetailsLevel: INFO
+2026-06-15T09:53:20.6129889+00:00 ContainerStatus: Site is running with deployment version: 78411d0d95b05987830936515879f1927c4f7cd31781516463197
+2026-06-15T09:53:20.6956750+00:00 ContainerStatus: Site started.
+2026-06-15T09:53:20.7485541+00:00 ContainerStatus: State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 06/15/2026 09:53:20 (UTC), DetailsLevel: INFO
+========== New Cold Start Attempt (2026-06-15T09:53:33.3699959+00:00) ==========
+2026-06-15T09:53:33.3699959+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:53:33 +0000] "GET / HTTP/1.1" 200 458 "-" "AlwaysOn" "127.0.0.1:5868"
+2026-06-15T09:53:41.1876941+00:00 ContainerStatus: State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:42:07 (UTC), DetailsLevel: INFO
+2026-06-15T09:53:41.2165756+00:00 ContainerStatus: Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:53:41.6920819+00:00 ContainerStatus: Stop and delete container. Retry count = 0
+2026-06-15T09:53:41.6947962+00:00 ContainerStatus: Stopping container: d2be1ee33f7e_pg-enterprise-supply-ui_218d.
+2026-06-15T09:53:41.9493927+00:00 ContainerStream: [Previous Container] 2026/06/15 09:53:41 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2026-06-15T09:53:41.9496784+00:00 ContainerStream: [Previous Container] 2026/06/15 09:53:41 [notice] 36#36: gracefully shutting down
+2026-06-15T09:53:41.9496854+00:00 ContainerStream: [Previous Container] 2026/06/15 09:53:41 [notice] 36#36: exiting
+2026-06-15T09:53:42.0055165+00:00 ContainerStream: [Previous Container] 2026/06/15 09:53:41 [notice] 36#36: exit
+2026-06-15T09:53:42.0521766+00:00 ContainerStream: [Previous Container] 2026/06/15 09:53:42 [notice] 1#1: signal 17 (SIGCHLD) received from 36
+2026-06-15T09:53:42.0532235+00:00 ContainerStream: [Previous Container] 2026/06/15 09:53:42 [notice] 1#1: worker process 36 exited with code 0
+2026-06-15T09:53:42.0613349+00:00 ContainerStream: [Previous Container] 2026/06/15 09:53:42 [notice] 1#1: exit
+2026-06-15T09:53:42.2796587+00:00 ContainerStatus: Deleting container: d2be1ee33f7e_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T09:53:43.1325419+00:00 ContainerStatus: Container spec TerminationMessagePolicy  path 
+2026-06-15T09:53:43.1349205+00:00 ContainerStatus: Container is terminated. Total time elapsed: 1917 ms.
+2026-06-15T09:53:43.1418172+00:00 ContainerStatus: Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:54:19.2800153+00:00 ContainerStatus: State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:54:26.3069684+00:00 ContainerStatus: State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:54:26.3071287+00:00 ContainerStatus: Container start method called.
+2026-06-15T09:54:26.3071758+00:00 ContainerStatus: State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:latest for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:54:26.3072896+00:00 ContainerStatus: Establishing network.
+2026-06-15T09:54:26.3074218+00:00 ContainerStatus: Pulling image: pgsupplyregistry.azurecr.io/frontend:latest.
+2026-06-15T09:54:33.8258566+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:54:33 +0000] "GET / HTTP/1.1" 200 458 "-" "AlwaysOn" "127.0.0.1:5868"
+2026-06-15T09:54:34.4058817+00:00 ContainerStatus: Image pgsupplyregistry.azurecr.io/frontend:latest is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:54:34.4060210+00:00 ContainerStatus: Container is starting.
+2026-06-15T09:54:34.4061557+00:00 ContainerStatus: State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:54:34.4062740+00:00 ContainerStatus: Establishing user namespace if not established already.
+2026-06-15T09:54:34.4063894+00:00 ContainerStatus: Establishing network if not established already.
+2026-06-15T09:54:34.4065124+00:00 ContainerStatus: Mounting volumes.
+2026-06-15T09:54:34.4066630+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:54:34.9198315+00:00 ContainerStatus: Nested mountpoint volatile/logs
+2026-06-15T09:54:35.2725690+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:54:35.4075027+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:54:35.4079084+00:00 ContainerStatus: Creating container.
+2026-06-15T09:54:35.4080389+00:00 ContainerStatus: Creating pipes for streaming container io.
+2026-06-15T09:54:35.4081729+00:00 ContainerStatus: Creating stdout named pipe at /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4084333+00:00 ContainerStatus: Successfully created stdout named pipe at: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4085317+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6 for reading in non-blocking mode.
+2026-06-15T09:54:35.4086697+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4087754+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stdout_56040495da5e44a489824ccc682332c6.
+2026-06-15T09:54:35.4652475+00:00 ContainerStatus: Creating stderr named pipe at /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4654871+00:00 ContainerStatus: Successfully created stderr named pipe at: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4655945+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741 for reading in non-blocking mode.
+2026-06-15T09:54:35.4657387+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4658607+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/75a826fb2487_pg-enterprise-supply-ui_218d/stderr_da140b1efcea4dffa1c4d06e95fd5741.
+2026-06-15T09:54:35.4759766+00:00 ContainerStatus: Creating container with image: pgsupplyregistry.azurecr.io/frontend:latest from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:latest
+2026-06-15T09:54:39.9544281+00:00 ContainerStatus: Starting container: 75a826fb2487_pg-enterprise-supply-ui_218d.
+2026-06-15T09:54:40.2661643+00:00 ContainerStatus: Starting watchers and probes.
+2026-06-15T09:54:40.2672273+00:00 ContainerStatus: Starting metrics collection.
+2026-06-15T09:54:40.2675098+00:00 ContainerStatus: Container is running.
+2026-06-15T09:54:40.2676601+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:54:40.8674751+00:00 ContainerStatus: Container start method finished after 14560 ms.
+2026-06-15T09:54:40.8677018+00:00 ContainerStatus: State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:54:40.8677324+00:00 ContainerStatus: State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:54:41.2570515+00:00 ContainerStream: /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2026-06-15T09:54:41.2572859+00:00 ContainerStream: /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+2026-06-15T09:54:41.4856680+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+2026-06-15T09:54:41.6836752+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+2026-06-15T09:54:43.2599961+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+2026-06-15T09:54:43.5545070+00:00 ContainerStream: /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+2026-06-15T09:54:43.5545491+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+2026-06-15T09:54:43.9525841+00:00 ContainerStream: 20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf
+2026-06-15T09:54:44.2547694+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+2026-06-15T09:54:44.3396978+00:00 ContainerStream: /docker-entrypoint.sh: Configuration complete; ready for start up
+2026-06-15T09:54:45.2408570+00:00 ContainerStream: 2026/06/15 09:54:44 [notice] 1#1: using the "epoll" event method
+2026-06-15T09:54:45.2409190+00:00 ContainerStream: 2026/06/15 09:54:44 [notice] 1#1: nginx/1.31.1
+2026-06-15T09:54:45.2409237+00:00 ContainerStream: 2026/06/15 09:54:44 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026-06-15T09:54:45.2409268+00:00 ContainerStream: 2026/06/15 09:54:44 [notice] 1#1: OS: Linux 6.6.138.1-1.azl3
+2026-06-15T09:54:45.2409299+00:00 ContainerStream: 2026/06/15 09:54:44 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 131072:131072
+2026-06-15T09:54:45.2868865+00:00 ContainerStream: 2026/06/15 09:54:44 [notice] 1#1: start worker processes
+2026-06-15T09:54:45.2869343+00:00 ContainerStream: 2026/06/15 09:54:44 [notice] 1#1: start worker process 36
+2026-06-15T09:54:47.9319210+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:54:47 +0000] "GET /robots933456.txt HTTP/1.1" 200 458 "-" "HealthCheck/1.0" "-"
+2026-06-15T09:54:48.2020827+00:00 ContainerStatus: Site startup probe succeeded after 7.327106 seconds.
+2026-06-15T09:54:50.9203135+00:00 ContainerStatus: State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 7.327106 seconds., DetailsLevel: INFO
+2026-06-15T09:54:53.6493250+00:00 ContainerStatus: Site is running with deployment version: 78411d0d95b05987830936515879f1927c4f7cd31781516463197
+2026-06-15T09:54:53.6780711+00:00 ContainerStatus: Site started.
+2026-06-15T09:54:53.7641644+00:00 ContainerStatus: State: Started, Action: None, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site started at 06/15/2026 09:54:53 (UTC), DetailsLevel: INFO
+========== New Cold Start Attempt (2026-06-15T09:55:14.1604249+00:00) ==========
+2026-06-15T09:55:14.1604249+00:00 ContainerStatus: State: Stopping, Action: StoppingSiteContainers, LastError: SiteStartupCancelled, LastErrorTimestamp: 06/15/2026 09:41:12, LastErrorDetails: , Details: Site started at 06/15/2026 09:53:20 (UTC), DetailsLevel: INFO
+2026-06-15T09:55:14.1606875+00:00 ContainerStatus: Container is terminating. Grace period: 5 seconds.
+2026-06-15T09:55:14.1888103+00:00 ContainerStatus: Stop and delete container. Retry count = 0
+2026-06-15T09:55:14.1889444+00:00 ContainerStatus: Stopping container: 201482bb57a5_pg-enterprise-supply-ui_218d.
+2026-06-15T09:55:14.3883773+00:00 ContainerStream: [Previous Container] 2026/06/15 09:55:14 [notice] 36#36: gracefully shutting down
+2026-06-15T09:55:14.3884272+00:00 ContainerStream: [Previous Container] 2026/06/15 09:55:14 [notice] 36#36: exiting
+2026-06-15T09:55:14.4078444+00:00 ContainerStream: [Previous Container] 2026/06/15 09:55:14 [notice] 36#36: exit
+2026-06-15T09:55:14.4926479+00:00 ContainerStream: [Previous Container] 2026/06/15 09:55:14 [notice] 1#1: signal 17 (SIGCHLD) received from 36
+2026-06-15T09:55:14.4926840+00:00 ContainerStream: [Previous Container] 2026/06/15 09:55:14 [notice] 1#1: worker process 36 exited with code 0
+2026-06-15T09:55:14.5217072+00:00 ContainerStream: [Previous Container] 2026/06/15 09:55:14 [notice] 1#1: exit
+2026-06-15T09:55:14.6336594+00:00 ContainerStatus: Deleting container: 201482bb57a5_pg-enterprise-supply-ui_218d. Retry count = 0
+2026-06-15T09:55:15.2398885+00:00 ContainerStatus: Container spec TerminationMessagePolicy  path 
+2026-06-15T09:55:15.2404780+00:00 ContainerStatus: Container is terminated. Total time elapsed: 1079 ms.
+2026-06-15T09:55:15.2406182+00:00 ContainerStatus: Site: pg-enterprise-supply-ui__218d stopped.
+2026-06-15T09:56:38.6377970+00:00 ContainerStatus: State: Starting, Action: EstablishingSiteNetworks, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:56:45.9690917+00:00 ContainerStatus: State: Starting, Action: StartingSiteContainers, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: , DetailsLevel: INFO
+2026-06-15T09:56:45.9784467+00:00 ContainerStatus: Container start method called.
+2026-06-15T09:56:45.9785521+00:00 ContainerStatus: State: Starting, Action: PullingImage, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pulling image pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6 for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:56:45.9786788+00:00 ContainerStatus: Establishing network.
+2026-06-15T09:56:45.9950145+00:00 ContainerStatus: Pulling image: pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6.
+2026-06-15T09:56:49.7536424+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:56:49 +0000] "GET /login HTTP/1.1" 200 458 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "138.84.77.142:43581"
+2026-06-15T09:56:49.9515524+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:56:49 +0000] "GET /assets/index-B2Ff1FLt.css HTTP/1.1" 200 42625 "https://pg-enterprise-supply-ui-staging.azurewebsites.net/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "138.84.77.142:43581"
+2026-06-15T09:56:50.2780691+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:56:50 +0000] "GET /assets/index-BspZ_tto.js HTTP/1.1" 200 360067 "https://pg-enterprise-supply-ui-staging.azurewebsites.net/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "138.84.77.142:43636"
+2026-06-15T09:56:50.6852022+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:56:50 +0000] "GET /favicon.svg HTTP/1.1" 200 9522 "https://pg-enterprise-supply-ui-staging.azurewebsites.net/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "138.84.77.142:43636"
+2026-06-15T09:56:58.2788102+00:00 ContainerStatus: Image pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:56:58.2796072+00:00 ContainerStatus: Container is starting.
+2026-06-15T09:56:58.2799783+00:00 ContainerStatus: State: Starting, Action: MountingVolumes, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Mounting volumes for pg-enterprise-supply-ui_218d., DetailsLevel: INFO
+2026-06-15T09:56:58.2977767+00:00 ContainerStatus: Establishing user namespace if not established already.
+2026-06-15T09:56:58.2990496+00:00 ContainerStatus: Establishing network if not established already.
+2026-06-15T09:56:58.2994308+00:00 ContainerStatus: Mounting volumes.
+2026-06-15T09:56:58.3070330+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:56:58.3823045+00:00 ContainerStatus: Nested mountpoint volatile/logs
+2026-06-15T09:56:58.4403137+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:56:58.6607669+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-ui_218d. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:56:58.6622572+00:00 ContainerStatus: Creating container.
+2026-06-15T09:56:58.6624486+00:00 ContainerStatus: Creating pipes for streaming container io.
+2026-06-15T09:56:58.6625879+00:00 ContainerStatus: Creating stdout named pipe at /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.6707969+00:00 ContainerStatus: Successfully created stdout named pipe at: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.6710217+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda for reading in non-blocking mode.
+2026-06-15T09:56:58.6711991+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.6713118+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stdout_c173e211c48b411c8682ca9736096eda.
+2026-06-15T09:56:58.8553257+00:00 ContainerStatus: Creating stderr named pipe at /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8733215+00:00 ContainerStatus: Successfully created stderr named pipe at: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8736287+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41 for reading in non-blocking mode.
+2026-06-15T09:56:58.8739021+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8816064+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/03bd29637df3_pg-enterprise-supply-ui_218d/stderr_71b5baea7dfc4c21b20bf46bc619fd41.
+2026-06-15T09:56:58.8838169+00:00 ContainerStatus: Creating container with image: pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/frontend:a3a16ac04ed746309f9730c003bad4cb30d486b6
+2026-06-15T09:57:00.7911150+00:00 ContainerStatus: Starting container: 03bd29637df3_pg-enterprise-supply-ui_218d.
+2026-06-15T09:57:00.9279975+00:00 ContainerStatus: Starting watchers and probes.
+2026-06-15T09:57:00.9289557+00:00 ContainerStatus: Starting metrics collection.
+2026-06-15T09:57:00.9294335+00:00 ContainerStatus: Container is running.
+2026-06-15T09:57:00.9296918+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:57:01.3285012+00:00 ContainerStatus: Container start method finished after 15349 ms.
+2026-06-15T09:57:01.3945818+00:00 ContainerStream: /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2026-06-15T09:57:01.3947509+00:00 ContainerStream: /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+2026-06-15T09:57:01.4027782+00:00 ContainerStatus: State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Container pg-enterprise-supply-ui_218d successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:57:01.4028714+00:00 ContainerStatus: State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:57:01.5012626+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+2026-06-15T09:57:01.6083952+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+2026-06-15T09:57:03.2336432+00:00 ContainerStream: 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+2026-06-15T09:57:03.2336872+00:00 ContainerStream: /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+2026-06-15T09:57:03.2336919+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+2026-06-15T09:57:03.5356376+00:00 ContainerStream: 20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf
+2026-06-15T09:57:03.5358027+00:00 ContainerStream: /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+2026-06-15T09:57:03.5358246+00:00 ContainerStream: /docker-entrypoint.sh: Configuration complete; ready for start up
+2026-06-15T09:57:04.5209264+00:00 ContainerStream: 2026/06/15 09:57:03 [notice] 1#1: using the "epoll" event method
+2026-06-15T09:57:04.5209766+00:00 ContainerStream: 2026/06/15 09:57:03 [notice] 1#1: nginx/1.31.1
+2026-06-15T09:57:04.5209898+00:00 ContainerStream: 2026/06/15 09:57:03 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026-06-15T09:57:04.5209930+00:00 ContainerStream: 2026/06/15 09:57:03 [notice] 1#1: OS: Linux 6.6.138.1-1.azl3
+2026-06-15T09:57:04.5209962+00:00 ContainerStream: 2026/06/15 09:57:03 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 131072:131072
+2026-06-15T09:57:04.5210017+00:00 ContainerStream: 2026/06/15 09:57:03 [notice] 1#1: start worker processes
+2026-06-15T09:57:04.5210047+00:00 ContainerStream: 2026/06/15 09:57:03 [notice] 1#1: start worker process 36
+2026-06-15T09:57:04.7413794+00:00 ContainerStream: 169.254.131.1 - - [15/Jun/2026:09:57:04 +0000] "GET /robots933456.txt HTTP/1.1" 200 458 "-" "HealthCheck/1.0" "-"
+2026-06-15T09:57:04.8363854+00:00 ContainerStatus: Site startup probe succeeded after 3.413631 seconds.
+2026-06-15T09:57:06.2087719+00:00 ContainerStatus: State: Starting, Action: WarmUpProbeSucceeded, LastError: , LastErrorTimestamp: 01/01/0001 00:00:00, LastErrorDetails: , Details: Site startup probe succeeded after 3.413631 seconds., DetailsLevel: INFO

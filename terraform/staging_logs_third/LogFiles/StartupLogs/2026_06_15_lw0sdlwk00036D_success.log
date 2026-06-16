@@ -1,0 +1,699 @@
+2026-06-15T09:57:13.0030190+00:00 ContainerStatus: State: Starting, Action: EstablishingSiteNetworks, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 09:45:55 (UTC), DetailsLevel: ERR
+2026-06-15T09:57:18.8893362+00:00 ContainerStatus: State: Starting, Action: StartingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site stopped at 06/15/2026 09:45:55 (UTC), DetailsLevel: ERR
+2026-06-15T09:57:18.8952990+00:00 ContainerStatus: Container start method called.
+2026-06-15T09:57:18.8959603+00:00 ContainerStatus: State: Starting, Action: PullingImage, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pulling image pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:57:18.8963676+00:00 ContainerStatus: Establishing network.
+2026-06-15T09:57:18.8965946+00:00 ContainerStatus: Pulling image: pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6.
+2026-06-15T09:58:04.7142388+00:00 ContainerStatus: Image pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T09:58:04.7143861+00:00 ContainerStatus: Container is starting.
+2026-06-15T09:58:04.7222357+00:00 ContainerStatus: State: Starting, Action: MountingVolumes, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T09:58:04.7228194+00:00 ContainerStatus: Establishing user namespace if not established already.
+2026-06-15T09:58:04.7229842+00:00 ContainerStatus: Establishing network if not established already.
+2026-06-15T09:58:04.7231480+00:00 ContainerStatus: Mounting volumes.
+2026-06-15T09:58:04.7233458+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:58:04.7343794+00:00 ContainerStatus: Nested mountpoint volatile/logs
+2026-06-15T09:58:04.8923717+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T09:58:05.3685076+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T09:58:05.4659127+00:00 ContainerStatus: Creating container.
+2026-06-15T09:58:05.4663832+00:00 ContainerStatus: Creating pipes for streaming container io.
+2026-06-15T09:58:05.4717113+00:00 ContainerStatus: Creating stdout named pipe at /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.4840450+00:00 ContainerStatus: Successfully created stdout named pipe at: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.6025046+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14 for reading in non-blocking mode.
+2026-06-15T09:58:05.6112099+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.6117919+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stdout_3c1c3a2249e347aba1a2df75d8efea14.
+2026-06-15T09:58:05.6520684+00:00 ContainerStatus: Creating stderr named pipe at /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.6526391+00:00 ContainerStatus: Successfully created stderr named pipe at: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.6527684+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac for reading in non-blocking mode.
+2026-06-15T09:58:05.6529618+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.7393542+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/6a58b92eb1f5_pg-enterprise-supply-api_4724/stderr_82246f6202ea46c5b66895b8ba47cfac.
+2026-06-15T09:58:05.7417557+00:00 ContainerStatus: Creating container with image: pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:a3a16ac04ed746309f9730c003bad4cb30d486b6
+2026-06-15T09:58:10.0792623+00:00 ContainerStatus: Starting container: 6a58b92eb1f5_pg-enterprise-supply-api_4724.
+2026-06-15T09:58:10.4124545+00:00 ContainerStatus: Starting watchers and probes.
+2026-06-15T09:58:10.4318475+00:00 ContainerStatus: Starting metrics collection.
+2026-06-15T09:58:10.4321223+00:00 ContainerStatus: Container is running.
+2026-06-15T09:58:10.4349299+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:58:10.9965682+00:00 ContainerStatus: Container start method finished after 52100 ms.
+2026-06-15T09:58:10.9968107+00:00 ContainerStatus: State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T09:58:10.9968441+00:00 ContainerStatus: State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T09:59:39.6188989+00:00 ContainerStream: 
+2026-06-15T09:59:39.6396499+00:00 ContainerStream:   .   ____          _            __ _ _
+2026-06-15T09:59:39.6397220+00:00 ContainerStream:  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+2026-06-15T09:59:39.6397274+00:00 ContainerStream: ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+2026-06-15T09:59:39.6397307+00:00 ContainerStream:  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+2026-06-15T09:59:39.6397344+00:00 ContainerStream:   '  |____| .__|_| |_|_| |_\__, | / / / /
+2026-06-15T09:59:39.6397444+00:00 ContainerStream:  =========|_|==============|___/=/_/_/_/
+2026-06-15T09:59:39.6397473+00:00 ContainerStream: 
+2026-06-15T09:59:39.6397507+00:00 ContainerStream:  :: Spring Boot ::                (v4.1.0)
+2026-06-15T09:59:39.6397533+00:00 ContainerStream: 
+2026-06-15T09:59:47.0471410+00:00 ContainerStream: 2026-06-15T09:59:46.981Z  INFO 1 --- [demo] [           main] com.pg.supplychain.DemoApplication       : Starting DemoApplication v0.0.1-SNAPSHOT using Java 17.0.19 with PID 1 (/app/app.jar started by root in /app)
+2026-06-15T09:59:47.2399286+00:00 ContainerStream: 2026-06-15T09:59:47.239Z  INFO 1 --- [demo] [           main] com.pg.supplychain.DemoApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-06-15T10:01:09.3242909+00:00 ContainerStream: 2026-06-15T10:01:09.246Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-06-15T10:01:09.9789534+00:00 ContainerStream: 2026-06-15T10:01:09.971Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-15T10:01:20.6814491+00:00 ContainerStream: 2026-06-15T10:01:20.680Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9892 ms. Found 9 JPA repository interfaces.
+2026-06-15T10:01:24.8612038+00:00 ContainerStream: 2026-06-15T10:01:24.860Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-06-15T10:01:24.8988889+00:00 ContainerStream: 2026-06-15T10:01:24.898Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-06-15T10:01:25.9977829+00:00 ContainerStream: 2026-06-15T10:01:25.997Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.AuditLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.0075957+00:00 ContainerStream: 2026-06-15T10:01:26.004Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.1012341+00:00 ContainerStream: 2026-06-15T10:01:26.017Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.1764034+00:00 ContainerStream: 2026-06-15T10:01:26.175Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.2143307+00:00 ContainerStream: 2026-06-15T10:01:26.213Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.3289991+00:00 ContainerStream: 2026-06-15T10:01:26.257Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.3749075+00:00 ContainerStream: 2026-06-15T10:01:26.358Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.SupplierRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.4231917+00:00 ContainerStream: 2026-06-15T10:01:26.387Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.4442737+00:00 ContainerStream: 2026-06-15T10:01:26.433Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.WarehouseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:01:26.4812265+00:00 ContainerStream: 2026-06-15T10:01:26.461Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 931 ms. Found 0 Redis repository interfaces.
+2026-06-15T10:02:05.7009163+00:00 ContainerStream: 2026-06-15T10:02:05.663Z  INFO 1 --- [demo] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-06-15T10:02:07.4884839+00:00 ContainerStream: 2026-06-15T10:02:07.387Z  INFO 1 --- [demo] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-15T10:02:07.6073084+00:00 ContainerStream: 2026-06-15T10:02:07.479Z  INFO 1 --- [demo] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-06-15T10:02:19.8181921+00:00 ContainerStream: 2026-06-15T10:02:19.816Z  INFO 1 --- [demo] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 150865 ms
+2026-06-15T10:03:03.6210920+00:00 ContainerStream: 2026-06-15T10:03:03.598Z  INFO 1 --- [demo] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-15T10:03:06.1891420+00:00 ContainerStream: 2026-06-15T10:03:06.179Z  INFO 1 --- [demo] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-06-15T10:04:01.5037983+00:00 ContainerStream: 2026-06-15T10:04:01.282Z  INFO 1 --- [demo] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-15T10:04:09.8329108+00:00 ContainerStream: 2026-06-15T10:04:09.832Z  INFO 1 --- [demo] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-15T10:04:34.8403985+00:00 ContainerStream: 2026-06-15T10:04:34.838Z  INFO 1 --- [demo] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@29eaf100
+2026-06-15T10:04:34.9195214+00:00 ContainerStream: 2026-06-15T10:04:34.918Z  INFO 1 --- [demo] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-15T10:04:38.5842536+00:00 ContainerStream: 2026-06-15T10:04:38.514Z  WARN 1 --- [demo] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-15T10:04:40.3806261+00:00 ContainerStream: 2026-06-15T10:04:40.364Z  INFO 1 --- [demo] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-06-15T10:04:40.3807078+00:00 ContainerStream: 	Database JDBC URL [jdbc:postgresql://postgres-nexus-supply-prod.postgres.database.azure.com:5432/supply_db?sslmode=require]
+2026-06-15T10:04:40.3807217+00:00 ContainerStream: 	Database driver: PostgreSQL JDBC Driver
+2026-06-15T10:04:40.3807249+00:00 ContainerStream: 	Database dialect: PostgreSQLDialect
+2026-06-15T10:04:40.3807277+00:00 ContainerStream: 	Database version: 15.18
+2026-06-15T10:04:40.3807315+00:00 ContainerStream: 	Default catalog/schema: supply_db/public
+2026-06-15T10:04:40.3807345+00:00 ContainerStream: 	Autocommit mode: undefined/unknown
+2026-06-15T10:04:40.3807374+00:00 ContainerStream: 	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+2026-06-15T10:04:40.3807435+00:00 ContainerStream: 	JDBC fetch size: none
+2026-06-15T10:04:40.3807465+00:00 ContainerStream: 	Pool: DataSourceConnectionProvider
+2026-06-15T10:04:40.3807492+00:00 ContainerStream: 	Minimum pool size: undefined/unknown
+2026-06-15T10:04:40.3807520+00:00 ContainerStream: 	Maximum pool size: undefined/unknown
+2026-06-15T10:06:02.9102450+00:00 ContainerStream: 2026-06-15T10:06:02.900Z  INFO 1 --- [demo] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-15T10:06:05.5271515+00:00 ContainerStream: 2026-06-15T10:06:05.495Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : alter table if exists suppliers add column lead_time_days integer
+2026-06-15T10:06:06.0351319+00:00 ContainerStream: 2026-06-15T10:06:06.024Z  INFO 1 --- [demo] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-15T10:06:21.7049981+00:00 ContainerStream: 2026-06-15T10:06:21.704Z  INFO 1 --- [demo] [           main] o.a.kafka.common.config.AbstractConfig   : AdminClientConfig values: 
+2026-06-15T10:06:21.7050896+00:00 ContainerStream: 	bootstrap.controllers = []
+2026-06-15T10:06:21.7050955+00:00 ContainerStream: 	bootstrap.servers = [localhost:9092]
+2026-06-15T10:06:21.7050987+00:00 ContainerStream: 	client.dns.lookup = use_all_dns_ips
+2026-06-15T10:06:21.7051016+00:00 ContainerStream: 	client.id = 
+2026-06-15T10:06:21.7051298+00:00 ContainerStream: 	config.providers = []
+2026-06-15T10:06:21.7056305+00:00 ContainerStream: 	connections.max.idle.ms = 300000
+2026-06-15T10:06:21.7056408+00:00 ContainerStream: 	default.api.timeout.ms = 1500
+2026-06-15T10:06:21.7056438+00:00 ContainerStream: 	enable.metrics.push = false
+2026-06-15T10:06:21.7056465+00:00 ContainerStream: 	metadata.max.age.ms = 300000
+2026-06-15T10:06:21.7056495+00:00 ContainerStream: 	metadata.recovery.rebootstrap.trigger.ms = 300000
+2026-06-15T10:06:21.7056524+00:00 ContainerStream: 	metadata.recovery.strategy = rebootstrap
+2026-06-15T10:06:21.7056555+00:00 ContainerStream: 	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+2026-06-15T10:06:21.7056622+00:00 ContainerStream: 	metrics.num.samples = 2
+2026-06-15T10:06:21.7056651+00:00 ContainerStream: 	metrics.recording.level = INFO
+2026-06-15T10:06:21.7056680+00:00 ContainerStream: 	metrics.sample.window.ms = 30000
+2026-06-15T10:06:21.7056707+00:00 ContainerStream: 	receive.buffer.bytes = 65536
+2026-06-15T10:06:21.7059926+00:00 ContainerStream: 	reconnect.backoff.max.ms = 1000
+2026-06-15T10:06:21.7059999+00:00 ContainerStream: 	reconnect.backoff.ms = 50
+2026-06-15T10:06:21.7122811+00:00 ContainerStream: 	request.timeout.ms = 1500
+2026-06-15T10:06:21.7122967+00:00 ContainerStream: 	retries = 2147483647
+2026-06-15T10:06:21.7122999+00:00 ContainerStream: 	retry.backoff.max.ms = 1000
+2026-06-15T10:06:21.7123028+00:00 ContainerStream: 	retry.backoff.ms = 100
+2026-06-15T10:06:21.7123059+00:00 ContainerStream: 	sasl.client.callback.handler.class = null
+2026-06-15T10:06:21.7123096+00:00 ContainerStream: 	sasl.jaas.config = null
+2026-06-15T10:06:21.7123126+00:00 ContainerStream: 	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+2026-06-15T10:06:21.7123203+00:00 ContainerStream: 	sasl.kerberos.min.time.before.relogin = 60000
+2026-06-15T10:06:21.7123232+00:00 ContainerStream: 	sasl.kerberos.service.name = null
+2026-06-15T10:06:21.7123262+00:00 ContainerStream: 	sasl.kerberos.ticket.renew.jitter = 0.05
+2026-06-15T10:06:21.7123291+00:00 ContainerStream: 	sasl.kerberos.ticket.renew.window.factor = 0.8
+2026-06-15T10:06:21.7123321+00:00 ContainerStream: 	sasl.login.callback.handler.class = null
+2026-06-15T10:06:21.7123348+00:00 ContainerStream: 	sasl.login.class = null
+2026-06-15T10:06:21.7132204+00:00 ContainerStream: 	sasl.login.connect.timeout.ms = null
+2026-06-15T10:06:21.7132376+00:00 ContainerStream: 	sasl.login.read.timeout.ms = null
+2026-06-15T10:06:21.7132412+00:00 ContainerStream: 	sasl.login.refresh.buffer.seconds = 300
+2026-06-15T10:06:21.7132441+00:00 ContainerStream: 	sasl.login.refresh.min.period.seconds = 60
+2026-06-15T10:06:21.7132476+00:00 ContainerStream: 	sasl.login.refresh.window.factor = 0.8
+2026-06-15T10:06:21.7132505+00:00 ContainerStream: 	sasl.login.refresh.window.jitter = 0.05
+2026-06-15T10:06:21.7135785+00:00 ContainerStream: 	sasl.login.retry.backoff.max.ms = 10000
+2026-06-15T10:06:21.7135844+00:00 ContainerStream: 	sasl.login.retry.backoff.ms = 100
+2026-06-15T10:06:21.7135874+00:00 ContainerStream: 	sasl.mechanism = GSSAPI
+2026-06-15T10:06:21.7135910+00:00 ContainerStream: 	sasl.oauthbearer.assertion.algorithm = RS256
+2026-06-15T10:06:21.7135940+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.aud = null
+2026-06-15T10:06:21.7135970+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+2026-06-15T10:06:21.7136040+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.iss = null
+2026-06-15T10:06:21.7136072+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.jti.include = false
+2026-06-15T10:06:21.7136103+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+2026-06-15T10:06:21.7136133+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.sub = null
+2026-06-15T10:06:21.7136162+00:00 ContainerStream: 	sasl.oauthbearer.assertion.file = null
+2026-06-15T10:06:21.7136192+00:00 ContainerStream: 	sasl.oauthbearer.assertion.private.key.file = null
+2026-06-15T10:06:21.7136224+00:00 ContainerStream: 	sasl.oauthbearer.assertion.private.key.passphrase = null
+2026-06-15T10:06:21.7138681+00:00 ContainerStream: 	sasl.oauthbearer.assertion.template.file = null
+2026-06-15T10:06:21.7138765+00:00 ContainerStream: 	sasl.oauthbearer.client.credentials.client.id = null
+2026-06-15T10:06:21.7138798+00:00 ContainerStream: 	sasl.oauthbearer.client.credentials.client.secret = null
+2026-06-15T10:06:21.7138827+00:00 ContainerStream: 	sasl.oauthbearer.clock.skew.seconds = 30
+2026-06-15T10:06:21.7138857+00:00 ContainerStream: 	sasl.oauthbearer.expected.audience = []
+2026-06-15T10:06:21.7138885+00:00 ContainerStream: 	sasl.oauthbearer.expected.issuer = null
+2026-06-15T10:06:21.7142798+00:00 ContainerStream: 	sasl.oauthbearer.header.urlencode = false
+2026-06-15T10:06:21.7143012+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+2026-06-15T10:06:21.7143046+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+2026-06-15T10:06:21.7143077+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+2026-06-15T10:06:21.7143106+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.url = null
+2026-06-15T10:06:21.7143143+00:00 ContainerStream: 	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+2026-06-15T10:06:21.7143177+00:00 ContainerStream: 	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+2026-06-15T10:06:21.7145229+00:00 ContainerStream: 	sasl.oauthbearer.scope = null
+2026-06-15T10:06:21.7145313+00:00 ContainerStream: 	sasl.oauthbearer.scope.claim.name = scope
+2026-06-15T10:06:21.7145344+00:00 ContainerStream: 	sasl.oauthbearer.sub.claim.name = sub
+2026-06-15T10:06:21.7145373+00:00 ContainerStream: 	sasl.oauthbearer.token.endpoint.url = null
+2026-06-15T10:06:21.7145440+00:00 ContainerStream: 	security.protocol = PLAINTEXT
+2026-06-15T10:06:21.7145468+00:00 ContainerStream: 	security.providers = null
+2026-06-15T10:06:21.7145499+00:00 ContainerStream: 	send.buffer.bytes = 131072
+2026-06-15T10:06:21.7145528+00:00 ContainerStream: 	socket.connection.setup.timeout.max.ms = 30000
+2026-06-15T10:06:21.7145558+00:00 ContainerStream: 	socket.connection.setup.timeout.ms = 10000
+2026-06-15T10:06:21.7145585+00:00 ContainerStream: 	ssl.cipher.suites = []
+2026-06-15T10:06:21.7149491+00:00 ContainerStream: 	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+2026-06-15T10:06:21.7149553+00:00 ContainerStream: 	ssl.endpoint.identification.algorithm = https
+2026-06-15T10:06:21.7149581+00:00 ContainerStream: 	ssl.engine.factory.class = null
+2026-06-15T10:06:21.7149611+00:00 ContainerStream: 	ssl.key.password = null
+2026-06-15T10:06:21.7149640+00:00 ContainerStream: 	ssl.keymanager.algorithm = SunX509
+2026-06-15T10:06:21.7149669+00:00 ContainerStream: 	ssl.keystore.certificate.chain = null
+2026-06-15T10:06:21.7157155+00:00 ContainerStream: 	ssl.keystore.key = null
+2026-06-15T10:06:21.7158698+00:00 ContainerStream: 	ssl.keystore.location = null
+2026-06-15T10:06:21.7158771+00:00 ContainerStream: 	ssl.keystore.password = null
+2026-06-15T10:06:21.7158800+00:00 ContainerStream: 	ssl.keystore.type = JKS
+2026-06-15T10:06:21.7158827+00:00 ContainerStream: 	ssl.protocol = TLSv1.3
+2026-06-15T10:06:21.7158855+00:00 ContainerStream: 	ssl.provider = null
+2026-06-15T10:06:21.7158884+00:00 ContainerStream: 	ssl.secure.random.implementation = null
+2026-06-15T10:06:21.7158917+00:00 ContainerStream: 	ssl.trustmanager.algorithm = PKIX
+2026-06-15T10:06:21.7165078+00:00 ContainerStream: 	ssl.truststore.certificates = null
+2026-06-15T10:06:21.7165145+00:00 ContainerStream: 	ssl.truststore.location = null
+2026-06-15T10:06:21.7165177+00:00 ContainerStream: 	ssl.truststore.password = null
+2026-06-15T10:06:21.7165204+00:00 ContainerStream: 	ssl.truststore.type = JKS
+2026-06-15T10:06:21.7165231+00:00 ContainerStream: 
+2026-06-15T10:06:28.3406241+00:00 ContainerStream: 2026-06-15T10:06:28.340Z  INFO 1 --- [demo] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 4.2.1
+2026-06-15T10:06:28.3497306+00:00 ContainerStream: 2026-06-15T10:06:28.349Z  INFO 1 --- [demo] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 92f61c44867f39dc
+2026-06-15T10:06:28.3512800+00:00 ContainerStream: 2026-06-15T10:06:28.351Z  INFO 1 --- [demo] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1781517988329
+2026-06-15T10:06:28.6980275+00:00 ContainerStream: 2026-06-15T10:06:28.686Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:06:28.7159687+00:00 ContainerStream: 2026-06-15T10:06:28.706Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:06:28.7781929+00:00 ContainerStream: 2026-06-15T10:06:28.777Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:06:28.7972390+00:00 ContainerStream: 2026-06-15T10:06:28.786Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:06:28.8430692+00:00 ContainerStream: 2026-06-15T10:06:28.828Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:28.8440663+00:00 ContainerStream: 2026-06-15T10:06:28.843Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:28.9538441+00:00 ContainerStream: 2026-06-15T10:06:28.946Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:06:28.9539518+00:00 ContainerStream: 2026-06-15T10:06:28.952Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:06:28.9539665+00:00 ContainerStream: 2026-06-15T10:06:28.952Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:28.9539713+00:00 ContainerStream: 2026-06-15T10:06:28.952Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:28.9539755+00:00 ContainerStream: 2026-06-15T10:06:28.953Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.0474566+00:00 ContainerStream: 2026-06-15T10:06:29.046Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.0529730+00:00 ContainerStream: 2026-06-15T10:06:29.052Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.0549701+00:00 ContainerStream: 2026-06-15T10:06:29.054Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.1220062+00:00 ContainerStream: 2026-06-15T10:06:29.055Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.4333207+00:00 ContainerStream: 2026-06-15T10:06:29.398Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:06:29.4343753+00:00 ContainerStream: 2026-06-15T10:06:29.433Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:06:29.4737055+00:00 ContainerStream: 2026-06-15T10:06:29.434Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.5027730+00:00 ContainerStream: 2026-06-15T10:06:29.502Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.5040836+00:00 ContainerStream: 2026-06-15T10:06:29.503Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.5113502+00:00 ContainerStream: 2026-06-15T10:06:29.504Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.5125139+00:00 ContainerStream: 2026-06-15T10:06:29.512Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.5216734+00:00 ContainerStream: 2026-06-15T10:06:29.521Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.6331755+00:00 ContainerStream: 2026-06-15T10:06:29.630Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.6522651+00:00 ContainerStream: 2026-06-15T10:06:29.649Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.6522974+00:00 ContainerStream: 2026-06-15T10:06:29.649Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.6523021+00:00 ContainerStream: 2026-06-15T10:06:29.649Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.6523063+00:00 ContainerStream: 2026-06-15T10:06:29.650Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.6523133+00:00 ContainerStream: 2026-06-15T10:06:29.650Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.6523174+00:00 ContainerStream: 2026-06-15T10:06:29.650Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7580655+00:00 ContainerStream: 2026-06-15T10:06:29.757Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7651562+00:00 ContainerStream: 2026-06-15T10:06:29.764Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7660533+00:00 ContainerStream: 2026-06-15T10:06:29.765Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7757501+00:00 ContainerStream: 2026-06-15T10:06:29.774Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7849700+00:00 ContainerStream: 2026-06-15T10:06:29.784Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7868389+00:00 ContainerStream: 2026-06-15T10:06:29.786Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7877490+00:00 ContainerStream: 2026-06-15T10:06:29.787Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.7883268+00:00 ContainerStream: 2026-06-15T10:06:29.788Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:29.9846578+00:00 ContainerStream: 2026-06-15T10:06:29.944Z  INFO 1 --- [demo] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2026-06-15T10:06:29.9857587+00:00 ContainerStream: 2026-06-15T10:06:29.985Z  INFO 1 --- [demo] [           main] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2026-06-15T10:06:29.9864903+00:00 ContainerStream: 2026-06-15T10:06:29.986Z  INFO 1 --- [demo] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2026-06-15T10:06:29.9944725+00:00 ContainerStream: 2026-06-15T10:06:29.906Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:29.9945279+00:00 ContainerStream: 
+2026-06-15T10:06:29.9945345+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: fetchMetadata
+2026-06-15T10:06:29.9945376+00:00 ContainerStream: 
+2026-06-15T10:06:29.9960906+00:00 ContainerStream: 2026-06-15T10:06:29.995Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:06:30.0051674+00:00 ContainerStream: 2026-06-15T10:06:29.996Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:06:30.0065641+00:00 ContainerStream: 2026-06-15T10:06:30.005Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0134203+00:00 ContainerStream: 2026-06-15T10:06:30.006Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0339804+00:00 ContainerStream: 2026-06-15T10:06:30.007Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0434228+00:00 ContainerStream: 2026-06-15T10:06:30.036Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0453883+00:00 ContainerStream: 2026-06-15T10:06:30.043Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0468877+00:00 ContainerStream: 2026-06-15T10:06:30.046Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0637384+00:00 ContainerStream: 2026-06-15T10:06:30.054Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0647141+00:00 ContainerStream: 2026-06-15T10:06:30.064Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.0654161+00:00 ContainerStream: 2026-06-15T10:06:30.065Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:06:30.1749965+00:00 ContainerStream: 2026-06-15T10:06:30.173Z  INFO 1 --- [demo] [| adminclient-1] o.a.kafka.common.utils.AppInfoParser     : App info kafka.admin.client for adminclient-1 unregistered
+2026-06-15T10:06:30.1830151+00:00 ContainerStream: 2026-06-15T10:06:30.182Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.1830818+00:00 ContainerStream: 
+2026-06-15T10:06:30.1830875+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.1830986+00:00 ContainerStream: 
+2026-06-15T10:06:30.2034694+00:00 ContainerStream: 2026-06-15T10:06:30.193Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2039194+00:00 ContainerStream: 
+2026-06-15T10:06:30.2039306+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2039338+00:00 ContainerStream: 
+2026-06-15T10:06:30.2039383+00:00 ContainerStream: 2026-06-15T10:06:30.200Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2039448+00:00 ContainerStream: 
+2026-06-15T10:06:30.2039480+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2039508+00:00 ContainerStream: 
+2026-06-15T10:06:30.2039541+00:00 ContainerStream: 2026-06-15T10:06:30.200Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2039568+00:00 ContainerStream: 
+2026-06-15T10:06:30.2039598+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2039654+00:00 ContainerStream: 
+2026-06-15T10:06:30.2039690+00:00 ContainerStream: 2026-06-15T10:06:30.200Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2039718+00:00 ContainerStream: 
+2026-06-15T10:06:30.2039750+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2039777+00:00 ContainerStream: 
+2026-06-15T10:06:30.2283568+00:00 ContainerStream: 2026-06-15T10:06:30.201Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2284116+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284170+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2284199+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284234+00:00 ContainerStream: 2026-06-15T10:06:30.209Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2284264+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284297+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2284357+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284393+00:00 ContainerStream: 2026-06-15T10:06:30.209Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2284421+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284452+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2284479+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284514+00:00 ContainerStream: 2026-06-15T10:06:30.209Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:06:30.2284575+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284608+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:06:30.2284637+00:00 ContainerStream: 
+2026-06-15T10:06:30.2284674+00:00 ContainerStream: 2026-06-15T10:06:30.209Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.clients.admin.KafkaAdminClient     : [AdminClient clientId=adminclient-1] Timed out 9 remaining operation(s) during close.
+2026-06-15T10:06:30.3881686+00:00 ContainerStream: 2026-06-15T10:06:30.377Z  INFO 1 --- [demo] [| adminclient-1] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2026-06-15T10:06:30.3949933+00:00 ContainerStream: 2026-06-15T10:06:30.394Z  INFO 1 --- [demo] [| adminclient-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2026-06-15T10:06:30.3970938+00:00 ContainerStream: 2026-06-15T10:06:30.396Z  INFO 1 --- [demo] [| adminclient-1] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2026-06-15T10:06:30.4239480+00:00 ContainerStream: 2026-06-15T10:06:30.417Z  WARN 1 --- [demo] [           main] c.p.s.kafkalite.SpringKafkaLiteBroker    : SpringKafkaLiteBroker: Apache Kafka is OFFLINE at localhost:9092. Falling back to Redis/In-Memory broker. Details: null
+2026-06-15T10:06:36.8747522+00:00 ContainerStream: 2026-06-15T10:06:36.828Z  WARN 1 --- [demo] [pool-3-thread-1] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite Broker: Redis is not available. Falling back to in-memory event queues. Error: Unable to connect to Redis
+2026-06-15T10:06:38.0545032+00:00 ContainerStream: 2026-06-15T10:06:38.044Z  INFO 1 --- [demo] [           main] com.pg.supplychain.config.CacheConfig    : CacheConfig: Redis is available. Using RedisCacheManager.
+2026-06-15T10:06:38.6438594+00:00 ContainerStream: 2026-06-15T10:06:38.643Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:06:38.6461698+00:00 ContainerStream: 2026-06-15T10:06:38.645Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic order-events
+2026-06-15T10:06:38.6553540+00:00 ContainerStream: 2026-06-15T10:06:38.652Z  INFO 1 --- [demo] [           main] c.p.s.a.listener.AnalyticsEventListener  : AnalyticsEventListener: Subscribed to product-events and order-events topics to invalidate analytics cache.
+2026-06-15T10:06:40.2496381+00:00 ContainerStream: 2026-06-15T10:06:40.249Z  INFO 1 --- [demo] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-15T10:06:43.6462066+00:00 ContainerStream: 2026-06-15T10:06:43.645Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic audit-events
+2026-06-15T10:06:43.6471300+00:00 ContainerStream: 2026-06-15T10:06:43.646Z  INFO 1 --- [demo] [           main] c.p.s.audit.listener.AuditEventListener  : AuditEventListener: Subscribed to audit-events topic.
+2026-06-15T10:07:26.4936717+00:00 ContainerStream: 2026-06-15T10:07:26.415Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:07:26.6276266+00:00 ContainerStream: 2026-06-15T10:07:26.483Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic order-events
+2026-06-15T10:07:26.6276679+00:00 ContainerStream: 2026-06-15T10:07:26.483Z  INFO 1 --- [demo] [           main] c.p.s.n.l.NotificationEventListener      : NotificationEventListener: Subscribed to product-events and order-events topics.
+2026-06-15T10:07:26.6276734+00:00 ContainerStream: 2026-06-15T10:07:26.608Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:07:26.6276772+00:00 ContainerStream: 2026-06-15T10:07:26.609Z  INFO 1 --- [demo] [           main] c.p.s.service.AutoReplenishmentService   : AutoReplenishmentService: Subscribed to product-events topic.
+2026-06-15T10:07:27.0263441+00:00 ContainerStream: 2026-06-15T10:07:27.015Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:07:27.1307659+00:00 ContainerStream: 2026-06-15T10:07:27.051Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic order-events
+2026-06-15T10:07:27.1308000+00:00 ContainerStream: 2026-06-15T10:07:27.063Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic category-events
+2026-06-15T10:07:27.1308048+00:00 ContainerStream: 2026-06-15T10:07:27.081Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic warehouse-events
+2026-06-15T10:07:27.1308129+00:00 ContainerStream: 2026-06-15T10:07:27.090Z  INFO 1 --- [demo] [           main] c.p.s.service.CacheEvictionListener      : CacheEvictionListener: Subscribed to product, order, category, and warehouse event topics.
+2026-06-15T10:07:35.8102141+00:00 ContainerStream: 2026-06-15T10:07:35.809Z  WARN 1 --- [demo] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-15T10:07:38.3508238+00:00 ContainerStream: 2026-06-15T10:07:38.206Z  WARN 1 --- [demo] [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-06-15T10:07:38.3508702+00:00 ContainerStream: 
+2026-06-15T10:07:38.3508761+00:00 ContainerStream: Using generated security password: 5ae1f909-8de8-4a0e-841d-d2ce05791b6d
+2026-06-15T10:07:38.3508792+00:00 ContainerStream: 
+2026-06-15T10:07:38.3508826+00:00 ContainerStream: This generated password is for development use only. Your security configuration must be updated before running your application in production.
+2026-06-15T10:07:38.3508862+00:00 ContainerStream: 
+2026-06-15T10:07:39.4355930+00:00 ContainerStream: 2026-06-15T10:07:39.418Z  INFO 1 --- [demo] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-15T10:07:48.1287749+00:00 ContainerStream: 2026-06-15T10:07:48.127Z DEBUG 1 --- [demo] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-06-15T10:08:03.4602411+00:00 ContainerStream: 2026-06-15T10:08:03.454Z  INFO 1 --- [demo] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-06-15T10:08:03.8863218+00:00 ContainerStream: 2026-06-15T10:08:03.877Z  INFO 1 --- [demo] [           main] com.pg.supplychain.DemoApplication       : Started DemoApplication in 522.605 seconds (process running for 591.552)
+2026-06-15T10:08:07.7636439+00:00 ContainerStream: 2026-06-15T10:08:07.756Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from roles r1_0
+2026-06-15T10:08:08.8264067+00:00 ContainerStream: 2026-06-15T10:08:08.804Z  INFO 1 --- [demo] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-15T10:08:08.8264755+00:00 ContainerStream: 2026-06-15T10:08:08.805Z  INFO 1 --- [demo] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-15T10:08:08.8927381+00:00 ContainerStream: 2026-06-15T10:08:08.892Z  INFO 1 --- [demo] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 80 ms
+2026-06-15T10:08:10.3167721+00:00 ContainerStream: 2026-06-15T10:08:10.309Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from users u1_0
+2026-06-15T10:08:10.4062332+00:00 ContainerStream: 2026-06-15T10:08:10.405Z  INFO 1 --- [demo] [           main] c.pg.supplychain.config.DatabaseSeeder   : Database users already exist. Skipping seeding.
+2026-06-15T10:08:12.7249016+00:00 ContainerStream: 2026-06-15T10:08:12.723Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /robots933456.txt
+2026-06-15T10:08:15.7139832+00:00 ContainerStream: 2026-06-15T10:08:15.713Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-15T10:08:15.7800384+00:00 ContainerStream: 2026-06-15T10:08:15.763Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-15T10:08:18.2864726+00:00 ContainerStream: 2026-06-15T10:08:18.268Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-15T10:08:18.2865714+00:00 ContainerStream: 2026-06-15T10:08:18.276Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-15T10:08:18.2987837+00:00 ContainerStream: 2026-06-15T10:08:18.298Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-15T10:08:18.6751290+00:00 ContainerStatus: Site startup probe succeeded after 607.5764575 seconds.
+2026-06-15T10:08:19.9388256+00:00 ContainerStatus: State: Starting, Action: WarmUpProbeSucceeded, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site startup probe succeeded after 607.5764575 seconds., DetailsLevel: INFO
+2026-06-15T10:08:20.4846055+00:00 ContainerStream: 2026-06-15T10:08:20.475Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select u1_0.id,u1_0.created_at,u1_0.email,u1_0.full_name,u1_0.password_hash,u1_0.role_id,u1_0.status,u1_0.updated_at from users u1_0 where u1_0.email=?
+2026-06-15T10:08:20.4969162+00:00 ContainerStream: 2026-06-15T10:08:20.496Z TRACE 1 --- [demo] [           main] org.hibernate.orm.jdbc.bind              : binding parameter (1:VARCHAR) <- [admin@pg.com]
+2026-06-15T10:08:21.5083233+00:00 ContainerStream: 2026-06-15T10:08:21.479Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select r1_0.id,r1_0.description,r1_0.name from roles r1_0 where r1_0.id=?
+2026-06-15T10:08:21.5658532+00:00 ContainerStream: 2026-06-15T10:08:21.535Z TRACE 1 --- [demo] [           main] org.hibernate.orm.jdbc.bind              : binding parameter (1:UUID) <- [0e0c4841-d780-4536-b6a4-dd689e33b377]
+2026-06-15T10:08:22.1502594+00:00 ContainerStream: 2026-06-15T10:08:22.123Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from warehouses w1_0
+2026-06-15T10:08:22.2217345+00:00 ContainerStream: 2026-06-15T10:08:22.218Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from product_categories c1_0
+2026-06-15T10:08:22.2664543+00:00 ContainerStream: 2026-06-15T10:08:22.260Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from suppliers s1_0
+2026-06-15T10:08:22.3451893+00:00 ContainerStream: 2026-06-15T10:08:22.337Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from products p1_0
+2026-06-15T10:08:25.0171017+00:00 ContainerStatus: Site is running with deployment version: a3a16ac04ed746309f9730c003bad4cb30d486b61781517249787
+2026-06-15T10:08:25.1722007+00:00 ContainerStatus: Site started.
+2026-06-15T10:08:25.1947642+00:00 ContainerStatus: State: Started, Action: None, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/15/2026 10:08:25 (UTC), DetailsLevel: INFO
+========== New Cold Start Attempt (2026-06-15T10:09:05.6473519+00:00) ==========
+2026-06-15T10:09:05.6473519+00:00 ContainerStatus: State: Stopping, Action: StoppingSite, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/15/2026 10:08:25 (UTC), DetailsLevel: INFO
+2026-06-15T10:09:05.7081636+00:00 ContainerStatus: State: Stopping, Action: StoppingSiteContainers, LastError: ContainerTimeout, LastErrorTimestamp: 06/15/2026 09:45:45, LastErrorDetails: Container did not start within expected time limit of 230s. Please inspect your container logs for more details., Details: Site started at 06/15/2026 10:08:25 (UTC), DetailsLevel: INFO
+2026-06-15T10:09:05.7084375+00:00 ContainerStatus: Container is terminating. Grace period: 5 seconds.
+2026-06-15T10:09:06.0784826+00:00 ContainerStatus: Stop and delete container. Retry count = 0
+2026-06-15T10:09:06.0802135+00:00 ContainerStatus: Stopping container: 6a58b92eb1f5_pg-enterprise-supply-api_4724.
+2026-06-15T10:09:07.4436334+00:00 ContainerStream: [Previous Container] 2026-06-15T10:09:07.443Z  INFO 1 --- [demo] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-06-15T10:09:08.6920549+00:00 ContainerStream: [Previous Container] 2026-06-15T10:09:08.684Z  INFO 1 --- [demo] [ionShutdownHook] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite Broker: Shutdown completed.
+2026-06-15T10:09:08.7913630+00:00 ContainerStream: [Previous Container] 2026-06-15T10:09:08.790Z  INFO 1 --- [demo] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-15T10:09:08.8892965+00:00 ContainerStream: [Previous Container] 2026-06-15T10:09:08.888Z  INFO 1 --- [demo] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-15T10:09:12.8701084+00:00 ContainerStatus: Deleting container: 6a58b92eb1f5_pg-enterprise-supply-api_4724. Retry count = 0
+2026-06-15T10:09:14.1038710+00:00 ContainerStatus: Container spec TerminationMessagePolicy  path 
+2026-06-15T10:09:14.1157652+00:00 ContainerStatus: Container is terminated. Total time elapsed: 8395 ms.
+2026-06-15T10:09:14.1159289+00:00 ContainerStatus: Site: pg-enterprise-supply-api__4724 stopped.
+2026-06-15T10:13:34.6084886+00:00 ContainerStatus: State: Starting, Action: EstablishingSiteNetworks, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site stopped at 06/15/2026 10:08:42 (UTC), DetailsLevel: ERR
+2026-06-15T10:13:37.4146866+00:00 ContainerStatus: State: Starting, Action: StartingSiteContainers, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site stopped at 06/15/2026 10:08:42 (UTC), DetailsLevel: ERR
+2026-06-15T10:13:37.4177694+00:00 ContainerStatus: Container start method called.
+2026-06-15T10:13:37.4252266+00:00 ContainerStatus: State: Starting, Action: PullingImage, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Pulling image pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76 for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T10:13:37.4270945+00:00 ContainerStatus: Establishing network.
+2026-06-15T10:13:37.4345778+00:00 ContainerStatus: Pulling image: pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76.
+2026-06-15T10:13:48.4967412+00:00 ContainerStatus: Image pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76 is pulled from registry pgsupplyregistry.azurecr.io
+2026-06-15T10:13:48.4997028+00:00 ContainerStatus: Container is starting.
+2026-06-15T10:13:48.5062822+00:00 ContainerStatus: State: Starting, Action: MountingVolumes, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Mounting volumes for pg-enterprise-supply-api_4724., DetailsLevel: INFO
+2026-06-15T10:13:48.5087475+00:00 ContainerStatus: Establishing user namespace if not established already.
+2026-06-15T10:13:48.5497759+00:00 ContainerStatus: Establishing network if not established already.
+2026-06-15T10:13:48.5509928+00:00 ContainerStatus: Mounting volumes.
+2026-06-15T10:13:48.5806983+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T10:13:48.6733939+00:00 ContainerStatus: Nested mountpoint volatile/logs
+2026-06-15T10:13:48.8983324+00:00 ContainerStatus: Nested mountpoint 
+2026-06-15T10:13:49.1402092+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Finished pulling container image and mounting volumes for pg-enterprise-supply-api_4724. Allocatinng the rest of the container resources to finish container creation., DetailsLevel: INFO
+2026-06-15T10:13:49.1417745+00:00 ContainerStatus: Creating container.
+2026-06-15T10:13:49.1696293+00:00 ContainerStatus: Creating pipes for streaming container io.
+2026-06-15T10:13:49.1862682+00:00 ContainerStatus: Creating stdout named pipe at /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2157389+00:00 ContainerStatus: Successfully created stdout named pipe at: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2320240+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89 for reading in non-blocking mode.
+2026-06-15T10:13:49.2430065+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2436822+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stdout_b196bc3389ae4ab69a94dd66cb45af89.
+2026-06-15T10:13:49.2807558+00:00 ContainerStatus: Creating stderr named pipe at /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2820930+00:00 ContainerStatus: Successfully created stderr named pipe at: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2879589+00:00 ContainerStatus: Opening named pipe /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23 for reading in non-blocking mode.
+2026-06-15T10:13:49.2884163+00:00 ContainerStatus: Successfully opened named pipe: /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2885680+00:00 ContainerStatus: Successfully removed non-blocking flag from /podr/container/pipe/edafe1e261c1_pg-enterprise-supply-api_4724/stderr_d0cdf7a5f41b486aafa5c5e3d1098c23.
+2026-06-15T10:13:49.2892037+00:00 ContainerStatus: Creating container with image: pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76 from registry: pgsupplyregistry.azurecr.io and fully qualified image name: pgsupplyregistry.azurecr.io/backend:aec9e57018d2609f1b916c9ed1169791384e3d76
+2026-06-15T10:13:51.1072615+00:00 ContainerStatus: Starting container: edafe1e261c1_pg-enterprise-supply-api_4724.
+2026-06-15T10:13:51.2738109+00:00 ContainerStatus: Starting watchers and probes.
+2026-06-15T10:13:51.2922412+00:00 ContainerStatus: Starting metrics collection.
+2026-06-15T10:13:51.3017366+00:00 ContainerStatus: Container is running.
+2026-06-15T10:13:51.3112985+00:00 ContainerStatus: State: Starting, Action: CreatingContainer, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T10:13:51.5344836+00:00 ContainerStatus: Container start method finished after 14109 ms.
+2026-06-15T10:13:51.6194369+00:00 ContainerStatus: State: Starting, Action: InitiatingSiteWarmUpProbe, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Container pg-enterprise-supply-api_4724 successfully created and is running., DetailsLevel: INFO
+2026-06-15T10:13:51.6195018+00:00 ContainerStatus: State: Starting, Action: WaitingForSiteWarmUpProbeSuccess, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Pinging warmup path to ensure container is ready to receive requests., DetailsLevel: INFO
+2026-06-15T10:14:30.9288613+00:00 ContainerStream: 
+2026-06-15T10:14:30.9536429+00:00 ContainerStream:   .   ____          _            __ _ _
+2026-06-15T10:14:30.9536704+00:00 ContainerStream:  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+2026-06-15T10:14:30.9536749+00:00 ContainerStream: ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+2026-06-15T10:14:30.9536787+00:00 ContainerStream:  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+2026-06-15T10:14:30.9536816+00:00 ContainerStream:   '  |____| .__|_| |_|_| |_\__, | / / / /
+2026-06-15T10:14:30.9536919+00:00 ContainerStream:  =========|_|==============|___/=/_/_/_/
+2026-06-15T10:14:30.9536947+00:00 ContainerStream: 
+2026-06-15T10:14:30.9536976+00:00 ContainerStream:  :: Spring Boot ::                (v4.1.0)
+2026-06-15T10:14:30.9659126+00:00 ContainerStream: 
+2026-06-15T10:14:32.6570395+00:00 ContainerStream: 2026-06-15T10:14:32.511Z  INFO 1 --- [demo] [           main] com.pg.supplychain.DemoApplication       : Starting DemoApplication v0.0.1-SNAPSHOT using Java 17.0.19 with PID 1 (/app/app.jar started by root in /app)
+2026-06-15T10:14:32.7029824+00:00 ContainerStream: 2026-06-15T10:14:32.693Z  INFO 1 --- [demo] [           main] com.pg.supplychain.DemoApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-06-15T10:15:01.0658576+00:00 ContainerStream: 2026-06-15T10:15:01.064Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-06-15T10:15:01.1043708+00:00 ContainerStream: 2026-06-15T10:15:01.096Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-15T10:15:06.9540994+00:00 ContainerStream: 2026-06-15T10:15:06.952Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 5634 ms. Found 9 JPA repository interfaces.
+2026-06-15T10:15:09.3862132+00:00 ContainerStream: 2026-06-15T10:15:09.382Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-06-15T10:15:09.4325528+00:00 ContainerStream: 2026-06-15T10:15:09.415Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-06-15T10:15:09.8719817+00:00 ContainerStream: 2026-06-15T10:15:09.871Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.AuditLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8892790+00:00 ContainerStream: 2026-06-15T10:15:09.879Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8893252+00:00 ContainerStream: 2026-06-15T10:15:09.880Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8893342+00:00 ContainerStream: 2026-06-15T10:15:09.880Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8893396+00:00 ContainerStream: 2026-06-15T10:15:09.881Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8893474+00:00 ContainerStream: 2026-06-15T10:15:09.881Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8893530+00:00 ContainerStream: 2026-06-15T10:15:09.882Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.SupplierRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8893583+00:00 ContainerStream: 2026-06-15T10:15:09.882Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:09.8894027+00:00 ContainerStream: 2026-06-15T10:15:09.883Z  INFO 1 --- [demo] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.pg.supplychain.repository.WarehouseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-06-15T10:15:10.0538614+00:00 ContainerStream: 2026-06-15T10:15:09.883Z  INFO 1 --- [demo] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 89 ms. Found 0 Redis repository interfaces.
+2026-06-15T10:15:30.9068011+00:00 ContainerStream: 2026-06-15T10:15:30.906Z  INFO 1 --- [demo] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-06-15T10:15:31.6810972+00:00 ContainerStream: 2026-06-15T10:15:31.680Z  INFO 1 --- [demo] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-15T10:15:31.7005627+00:00 ContainerStream: 2026-06-15T10:15:31.689Z  INFO 1 --- [demo] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-06-15T10:15:35.1906589+00:00 ContainerStream: 2026-06-15T10:15:35.189Z  INFO 1 --- [demo] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 60777 ms
+2026-06-15T10:15:48.0188017+00:00 ContainerStream: 2026-06-15T10:15:48.002Z  INFO 1 --- [demo] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-15T10:15:49.7274560+00:00 ContainerStream: 2026-06-15T10:15:49.689Z  INFO 1 --- [demo] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-06-15T10:16:02.6019696+00:00 ContainerStream: 2026-06-15T10:16:02.595Z  INFO 1 --- [demo] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-15T10:16:03.7509477+00:00 ContainerStream: 2026-06-15T10:16:03.750Z  INFO 1 --- [demo] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-15T10:16:13.6885329+00:00 ContainerStream: 2026-06-15T10:16:13.679Z  INFO 1 --- [demo] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@a6204e4
+2026-06-15T10:16:13.6992910+00:00 ContainerStream: 2026-06-15T10:16:13.698Z  INFO 1 --- [demo] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-15T10:16:14.5462049+00:00 ContainerStream: 2026-06-15T10:16:14.544Z  WARN 1 --- [demo] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-15T10:16:15.4442145+00:00 ContainerStream: 2026-06-15T10:16:15.436Z  INFO 1 --- [demo] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-06-15T10:16:15.4443041+00:00 ContainerStream: 	Database JDBC URL [jdbc:postgresql://postgres-nexus-supply-prod.postgres.database.azure.com:5432/supply_db?sslmode=require]
+2026-06-15T10:16:15.4443084+00:00 ContainerStream: 	Database driver: PostgreSQL JDBC Driver
+2026-06-15T10:16:15.4443113+00:00 ContainerStream: 	Database dialect: PostgreSQLDialect
+2026-06-15T10:16:15.4443142+00:00 ContainerStream: 	Database version: 15.18
+2026-06-15T10:16:15.4443178+00:00 ContainerStream: 	Default catalog/schema: supply_db/public
+2026-06-15T10:16:15.4443208+00:00 ContainerStream: 	Autocommit mode: undefined/unknown
+2026-06-15T10:16:15.4443238+00:00 ContainerStream: 	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+2026-06-15T10:16:15.4443292+00:00 ContainerStream: 	JDBC fetch size: none
+2026-06-15T10:16:15.4443354+00:00 ContainerStream: 	Pool: DataSourceConnectionProvider
+2026-06-15T10:16:15.4443382+00:00 ContainerStream: 	Minimum pool size: undefined/unknown
+2026-06-15T10:16:15.4443410+00:00 ContainerStream: 	Maximum pool size: undefined/unknown
+2026-06-15T10:16:38.4771641+00:00 ContainerStream: 2026-06-15T10:16:38.476Z  INFO 1 --- [demo] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-15T10:16:39.3682972+00:00 ContainerStream: 2026-06-15T10:16:39.361Z  INFO 1 --- [demo] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-15T10:16:51.1287115+00:00 ContainerStream: 2026-06-15T10:16:51.128Z  INFO 1 --- [demo] [           main] o.a.kafka.common.config.AbstractConfig   : AdminClientConfig values: 
+2026-06-15T10:16:51.1287858+00:00 ContainerStream: 	bootstrap.controllers = []
+2026-06-15T10:16:51.1287905+00:00 ContainerStream: 	bootstrap.servers = [localhost:9092]
+2026-06-15T10:16:51.1287935+00:00 ContainerStream: 	client.dns.lookup = use_all_dns_ips
+2026-06-15T10:16:51.1287963+00:00 ContainerStream: 	client.id = 
+2026-06-15T10:16:51.1287992+00:00 ContainerStream: 	config.providers = []
+2026-06-15T10:16:51.1288022+00:00 ContainerStream: 	connections.max.idle.ms = 300000
+2026-06-15T10:16:51.1288085+00:00 ContainerStream: 	default.api.timeout.ms = 1500
+2026-06-15T10:16:51.1288118+00:00 ContainerStream: 	enable.metrics.push = false
+2026-06-15T10:16:51.1288146+00:00 ContainerStream: 	metadata.max.age.ms = 300000
+2026-06-15T10:16:51.1288175+00:00 ContainerStream: 	metadata.recovery.rebootstrap.trigger.ms = 300000
+2026-06-15T10:16:51.1288205+00:00 ContainerStream: 	metadata.recovery.strategy = rebootstrap
+2026-06-15T10:16:51.1288236+00:00 ContainerStream: 	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+2026-06-15T10:16:51.1288265+00:00 ContainerStream: 	metrics.num.samples = 2
+2026-06-15T10:16:51.1288318+00:00 ContainerStream: 	metrics.recording.level = INFO
+2026-06-15T10:16:51.1288347+00:00 ContainerStream: 	metrics.sample.window.ms = 30000
+2026-06-15T10:16:51.1288377+00:00 ContainerStream: 	receive.buffer.bytes = 65536
+2026-06-15T10:16:51.1288430+00:00 ContainerStream: 	reconnect.backoff.max.ms = 1000
+2026-06-15T10:16:51.1288460+00:00 ContainerStream: 	reconnect.backoff.ms = 50
+2026-06-15T10:16:51.1288488+00:00 ContainerStream: 	request.timeout.ms = 1500
+2026-06-15T10:16:51.1288535+00:00 ContainerStream: 	retries = 2147483647
+2026-06-15T10:16:51.1288564+00:00 ContainerStream: 	retry.backoff.max.ms = 1000
+2026-06-15T10:16:51.1288592+00:00 ContainerStream: 	retry.backoff.ms = 100
+2026-06-15T10:16:51.1288621+00:00 ContainerStream: 	sasl.client.callback.handler.class = null
+2026-06-15T10:16:51.1288649+00:00 ContainerStream: 	sasl.jaas.config = null
+2026-06-15T10:16:51.1288676+00:00 ContainerStream: 	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+2026-06-15T10:16:51.1288706+00:00 ContainerStream: 	sasl.kerberos.min.time.before.relogin = 60000
+2026-06-15T10:16:51.1288755+00:00 ContainerStream: 	sasl.kerberos.service.name = null
+2026-06-15T10:16:51.1288784+00:00 ContainerStream: 	sasl.kerberos.ticket.renew.jitter = 0.05
+2026-06-15T10:16:51.1288813+00:00 ContainerStream: 	sasl.kerberos.ticket.renew.window.factor = 0.8
+2026-06-15T10:16:51.1288842+00:00 ContainerStream: 	sasl.login.callback.handler.class = null
+2026-06-15T10:16:51.1288869+00:00 ContainerStream: 	sasl.login.class = null
+2026-06-15T10:16:51.1370364+00:00 ContainerStream: 	sasl.login.connect.timeout.ms = null
+2026-06-15T10:16:51.1370630+00:00 ContainerStream: 	sasl.login.read.timeout.ms = null
+2026-06-15T10:16:51.1370728+00:00 ContainerStream: 	sasl.login.refresh.buffer.seconds = 300
+2026-06-15T10:16:51.1370760+00:00 ContainerStream: 	sasl.login.refresh.min.period.seconds = 60
+2026-06-15T10:16:51.1370790+00:00 ContainerStream: 	sasl.login.refresh.window.factor = 0.8
+2026-06-15T10:16:51.1370819+00:00 ContainerStream: 	sasl.login.refresh.window.jitter = 0.05
+2026-06-15T10:16:51.1370847+00:00 ContainerStream: 	sasl.login.retry.backoff.max.ms = 10000
+2026-06-15T10:16:51.1370876+00:00 ContainerStream: 	sasl.login.retry.backoff.ms = 100
+2026-06-15T10:16:51.1370931+00:00 ContainerStream: 	sasl.mechanism = GSSAPI
+2026-06-15T10:16:51.1370966+00:00 ContainerStream: 	sasl.oauthbearer.assertion.algorithm = RS256
+2026-06-15T10:16:51.1370995+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.aud = null
+2026-06-15T10:16:51.1371024+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+2026-06-15T10:16:51.1372227+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.iss = null
+2026-06-15T10:16:51.1372273+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.jti.include = false
+2026-06-15T10:16:51.1372303+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+2026-06-15T10:16:51.1372366+00:00 ContainerStream: 	sasl.oauthbearer.assertion.claim.sub = null
+2026-06-15T10:16:51.1372395+00:00 ContainerStream: 	sasl.oauthbearer.assertion.file = null
+2026-06-15T10:16:51.1372561+00:00 ContainerStream: 	sasl.oauthbearer.assertion.private.key.file = null
+2026-06-15T10:16:51.1372598+00:00 ContainerStream: 	sasl.oauthbearer.assertion.private.key.passphrase = null
+2026-06-15T10:16:51.1372628+00:00 ContainerStream: 	sasl.oauthbearer.assertion.template.file = null
+2026-06-15T10:16:51.1372658+00:00 ContainerStream: 	sasl.oauthbearer.client.credentials.client.id = null
+2026-06-15T10:16:51.1372710+00:00 ContainerStream: 	sasl.oauthbearer.client.credentials.client.secret = null
+2026-06-15T10:16:51.1372740+00:00 ContainerStream: 	sasl.oauthbearer.clock.skew.seconds = 30
+2026-06-15T10:16:51.1372768+00:00 ContainerStream: 	sasl.oauthbearer.expected.audience = []
+2026-06-15T10:16:51.1372798+00:00 ContainerStream: 	sasl.oauthbearer.expected.issuer = null
+2026-06-15T10:16:51.1372827+00:00 ContainerStream: 	sasl.oauthbearer.header.urlencode = false
+2026-06-15T10:16:51.1372856+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+2026-06-15T10:16:51.1372909+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+2026-06-15T10:16:51.1372940+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+2026-06-15T10:16:51.1372968+00:00 ContainerStream: 	sasl.oauthbearer.jwks.endpoint.url = null
+2026-06-15T10:16:51.1373003+00:00 ContainerStream: 	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+2026-06-15T10:16:51.1373043+00:00 ContainerStream: 	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+2026-06-15T10:16:51.1373073+00:00 ContainerStream: 	sasl.oauthbearer.scope = null
+2026-06-15T10:16:51.1373127+00:00 ContainerStream: 	sasl.oauthbearer.scope.claim.name = scope
+2026-06-15T10:16:51.1373158+00:00 ContainerStream: 	sasl.oauthbearer.sub.claim.name = sub
+2026-06-15T10:16:51.1373187+00:00 ContainerStream: 	sasl.oauthbearer.token.endpoint.url = null
+2026-06-15T10:16:51.1373214+00:00 ContainerStream: 	security.protocol = PLAINTEXT
+2026-06-15T10:16:51.1373243+00:00 ContainerStream: 	security.providers = null
+2026-06-15T10:16:51.1373271+00:00 ContainerStream: 	send.buffer.bytes = 131072
+2026-06-15T10:16:51.1373322+00:00 ContainerStream: 	socket.connection.setup.timeout.max.ms = 30000
+2026-06-15T10:16:51.1373352+00:00 ContainerStream: 	socket.connection.setup.timeout.ms = 10000
+2026-06-15T10:16:51.1373380+00:00 ContainerStream: 	ssl.cipher.suites = []
+2026-06-15T10:16:51.1373411+00:00 ContainerStream: 	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+2026-06-15T10:16:51.1373441+00:00 ContainerStream: 	ssl.endpoint.identification.algorithm = https
+2026-06-15T10:16:51.1373470+00:00 ContainerStream: 	ssl.engine.factory.class = null
+2026-06-15T10:16:51.1373516+00:00 ContainerStream: 	ssl.key.password = null
+2026-06-15T10:16:51.1373545+00:00 ContainerStream: 	ssl.keymanager.algorithm = SunX509
+2026-06-15T10:16:51.1373573+00:00 ContainerStream: 	ssl.keystore.certificate.chain = null
+2026-06-15T10:16:51.1373601+00:00 ContainerStream: 	ssl.keystore.key = null
+2026-06-15T10:16:51.1373631+00:00 ContainerStream: 	ssl.keystore.location = null
+2026-06-15T10:16:51.1373660+00:00 ContainerStream: 	ssl.keystore.password = null
+2026-06-15T10:16:51.1373709+00:00 ContainerStream: 	ssl.keystore.type = JKS
+2026-06-15T10:16:51.1373737+00:00 ContainerStream: 	ssl.protocol = TLSv1.3
+2026-06-15T10:16:51.1373764+00:00 ContainerStream: 	ssl.provider = null
+2026-06-15T10:16:51.1373793+00:00 ContainerStream: 	ssl.secure.random.implementation = null
+2026-06-15T10:16:51.1373821+00:00 ContainerStream: 	ssl.trustmanager.algorithm = PKIX
+2026-06-15T10:16:51.1373849+00:00 ContainerStream: 	ssl.truststore.certificates = null
+2026-06-15T10:16:51.1373877+00:00 ContainerStream: 	ssl.truststore.location = null
+2026-06-15T10:16:51.1373904+00:00 ContainerStream: 	ssl.truststore.password = null
+2026-06-15T10:16:51.1373950+00:00 ContainerStream: 	ssl.truststore.type = JKS
+2026-06-15T10:16:51.1373977+00:00 ContainerStream: 
+2026-06-15T10:16:54.2458745+00:00 ContainerStream: 2026-06-15T10:16:54.245Z  INFO 1 --- [demo] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 4.2.1
+2026-06-15T10:16:54.2472967+00:00 ContainerStream: 2026-06-15T10:16:54.246Z  INFO 1 --- [demo] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 92f61c44867f39dc
+2026-06-15T10:16:54.2640222+00:00 ContainerStream: 2026-06-15T10:16:54.248Z  INFO 1 --- [demo] [           main] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1781518614209
+2026-06-15T10:16:54.9370373+00:00 ContainerStream: 2026-06-15T10:16:54.936Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:16:54.9645376+00:00 ContainerStream: 2026-06-15T10:16:54.956Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:16:55.0333304+00:00 ContainerStream: 2026-06-15T10:16:55.023Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:16:55.0334214+00:00 ContainerStream: 2026-06-15T10:16:55.025Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:16:55.1034653+00:00 ContainerStream: 2026-06-15T10:16:55.092Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.1420895+00:00 ContainerStream: 2026-06-15T10:16:55.141Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.2603917+00:00 ContainerStream: 2026-06-15T10:16:55.259Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:16:55.2604775+00:00 ContainerStream: 2026-06-15T10:16:55.259Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:16:55.2604922+00:00 ContainerStream: 2026-06-15T10:16:55.259Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.2604965+00:00 ContainerStream: 2026-06-15T10:16:55.259Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.2605005+00:00 ContainerStream: 2026-06-15T10:16:55.260Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.3757229+00:00 ContainerStream: 2026-06-15T10:16:55.368Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.3779490+00:00 ContainerStream: 2026-06-15T10:16:55.376Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.3787702+00:00 ContainerStream: 2026-06-15T10:16:55.378Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.3952999+00:00 ContainerStream: 2026-06-15T10:16:55.394Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.5105922+00:00 ContainerStream: 2026-06-15T10:16:55.509Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:16:55.5116391+00:00 ContainerStream: 2026-06-15T10:16:55.511Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:16:55.5123252+00:00 ContainerStream: 2026-06-15T10:16:55.512Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.5128083+00:00 ContainerStream: 2026-06-15T10:16:55.512Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.5196753+00:00 ContainerStream: 2026-06-15T10:16:55.519Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.5307474+00:00 ContainerStream: 2026-06-15T10:16:55.529Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.5315666+00:00 ContainerStream: 2026-06-15T10:16:55.531Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.6672616+00:00 ContainerStream: 2026-06-15T10:16:55.666Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.6680041+00:00 ContainerStream: 2026-06-15T10:16:55.667Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.6742086+00:00 ContainerStream: 2026-06-15T10:16:55.673Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.6748550+00:00 ContainerStream: 2026-06-15T10:16:55.674Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.6755821+00:00 ContainerStream: 2026-06-15T10:16:55.675Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.6763309+00:00 ContainerStream: 2026-06-15T10:16:55.676Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8010057+00:00 ContainerStream: 2026-06-15T10:16:55.780Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8010516+00:00 ContainerStream: 2026-06-15T10:16:55.782Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8010622+00:00 ContainerStream: 2026-06-15T10:16:55.782Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8010665+00:00 ContainerStream: 2026-06-15T10:16:55.783Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8010705+00:00 ContainerStream: 2026-06-15T10:16:55.783Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8010765+00:00 ContainerStream: 2026-06-15T10:16:55.783Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8010807+00:00 ContainerStream: 2026-06-15T10:16:55.783Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8911760+00:00 ContainerStream: 2026-06-15T10:16:55.890Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.8919171+00:00 ContainerStream: 2026-06-15T10:16:55.891Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9180401+00:00 ContainerStream: 2026-06-15T10:16:55.908Z  INFO 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Node -1 disconnected.
+2026-06-15T10:16:55.9180854+00:00 ContainerStream: 2026-06-15T10:16:55.909Z  WARN 1 --- [demo] [| adminclient-1] org.apache.kafka.clients.NetworkClient   : [AdminClient clientId=adminclient-1] Connection to node -1 (localhost/127.0.0.1:9092) could not be established. Node may not be available.
+2026-06-15T10:16:55.9180911+00:00 ContainerStream: 2026-06-15T10:16:55.910Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9181028+00:00 ContainerStream: 2026-06-15T10:16:55.910Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9181070+00:00 ContainerStream: 2026-06-15T10:16:55.910Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9181111+00:00 ContainerStream: 2026-06-15T10:16:55.910Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9181149+00:00 ContainerStream: 2026-06-15T10:16:55.910Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9181210+00:00 ContainerStream: 2026-06-15T10:16:55.911Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9296374+00:00 ContainerStream: 2026-06-15T10:16:55.929Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:55.9302393+00:00 ContainerStream: 2026-06-15T10:16:55.930Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.0479001+00:00 ContainerStream: 2026-06-15T10:16:55.979Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.0637853+00:00 ContainerStream: 
+2026-06-15T10:16:56.0637957+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: fetchMetadata
+2026-06-15T10:16:56.0637993+00:00 ContainerStream: 
+2026-06-15T10:16:56.0638653+00:00 ContainerStream: 2026-06-15T10:16:56.053Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.0638797+00:00 ContainerStream: 2026-06-15T10:16:56.055Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.0638841+00:00 ContainerStream: 2026-06-15T10:16:56.056Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.0662421+00:00 ContainerStream: 2026-06-15T10:16:56.064Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.0839113+00:00 ContainerStream: 2026-06-15T10:16:56.083Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.0854255+00:00 ContainerStream: 2026-06-15T10:16:56.085Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.0868724+00:00 ContainerStream: 2026-06-15T10:16:56.086Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1021483+00:00 ContainerStream: 2026-06-15T10:16:56.038Z  INFO 1 --- [demo] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2026-06-15T10:16:56.1021619+00:00 ContainerStream: 2026-06-15T10:16:56.095Z  INFO 1 --- [demo] [           main] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2026-06-15T10:16:56.1021656+00:00 ContainerStream: 2026-06-15T10:16:56.095Z  INFO 1 --- [demo] [           main] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2026-06-15T10:16:56.1258107+00:00 ContainerStream: 2026-06-15T10:16:56.125Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1333237+00:00 ContainerStream: 2026-06-15T10:16:56.131Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1333364+00:00 ContainerStream: 2026-06-15T10:16:56.132Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1333407+00:00 ContainerStream: 2026-06-15T10:16:56.132Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1333447+00:00 ContainerStream: 2026-06-15T10:16:56.132Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1333599+00:00 ContainerStream: 2026-06-15T10:16:56.132Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1610986+00:00 ContainerStream: 2026-06-15T10:16:56.133Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.1611724+00:00 ContainerStream: 2026-06-15T10:16:56.142Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Rebootstrapping with Cluster(id = null, nodes = [localhost:9092 (id: -1 rack: null isFenced: false)], partitions = [], controller = null)
+2026-06-15T10:16:56.2587033+00:00 ContainerStream: 2026-06-15T10:16:56.258Z  INFO 1 --- [demo] [| adminclient-1] o.a.kafka.common.utils.AppInfoParser     : App info kafka.admin.client for adminclient-1 unregistered
+2026-06-15T10:16:56.2604432+00:00 ContainerStream: 2026-06-15T10:16:56.259Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2604729+00:00 ContainerStream: 
+2026-06-15T10:16:56.2604785+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2604823+00:00 ContainerStream: 
+2026-06-15T10:16:56.2617660+00:00 ContainerStream: 2026-06-15T10:16:56.261Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2617917+00:00 ContainerStream: 
+2026-06-15T10:16:56.2617960+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2617989+00:00 ContainerStream: 
+2026-06-15T10:16:56.2718100+00:00 ContainerStream: 2026-06-15T10:16:56.267Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2718537+00:00 ContainerStream: 
+2026-06-15T10:16:56.2718664+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2718694+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719009+00:00 ContainerStream: 2026-06-15T10:16:56.270Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2719044+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719074+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2719103+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719164+00:00 ContainerStream: 2026-06-15T10:16:56.271Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2719194+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719224+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2719250+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719284+00:00 ContainerStream: 2026-06-15T10:16:56.271Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2719311+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719360+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2719388+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719834+00:00 ContainerStream: 2026-06-15T10:16:56.271Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2719876+00:00 ContainerStream: 
+2026-06-15T10:16:56.2719908+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2719934+00:00 ContainerStream: 
+2026-06-15T10:16:56.2892512+00:00 ContainerStream: 2026-06-15T10:16:56.272Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.c.a.i.AdminMetadataManager         : [AdminClient clientId=adminclient-1] Metadata update failed
+2026-06-15T10:16:56.2893251+00:00 ContainerStream: 
+2026-06-15T10:16:56.2893314+00:00 ContainerStream: org.apache.kafka.common.errors.TimeoutException: The AdminClient thread has exited. Call: fetchMetadata
+2026-06-15T10:16:56.2893345+00:00 ContainerStream: 
+2026-06-15T10:16:56.2911298+00:00 ContainerStream: 2026-06-15T10:16:56.290Z  INFO 1 --- [demo] [| adminclient-1] o.a.k.clients.admin.KafkaAdminClient     : [AdminClient clientId=adminclient-1] Timed out 8 remaining operation(s) during close.
+2026-06-15T10:16:56.3477011+00:00 ContainerStream: 2026-06-15T10:16:56.347Z  INFO 1 --- [demo] [| adminclient-1] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2026-06-15T10:16:56.3492945+00:00 ContainerStream: 2026-06-15T10:16:56.349Z  INFO 1 --- [demo] [| adminclient-1] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2026-06-15T10:16:56.3497804+00:00 ContainerStream: 2026-06-15T10:16:56.349Z  INFO 1 --- [demo] [| adminclient-1] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2026-06-15T10:16:56.3590067+00:00 ContainerStream: 2026-06-15T10:16:56.356Z  WARN 1 --- [demo] [           main] c.p.s.kafkalite.SpringKafkaLiteBroker    : SpringKafkaLiteBroker: Apache Kafka is OFFLINE at localhost:9092. Falling back to Redis/In-Memory broker. Details: null
+2026-06-15T10:16:59.4316811+00:00 ContainerStream: 2026-06-15T10:16:59.431Z  INFO 1 --- [demo] [           main] com.pg.supplychain.config.CacheConfig    : CacheConfig: Redis is available. Using RedisCacheManager.
+2026-06-15T10:16:59.5596613+00:00 ContainerStream: 2026-06-15T10:16:59.558Z  INFO 1 --- [demo] [pool-3-thread-1] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite Broker: Successfully connected to Redis event queue broker.
+2026-06-15T10:16:59.8629479+00:00 ContainerStream: 2026-06-15T10:16:59.862Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:16:59.8819146+00:00 ContainerStream: 2026-06-15T10:16:59.881Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic order-events
+2026-06-15T10:16:59.8983334+00:00 ContainerStream: 2026-06-15T10:16:59.888Z  INFO 1 --- [demo] [           main] c.p.s.a.listener.AnalyticsEventListener  : AnalyticsEventListener: Subscribed to product-events and order-events topics to invalidate analytics cache.
+2026-06-15T10:17:01.4528135+00:00 ContainerStream: 2026-06-15T10:17:01.445Z  WARN 1 --- [demo] [pool-3-thread-1] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Connection issue during polling for product-events. Switching to in-memory fallback. Error: Error in execution
+2026-06-15T10:17:03.0358391+00:00 ContainerStream: 2026-06-15T10:17:03.035Z  INFO 1 --- [demo] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-15T10:17:07.9525852+00:00 ContainerStream: 2026-06-15T10:17:07.952Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic audit-events
+2026-06-15T10:17:07.9547560+00:00 ContainerStream: 2026-06-15T10:17:07.953Z  INFO 1 --- [demo] [           main] c.p.s.audit.listener.AuditEventListener  : AuditEventListener: Subscribed to audit-events topic.
+2026-06-15T10:17:46.8792414+00:00 ContainerStream: 2026-06-15T10:17:46.878Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:17:46.8963029+00:00 ContainerStream: 2026-06-15T10:17:46.887Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic order-events
+2026-06-15T10:17:46.8963395+00:00 ContainerStream: 2026-06-15T10:17:46.887Z  INFO 1 --- [demo] [           main] c.p.s.n.l.NotificationEventListener      : NotificationEventListener: Subscribed to product-events and order-events topics.
+2026-06-15T10:17:46.9067801+00:00 ContainerStream: 2026-06-15T10:17:46.890Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:17:46.9093845+00:00 ContainerStream: 2026-06-15T10:17:46.909Z  INFO 1 --- [demo] [           main] c.p.s.service.AutoReplenishmentService   : AutoReplenishmentService: Subscribed to product-events topic.
+2026-06-15T10:17:46.9199142+00:00 ContainerStream: 2026-06-15T10:17:46.918Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic product-events
+2026-06-15T10:17:46.9378952+00:00 ContainerStream: 2026-06-15T10:17:46.926Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic order-events
+2026-06-15T10:17:46.9379359+00:00 ContainerStream: 2026-06-15T10:17:46.929Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic category-events
+2026-06-15T10:17:46.9379406+00:00 ContainerStream: 2026-06-15T10:17:46.937Z  INFO 1 --- [demo] [           main] c.p.s.kafkalite.RedisKafkaLiteBroker     : KafkaLite: Subscribed to topic warehouse-events
+2026-06-15T10:17:46.9379518+00:00 ContainerStream: 2026-06-15T10:17:46.937Z  INFO 1 --- [demo] [           main] c.p.s.service.CacheEvictionListener      : CacheEvictionListener: Subscribed to product, order, category, and warehouse event topics.
+2026-06-15T10:17:47.7019335+00:00 ContainerStream: 2026-06-15T10:17:47.701Z  WARN 1 --- [demo] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-15T10:17:48.0840042+00:00 ContainerStream: 2026-06-15T10:17:48.077Z  WARN 1 --- [demo] [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+2026-06-15T10:17:48.0844086+00:00 ContainerStream: 
+2026-06-15T10:17:48.0844264+00:00 ContainerStream: Using generated security password: 6885a7b1-1c4a-4d6e-95c5-832e7254b318
+2026-06-15T10:17:48.0844296+00:00 ContainerStream: 
+2026-06-15T10:17:48.0844329+00:00 ContainerStream: This generated password is for development use only. Your security configuration must be updated before running your application in production.
+2026-06-15T10:17:48.0844355+00:00 ContainerStream: 
+2026-06-15T10:17:48.2119265+00:00 ContainerStream: 2026-06-15T10:17:48.211Z  INFO 1 --- [demo] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-15T10:17:50.5118797+00:00 ContainerStream: 2026-06-15T10:17:50.511Z DEBUG 1 --- [demo] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-06-15T10:17:56.3704023+00:00 ContainerStream: 2026-06-15T10:17:56.341Z  INFO 1 --- [demo] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-06-15T10:17:56.4789279+00:00 ContainerStream: 2026-06-15T10:17:56.478Z  INFO 1 --- [demo] [           main] com.pg.supplychain.DemoApplication       : Started DemoApplication in 215.259 seconds (process running for 244.707)
+2026-06-15T10:17:57.7979732+00:00 ContainerStream: 2026-06-15T10:17:57.797Z  INFO 1 --- [demo] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-15T10:17:57.8176384+00:00 ContainerStream: 2026-06-15T10:17:57.817Z  INFO 1 --- [demo] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-15T10:17:57.8406280+00:00 ContainerStream: 2026-06-15T10:17:57.840Z  INFO 1 --- [demo] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 22 ms
+2026-06-15T10:17:57.8673240+00:00 ContainerStream: 2026-06-15T10:17:57.866Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from roles r1_0
+2026-06-15T10:17:58.1419628+00:00 ContainerStream: 2026-06-15T10:17:58.140Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /robots933456.txt
+2026-06-15T10:17:58.2682833+00:00 ContainerStream: 2026-06-15T10:17:58.267Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from users u1_0
+2026-06-15T10:17:58.2874806+00:00 ContainerStream: 2026-06-15T10:17:58.287Z  INFO 1 --- [demo] [           main] c.pg.supplychain.config.DatabaseSeeder   : Database users already exist. Skipping seeding.
+2026-06-15T10:17:58.3078496+00:00 ContainerStream: 2026-06-15T10:17:58.298Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-15T10:17:58.3582444+00:00 ContainerStream: 2026-06-15T10:17:58.357Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-15T10:17:58.4560219+00:00 ContainerStream: 2026-06-15T10:17:58.455Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-15T10:17:58.4742850+00:00 ContainerStream: 2026-06-15T10:17:58.464Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-15T10:17:58.4759648+00:00 ContainerStream: 2026-06-15T10:17:58.475Z DEBUG 1 --- [demo] [nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-15T10:17:58.6804009+00:00 ContainerStatus: Site startup probe succeeded after 246.9464216 seconds.
+2026-06-15T10:17:59.4726544+00:00 ContainerStatus: State: Starting, Action: WarmUpProbeSucceeded, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site startup probe succeeded after 246.9464216 seconds., DetailsLevel: INFO
+2026-06-15T10:17:59.8076502+00:00 ContainerStream: 2026-06-15T10:17:59.805Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select u1_0.id,u1_0.created_at,u1_0.email,u1_0.full_name,u1_0.password_hash,u1_0.role_id,u1_0.status,u1_0.updated_at from users u1_0 where u1_0.email=?
+2026-06-15T10:17:59.9243343+00:00 ContainerStream: 2026-06-15T10:17:59.917Z TRACE 1 --- [demo] [           main] org.hibernate.orm.jdbc.bind              : binding parameter (1:VARCHAR) <- [admin@pg.com]
+2026-06-15T10:18:00.4235164+00:00 ContainerStream: 2026-06-15T10:18:00.414Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select r1_0.id,r1_0.description,r1_0.name from roles r1_0 where r1_0.id=?
+2026-06-15T10:18:00.4235690+00:00 ContainerStream: 2026-06-15T10:18:00.414Z TRACE 1 --- [demo] [           main] org.hibernate.orm.jdbc.bind              : binding parameter (1:UUID) <- [0e0c4841-d780-4536-b6a4-dd689e33b377]
+2026-06-15T10:18:00.6893062+00:00 ContainerStream: 2026-06-15T10:18:00.680Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from warehouses w1_0
+2026-06-15T10:18:00.7897353+00:00 ContainerStream: 2026-06-15T10:18:00.722Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from product_categories c1_0
+2026-06-15T10:18:00.8847902+00:00 ContainerStream: 2026-06-15T10:18:00.867Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from suppliers s1_0
+2026-06-15T10:18:01.0061211+00:00 ContainerStream: 2026-06-15T10:18:01.005Z DEBUG 1 --- [demo] [           main] org.hibernate.SQL                        : select count(*) from products p1_0
+2026-06-15T10:18:01.7359118+00:00 ContainerStatus: Site is running with deployment version: aec9e57018d2609f1b916c9ed1169791384e3d761781518090812
+2026-06-15T10:18:01.8325341+00:00 ContainerStatus: Site started.
+2026-06-15T10:18:01.8332762+00:00 ContainerStatus: State: Started, Action: None, LastError: VNETFailure, LastErrorTimestamp: 06/15/2026 10:08:41, LastErrorDetails: There was an issue setting up VNet., Details: Site started at 06/15/2026 10:18:01 (UTC), DetailsLevel: INFO

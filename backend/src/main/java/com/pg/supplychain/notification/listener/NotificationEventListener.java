@@ -79,9 +79,7 @@ public class NotificationEventListener {
                     }
 
                     // Add all admins
-                    List<User> admins = userRepository.findAll().stream()
-                            .filter(u -> u.getRole() != null && "ROLE_ADMIN".equals(u.getRole().getName()))
-                            .collect(Collectors.toList());
+                    List<User> admins = userRepository.findByRoleName("ROLE_ADMIN");
                     recipients.addAll(admins);
 
                     for (User user : recipients) {
@@ -118,9 +116,7 @@ public class NotificationEventListener {
                     }
 
                     // Add admins
-                    List<User> admins = userRepository.findAll().stream()
-                            .filter(u -> u.getRole() != null && "ROLE_ADMIN".equals(u.getRole().getName()))
-                            .collect(Collectors.toList());
+                    List<User> admins = userRepository.findByRoleName("ROLE_ADMIN");
                     recipients.addAll(admins);
 
                     String notificationType = "PENDING_APPROVAL".equalsIgnoreCase(status) ? "ORDER_CREATED" : "ORDER_STATUS_UPDATE";
