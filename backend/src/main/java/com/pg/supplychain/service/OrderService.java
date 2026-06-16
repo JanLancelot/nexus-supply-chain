@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +39,7 @@ public class OrderService {
     private final WarehouseRepository warehouseRepository;
     private final AuditService auditService;
     private final KafkaLiteBroker kafkaLiteBroker;
+    private final AtomicLong orderCounter = new AtomicLong(System.currentTimeMillis());
 
     @Transactional
     public OrderResponse createOrder(OrderCreateRequest request) {
@@ -52,7 +54,7 @@ public class OrderService {
         Warehouse warehouse = warehouseRepository.findById(request.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with ID: " + request.getWarehouseId()));
 
-        String orderNum = "ORD-" + System.currentTimeMillis();
+        String orderNum = "ORD-" + orderCounter.incrementAndGet();
 
         Order order = Order.builder()
                 .orderNumber(orderNum)
@@ -111,7 +113,7 @@ public class OrderService {
         Warehouse warehouse = warehouseRepository.findById(warehouseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with ID: " + warehouseId));
 
-        String orderNum = "ORD-SYS-" + System.currentTimeMillis();
+        String orderNum = "ORD-SYS-" + orderCounter.incrementAndGet();
 
         Order order = Order.builder()
                 .orderNumber(orderNum)

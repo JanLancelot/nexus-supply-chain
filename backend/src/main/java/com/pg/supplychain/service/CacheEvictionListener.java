@@ -32,6 +32,7 @@ public class CacheEvictionListener {
             ProductEvent event = objectMapper.readValue(messageJson, ProductEvent.class);
             log.info("CacheEvictionListener: Received ProductEvent: action={}, productId={}", event.getAction(), event.getProductId());
             evictCache("products");
+            evictCache("analytics");
         } catch (Exception e) {
             log.error("CacheEvictionListener: Failed to process ProductEvent message", e);
         }
@@ -41,6 +42,7 @@ public class CacheEvictionListener {
         try {
             OrderEvent event = objectMapper.readValue(messageJson, OrderEvent.class);
             log.info("CacheEvictionListener: Received OrderEvent: status={}, orderId={}", event.getStatus(), event.getOrderId());
+            evictCache("analytics");
             if ("DELIVERED".equalsIgnoreCase(event.getStatus())) {
                 evictCache("products");
             }

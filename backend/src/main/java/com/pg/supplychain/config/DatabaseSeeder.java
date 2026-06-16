@@ -152,8 +152,13 @@ public class DatabaseSeeder implements CommandLineRunner {
             log.info("Seeding default products...");
             Category electronics = categoryRepository.findByName("Electronics").orElse(null);
             Category industrial = categoryRepository.findByName("Industrial").orElse(null);
+            Category office = categoryRepository.findByName("Office Supplies").orElse(null);
             Warehouse mainWh = warehouseRepository.findAll().stream()
                     .filter(w -> w.getName().contains("Main"))
+                    .findFirst()
+                    .orElse(null);
+            Warehouse regionalWh = warehouseRepository.findAll().stream()
+                    .filter(w -> w.getName().contains("Regional"))
                     .findFirst()
                     .orElse(null);
 
@@ -163,7 +168,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .description("Enterprise grade 10Gbps dual-band fiber router")
                     .category(electronics)
                     .unitPrice(BigDecimal.valueOf(299.99))
-                    .stockQuantity(50)
+                    .stockQuantity(100)
                     .reorderLevel(15)
                     .warehouse(mainWh)
                     .isActive(true)
@@ -175,14 +180,118 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .description("Industrial grade high pressure gas valve")
                     .category(industrial)
                     .unitPrice(BigDecimal.valueOf(89.50))
-                    .stockQuantity(8)
+                    .stockQuantity(100)
                     .reorderLevel(10)
                     .warehouse(mainWh)
                     .isActive(true)
                     .build();
 
+            Product laptop = Product.builder()
+                    .sku("SKU-ELEC-002")
+                    .name("Developer Laptop")
+                    .description("High-end workstation laptop")
+                    .category(electronics)
+                    .unitPrice(BigDecimal.valueOf(1499.00))
+                    .stockQuantity(100)
+                    .reorderLevel(5)
+                    .warehouse(mainWh)
+                    .isActive(true)
+                    .build();
+
+            Product switchGear = Product.builder()
+                    .sku("SKU-ELEC-003")
+                    .name("Network Switch")
+                    .description("24-port Gigabit managed switch")
+                    .category(electronics)
+                    .unitPrice(BigDecimal.valueOf(189.99))
+                    .stockQuantity(100)
+                    .reorderLevel(10)
+                    .warehouse(regionalWh)
+                    .isActive(true)
+                    .build();
+
+            Product safetyHelmet = Product.builder()
+                    .sku("SKU-IND-001")
+                    .name("Industrial Safety Helmet")
+                    .description("Heavy duty construction safety helmet")
+                    .category(industrial)
+                    .unitPrice(BigDecimal.valueOf(24.99))
+                    .stockQuantity(200)
+                    .reorderLevel(20)
+                    .warehouse(mainWh)
+                    .isActive(true)
+                    .build();
+
+            Product gloves = Product.builder()
+                    .sku("SKU-IND-002")
+                    .name("Work Gloves")
+                    .description("Cut-resistant protective work gloves")
+                    .category(industrial)
+                    .unitPrice(BigDecimal.valueOf(12.50))
+                    .stockQuantity(500)
+                    .reorderLevel(50)
+                    .warehouse(regionalWh)
+                    .isActive(true)
+                    .build();
+
+            Product desk = Product.builder()
+                    .sku("SKU-OFF-001")
+                    .name("Ergonomic Desk")
+                    .description("Adjustable height standing desk")
+                    .category(office)
+                    .unitPrice(BigDecimal.valueOf(349.99))
+                    .stockQuantity(50)
+                    .reorderLevel(5)
+                    .warehouse(mainWh)
+                    .isActive(true)
+                    .build();
+
+            Product chair = Product.builder()
+                    .sku("SKU-OFF-002")
+                    .name("Office Chair")
+                    .description("Ergonomic mesh office chair")
+                    .category(office)
+                    .unitPrice(BigDecimal.valueOf(199.99))
+                    .stockQuantity(75)
+                    .reorderLevel(8)
+                    .warehouse(mainWh)
+                    .isActive(true)
+                    .build();
+
+            Product paper = Product.builder()
+                    .sku("SKU-OFF-003")
+                    .name("Printer Paper")
+                    .description("A4 copy paper ream")
+                    .category(office)
+                    .unitPrice(BigDecimal.valueOf(5.99))
+                    .stockQuantity(1000)
+                    .reorderLevel(100)
+                    .warehouse(regionalWh)
+                    .isActive(true)
+                    .build();
+
+            Product monitor = Product.builder()
+                    .sku("SKU-ELEC-004")
+                    .name("4K Monitor")
+                    .description("27-inch 4K UHD professional monitor")
+                    .category(electronics)
+                    .unitPrice(BigDecimal.valueOf(399.99))
+                    .stockQuantity(60)
+                    .reorderLevel(10)
+                    .warehouse(regionalWh)
+                    .isActive(true)
+                    .build();
+
             productRepository.save(router);
             productRepository.save(valve);
+            productRepository.save(laptop);
+            productRepository.save(switchGear);
+            productRepository.save(safetyHelmet);
+            productRepository.save(gloves);
+            productRepository.save(desk);
+            productRepository.save(chair);
+            productRepository.save(paper);
+            productRepository.save(monitor);
             log.info("Products seeded successfully.");
         }
     }

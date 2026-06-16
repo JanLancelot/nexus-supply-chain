@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,8 +41,8 @@ public class AuditService {
         kafkaLiteBroker.send("audit-events", event);
     }
 
-    public List<AuditLog> getAllAuditLogs() {
-        return auditLogRepository.findAll();
+    public Page<AuditLog> getAllAuditLogs(Pageable pageable) {
+        return auditLogRepository.findAll(pageable);
     }
 }
 

@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 @RestController
@@ -18,8 +24,13 @@ public class AuditLogController {
     private final AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<List<AuditLog>> getAllAuditLogs() {
-        return ResponseEntity.ok(auditService.getAllAuditLogs());
+    public ResponseEntity<List<AuditLog>> getAllAuditLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        int limitSize = Math.min(size, 200);
+        Pageable pageable = PageRequest.of(page, limitSize, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(auditService.getAllAuditLogs(pageable).getContent());
     }
 }
 
