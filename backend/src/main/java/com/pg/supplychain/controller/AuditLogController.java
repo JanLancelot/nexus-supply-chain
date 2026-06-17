@@ -28,7 +28,7 @@ public class AuditLogController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size
     ) {
-        int limitSize = Math.min(size, 200);
+        int limitSize = Math.min(size, 50);
         Pageable pageable = PageRequest.of(page, limitSize, Sort.by("createdAt").descending());
         return ResponseEntity.ok(auditService.getAllAuditLogs(pageable).getContent());
     }

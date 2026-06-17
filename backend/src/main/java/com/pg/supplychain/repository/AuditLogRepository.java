@@ -13,6 +13,6 @@ import java.util.UUID;
 public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
 
     @Override
-    @EntityGraph(attributePaths = {"user"})
+    @EntityGraph(attributePaths = {"user", "user.role"})
     Page<AuditLog> findAll(Pageable pageable);
 }

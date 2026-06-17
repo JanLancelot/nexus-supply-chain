@@ -20,6 +20,8 @@ const AuditLogs: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   
   // Selection/Inspect details
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
@@ -30,16 +32,18 @@ const AuditLogs: React.FC = () => {
   const [entityFilter, setEntityFilter] = useState('ALL');
   const [actionFilter, setActionFilter] = useState('ALL');
 
-  const fetchLogs = async () => {
+  const fetchLogs = async (pageNumber: number = 0) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAuditLogs();
+      const data = await getAuditLogs(pageNumber, 50);
       // Sort: newest first
       const sorted = [...data].sort((a, b) => 
         new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
       );
       setLogs(sorted);
+      setPage(pageNumber);
+      setHasMore(data.length === 50);
     } catch (err: any) {
       console.error(err);
       setError('Access Denied or Failed to fetch forensic logs. Check administrative authorization token.');
@@ -49,7 +53,7 @@ const AuditLogs: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchLogs();
+    fetchLogs(0);
   }, []);
 
   // Action tag color resolver
@@ -207,7 +211,7 @@ const AuditLogs: React.FC = () => {
               </select>
 
               <button
-                onClick={fetchLogs}
+                onClick={() => fetchLogs(0)}
                 className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-lg border border-gray-800 hover:border-gray-700 transition cursor-pointer"
                 title="Refresh Audit History"
               >
@@ -282,6 +286,27 @@ const AuditLogs: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="flex items-center justify-between px-6 py-4 bg-gray-900/20 border-t border-gray-850">
+                <div className="text-xs text-gray-400">
+                  Page <span className="font-semibold text-white">{page + 1}</span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => fetchLogs(page - 1)}
+                    disabled={page === 0 || loading}
+                    className="px-3 py-1.5 text-xs font-medium bg-gray-800 hover:bg-gray-700 disabled:opacity-45 disabled:hover:bg-gray-800 text-white rounded-lg border border-gray-750 transition cursor-pointer"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => fetchLogs(page + 1)}
+                    disabled={!hasMore || loading}
+                    className="px-3 py-1.5 text-xs font-medium bg-gray-800 hover:bg-gray-700 disabled:opacity-45 disabled:hover:bg-gray-800 text-white rounded-lg border border-gray-750 transition cursor-pointer"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           )}
