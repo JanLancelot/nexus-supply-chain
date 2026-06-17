@@ -216,7 +216,8 @@ class AnalyticsAndNotificationTests {
         notificationService.createNotification(adminUser, "TEST_TYPE", "Hello admin");
 
         // Get notifications
-        List<NotificationResponse> responses = notificationService.getNotificationsForCurrentUser();
+        com.pg.supplychain.dto.NotificationListResponse listResponse = notificationService.getNotificationsForCurrentUser();
+        List<NotificationResponse> responses = listResponse.getNotifications();
         assertFalse(responses.isEmpty());
         assertEquals("TEST_TYPE", responses.get(0).getType());
         assertFalse(responses.get(0).isRead());
@@ -224,7 +225,8 @@ class AnalyticsAndNotificationTests {
         // Mark read
         notificationService.markAsRead(responses.get(0).getId());
 
-        responses = notificationService.getNotificationsForCurrentUser();
+        listResponse = notificationService.getNotificationsForCurrentUser();
+        responses = listResponse.getNotifications();
         assertTrue(responses.get(0).isRead());
     }
 }

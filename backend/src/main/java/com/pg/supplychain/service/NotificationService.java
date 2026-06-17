@@ -1,5 +1,6 @@
 package com.pg.supplychain.service;
 
+import com.pg.supplychain.dto.NotificationListResponse;
 import com.pg.supplychain.dto.NotificationResponse;
 import com.pg.supplychain.exception.ResourceNotFoundException;
 import com.pg.supplychain.model.Notification;
@@ -8,6 +9,9 @@ import com.pg.supplychain.repository.NotificationRepository;
 import com.pg.supplychain.security.SecurityContextService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,16 +30,29 @@ public class NotificationService {
     private final SecurityContextService securityContextService;
 
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getNotificationsForCurrentUser() {
+    public NotificationListResponse getNotificationsForCurrentUser() {
         User currentUser = securityContextService.getCurrentUser();
         if (currentUser == null) {
             throw new AccessDeniedException("User is not authenticated");
         }
 
-        List<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(currentUser);
-        return notifications.stream()
+        Page<Notification> pagedResult = notificationRepository.findByUser(
+                currentUser,
+                PageRequest.of(0, 50, Sort.by("createdAt").descending())
+        );
+
+        List<NotificationResponse> list = pagedResult.getContent().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+
+        long totalCount = pagedResult.getTotalElements();
+        long unreadCount = notificationRepository.countByUserAndIsReadFalse(currentUser);
+
+        return NotificationListResponse.builder()
+                .notifications(list)
+                .totalCount(totalCount)
+                .unreadCount(unreadCount)
+                .build();
     }
 
     @Transactional

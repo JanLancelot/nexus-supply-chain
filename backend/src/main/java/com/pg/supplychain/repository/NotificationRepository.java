@@ -2,6 +2,9 @@ package com.pg.supplychain.repository;
 
 import com.pg.supplychain.model.Notification;
 import com.pg.supplychain.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +17,13 @@ import java.util.UUID;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
     
-    List<Notification> findByUserOrderByCreatedAtDesc(User user);
+    @EntityGraph(attributePaths = {"user"})
+    List<Notification> findTop100ByUserOrderByCreatedAtDesc(User user);
+
+    @EntityGraph(attributePaths = {"user"})
+    Page<Notification> findByUser(User user, Pageable pageable);
+
+    long countByUserAndIsReadFalse(User user);
 
     @Modifying
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.user = :user AND n.isRead = false")

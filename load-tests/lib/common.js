@@ -174,14 +174,21 @@ export function setupTestData() {
     if (supRes.status === 200) suppliers = supRes.json();
 
     const prodRes = taggedRequest('GET', `${baseUrl}/api/v1/inventory/products`, null, { headers }, ENDPOINTS.PRODUCTS_LIST, 'admin');
-    if (prodRes.status === 200) products = prodRes.json();
+    if (prodRes.status === 200) {
+      const body = prodRes.json();
+      products = Array.isArray(body) ? body : (body.content || []);
+    }
 
-    const orderRes = taggedRequest('GET', `${baseUrl}/api/v1/orders`, null, { headers }, ENDPOINTS.ORDERS_LIST, 'admin');
-    if (orderRes.status === 200) orders = orderRes.json();
+    const orderRes = taggedRequest('GET', `${baseUrl}/api/v1/orders?size=50`, null, { headers }, ENDPOINTS.ORDERS_LIST, 'admin');
+    if (orderRes.status === 200) {
+      const body = orderRes.json();
+      // Handle both paginated (Page<T>) and plain array responses
+      orders = Array.isArray(body) ? body : (body.content || []);
+    }
   }
 
   const productCount = products.length;
-  const orderCount = orders.length;
+  const orderCount = Array.isArray(orders) ? orders.length : 0;
   const pendingOrders = orders.filter((order) => order.status === 'PENDING_APPROVAL');
 
   console.log('[Setup] Loaded metadata:');
@@ -522,7 +529,8 @@ export function runStaffWorkflow(data, options = {}) {
     sleep(randomInt(thinkTime[0], thinkTime[1]));
 
     if (notifyRes.status === 200) {
-      const notifications = notifyRes.json();
+      const body = notifyRes.json();
+      const notifications = Array.isArray(body) ? body : (body.notifications || []);
       const unread = notifications.filter((n) => !n.isRead);
       if (unread.length > 0 && Math.random() < 0.3) {
         markNotificationRead(baseUrl, staffToken, 'staff', pickRandom(unread).id);

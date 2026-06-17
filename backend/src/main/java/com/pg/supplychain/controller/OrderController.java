@@ -3,14 +3,15 @@ package com.pg.supplychain.controller;
 import com.pg.supplychain.dto.OrderCreateRequest;
 import com.pg.supplychain.dto.OrderResponse;
 import com.pg.supplychain.dto.OrderStatusUpdateRequest;
+import com.pg.supplychain.dto.PagedResponse;
 import com.pg.supplychain.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,8 +22,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAllOrders());
+    public ResponseEntity<PagedResponse<OrderResponse>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        int limitSize = Math.min(size, 50);
+        return ResponseEntity.ok(orderService.getAllOrders(page, limitSize));
     }
 
     @GetMapping("/{id}")

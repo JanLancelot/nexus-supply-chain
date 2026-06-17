@@ -29,6 +29,9 @@ const Catalog: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,16 +65,18 @@ const Catalog: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Fetch data
-  const loadCatalogData = async () => {
+  const loadCatalogData = async (page = currentPage) => {
     setLoading(true);
     setError(null);
     try {
-      const [productsData, categoriesData, warehousesData] = await Promise.all([
-        getProducts(),
+      const [productsPaged, categoriesData, warehousesData] = await Promise.all([
+        getProducts(page, 50),
         getCategories(),
         getWarehouses(),
       ]);
-      setProducts(productsData);
+      setProducts(productsPaged.content);
+      setTotalPages(productsPaged.totalPages);
+      setTotalElements(productsPaged.totalElements);
       setCategories(categoriesData);
       setWarehouses(warehousesData);
     } catch (err: any) {
@@ -83,8 +88,8 @@ const Catalog: React.FC = () => {
   };
 
   useEffect(() => {
-    loadCatalogData();
-  }, []);
+    loadCatalogData(currentPage);
+  }, [currentPage]);
 
   // Form handle submit for Create Product
   const handleCreateProductSubmit = async (e: React.FormEvent) => {
@@ -249,7 +254,7 @@ const Catalog: React.FC = () => {
 
           {/* Action Buttons */}
           <button
-            onClick={loadCatalogData}
+            onClick={() => loadCatalogData()}
             className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-lg border border-gray-800 hover:border-gray-700 transition cursor-pointer"
             title="Refresh Catalog Data"
           >
@@ -340,6 +345,31 @@ const Catalog: React.FC = () => {
               </tbody>
             </table>
           </div>
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800/60 bg-gray-900/10">
+              <div className="text-xs text-gray-400">
+                Showing page <span className="font-semibold text-white">{currentPage + 1}</span> of{' '}
+                <span className="font-semibold text-white">{totalPages}</span> ({totalElements} total products)
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                  disabled={currentPage === 0}
+                  className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
+                  disabled={currentPage === totalPages - 1}
+                  className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

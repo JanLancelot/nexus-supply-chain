@@ -1,7 +1,13 @@
 import api from './api';
 import { type Notification } from '../types';
 
-export const getNotifications = async (): Promise<Notification[]> => {
+export interface NotificationListResponse {
+  notifications: Notification[];
+  totalCount: number;
+  unreadCount: number;
+}
+
+export const getNotifications = async (): Promise<NotificationListResponse> => {
   const response = await api.get('/notifications');
   return response.data;
 };

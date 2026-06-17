@@ -1,5 +1,6 @@
 package com.pg.supplychain.controller;
 
+import com.pg.supplychain.dto.NotificationListResponse;
 import com.pg.supplychain.dto.NotificationResponse;
 import com.pg.supplychain.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> getNotifications() {
+    public ResponseEntity<NotificationListResponse> getNotifications() {
         return ResponseEntity.ok(notificationService.getNotificationsForCurrentUser());
     }
 

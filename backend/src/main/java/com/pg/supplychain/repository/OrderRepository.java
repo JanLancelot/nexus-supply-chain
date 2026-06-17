@@ -4,14 +4,29 @@ import com.pg.supplychain.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
+
+    @Override
+    @EntityGraph(attributePaths = {"supplier", "warehouse", "createdBy"})
+    List<Order> findAll();
+
+    @Override
+    @EntityGraph(attributePaths = {"supplier", "warehouse", "createdBy"})
+    Page<Order> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"supplier", "warehouse", "createdBy"})
+    Optional<Order> findById(UUID id);
 
     @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status = com.pg.supplychain.model.OrderStatus.DELIVERED")
     BigDecimal calculateTotalRevenue();

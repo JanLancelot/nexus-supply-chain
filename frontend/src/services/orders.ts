@@ -1,8 +1,8 @@
 import api from './api';
-import { type Order } from '../types';
+import { type Order, type PagedResponse } from '../types';
 
-export const getOrders = async (): Promise<Order[]> => {
-  const response = await api.get('/orders');
+export const getOrders = async (page = 0, size = 50): Promise<PagedResponse<Order>> => {
+  const response = await api.get(`/orders?page=${page}&size=${size}`);
   return response.data;
 };
 
