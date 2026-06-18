@@ -23,7 +23,13 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     @EntityGraph(attributePaths = {"user"})
     Page<Notification> findByUser(User user, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"user"})
+    List<Notification> findListByUser(User user, Pageable pageable);
+
     long countByUserAndIsReadFalse(User user);
+
+    @Query("SELECT COUNT(n), SUM(CASE WHEN n.isRead = false THEN 1 ELSE 0 END) FROM Notification n WHERE n.user = :user")
+    List<Object[]> countTotalAndUnreadByUser(@Param("user") User user);
 
     @Modifying
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.user = :user AND n.isRead = false")

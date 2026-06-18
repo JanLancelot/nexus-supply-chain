@@ -5,7 +5,7 @@ import com.pg.supplychain.kafkalite.event.AuditEvent;
 import com.pg.supplychain.model.AuditLog;
 import com.pg.supplychain.model.User;
 import com.pg.supplychain.repository.AuditLogRepository;
-import com.pg.supplychain.repository.UserRepository;
+import com.pg.supplychain.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class AuditEventListener {
 
     private final KafkaLiteBroker broker;
     private final AuditLogRepository auditLogRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ObjectMapper objectMapper;
 
     @PostConstruct
@@ -37,7 +37,7 @@ public class AuditEventListener {
 
             User user = null;
             if (event.getActorId() != null) {
-                user = userRepository.findById(event.getActorId()).orElse(null);
+                user = userService.getUserById(event.getActorId());
             }
 
             String oldStr = null;

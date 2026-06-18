@@ -36,17 +36,24 @@ public class NotificationService {
             throw new AccessDeniedException("User is not authenticated");
         }
 
-        Page<Notification> pagedResult = notificationRepository.findByUser(
+        List<Notification> notifications = notificationRepository.findListByUser(
                 currentUser,
                 PageRequest.of(0, 50, Sort.by("createdAt").descending())
         );
 
-        List<NotificationResponse> list = pagedResult.getContent().stream()
+        List<NotificationResponse> list = notifications.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
 
-        long totalCount = pagedResult.getTotalElements();
-        long unreadCount = notificationRepository.countByUserAndIsReadFalse(currentUser);
+        long totalCount = 0;
+        long unreadCount = 0;
+
+        List<Object[]> counts = notificationRepository.countTotalAndUnreadByUser(currentUser);
+        if (counts != null && !counts.isEmpty()) {
+            Object[] row = counts.get(0);
+            totalCount = row[0] != null ? ((Number) row[0]).longValue() : 0L;
+            unreadCount = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+        }
 
         return NotificationListResponse.builder()
                 .notifications(list)

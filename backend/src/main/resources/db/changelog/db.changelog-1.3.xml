@@ -5,9 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="db.changelog-1.0.xml" relativeToChangelogFile="true"/>
-    <include file="db.changelog-1.1.xml" relativeToChangelogFile="true"/>
-    <include file="db.changelog-1.2.xml" relativeToChangelogFile="true"/>
-    <include file="db.changelog-1.3.xml" relativeToChangelogFile="true"/>
+    <changeSet id="1.3-orders-created-at-index" author="nexus-supply-chain">
+        <createIndex tableName="orders" indexName="idx_orders_created_at">
+            <column name="created_at" descending="true"/>
+        </createIndex>
+    </changeSet>
 
 </databaseChangeLog>

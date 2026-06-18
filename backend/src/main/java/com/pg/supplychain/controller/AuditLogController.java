@@ -30,7 +30,7 @@ public class AuditLogController {
     ) {
         int limitSize = Math.min(size, 50);
         Pageable pageable = PageRequest.of(page, limitSize, Sort.by("createdAt").descending());
-        return ResponseEntity.ok(auditService.getAllAuditLogs(pageable).getContent());
+        return ResponseEntity.ok(auditService.getAllAuditLogs(pageable));
     }
 }
 

@@ -1,7 +1,7 @@
 package com.pg.supplychain.security;
 
 import com.pg.supplychain.model.User;
-import com.pg.supplychain.repository.UserRepository;
+import com.pg.supplychain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SecurityContextService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     /**
      * Retrieves the currently authenticated User from the SecurityContext.
@@ -28,7 +28,7 @@ public class SecurityContextService {
             String userIdStr = (String) principal.get("userId");
             if (userIdStr != null) {
                 try {
-                    return userRepository.findById(UUID.fromString(userIdStr)).orElse(null);
+                    return userService.getUserById(UUID.fromString(userIdStr));
                 } catch (IllegalArgumentException e) {
                     return null;
                 }
