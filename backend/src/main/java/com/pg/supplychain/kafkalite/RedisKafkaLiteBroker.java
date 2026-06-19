@@ -27,23 +27,22 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
     public RedisKafkaLiteBroker(StringRedisTemplate redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
-        // Bounded thread pool: 4 core threads, 16 max, 60s idle keepalive, 200-item queue.
-        // Prevents unbounded thread proliferation under high concurrency across multiple test runs.
-        this.executorService = new ThreadPoolExecutor(
-                4, 16, 60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(200),
-                new ThreadPoolExecutor.CallerRunsPolicy());
+        this.executorService = Executors.newCachedThreadPool();
         
-        // Test connection on start asynchronously to avoid blocking startup
-        executorService.submit(() -> {
-            try (var connection = redisTemplate.getConnectionFactory().getConnection()) {
-                connection.ping();
-                log.info("KafkaLite Broker: Successfully connected to Redis event queue broker.");
-            } catch (Exception e) {
-                log.warn("KafkaLite Broker: Redis is not available. Falling back to in-memory event queues. Error: {}", e.getMessage());
+        // Test connection on start synchronously to determine fallback immediately
+        try {
+            if (redisTemplate != null && redisTemplate.getConnectionFactory() != null) {
+                try (var connection = redisTemplate.getConnectionFactory().getConnection()) {
+                    connection.ping();
+                    log.info("KafkaLite Broker: Successfully connected to Redis event queue broker.");
+                }
+            } else {
                 this.useFallback = true;
             }
-        });
+        } catch (Exception e) {
+            log.warn("KafkaLite Broker: Redis is not available. Falling back to in-memory event queues. Error: {}", e.getMessage());
+            this.useFallback = true;
+        }
     }
 
     @Override
