@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
+import java.util.concurrent.*;
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +18,9 @@ public class CacheEvictionListener {
     private final KafkaLiteBroker broker;
     private final CacheManager cacheManager;
     private final ObjectMapper objectMapper;
+
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ConcurrentHashMap<String, ScheduledFuture<?>> pendingEvictions = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void registerListeners() {
@@ -72,10 +76,29 @@ public class CacheEvictionListener {
     }
 
     private void evictCache(String cacheName) {
-        var cache = cacheManager.getCache(cacheName);
-        if (cache != null) {
-            cache.clear();
-            log.info("CacheEvictionListener: Evicted '{}' cache.", cacheName);
+        ScheduledFuture<?> future = pendingEvictions.put(cacheName, scheduler.schedule(() -> {
+            var cache = cacheManager.getCache(cacheName);
+            if (cache != null) {
+                cache.clear();
+                log.info("CacheEvictionListener: Evicted '{}' cache after debounce.", cacheName);
+            }
+            pendingEvictions.remove(cacheName);
+        }, 1, TimeUnit.SECONDS));
+
+        if (future != null) {
+            future.cancel(false);
+        }
+    }
+
+    @jakarta.annotation.PreDestroy
+    public void shutdown() {
+        scheduler.shutdown();
+        try {
+            if (!scheduler.awaitTermination(2, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
         }
     }
 }
