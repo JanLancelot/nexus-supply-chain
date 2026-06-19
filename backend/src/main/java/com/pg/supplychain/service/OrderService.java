@@ -10,8 +10,8 @@ import com.pg.supplychain.repository.*;
 import com.pg.supplychain.security.SecurityContextService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -272,16 +272,16 @@ public class OrderService {
     @Transactional(readOnly = true)
     public PagedResponse<OrderResponse> getAllOrders(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Order> orderPage = orderRepository.findAll(pageRequest);
-        List<OrderResponse> content = orderPage.getContent().stream()
+        Slice<Order> orderSlice = orderRepository.findSliceBy(pageRequest);
+        List<OrderResponse> content = orderSlice.getContent().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
         return PagedResponse.<OrderResponse>builder()
                 .content(content)
-                .totalElements(orderPage.getTotalElements())
-                .totalPages(orderPage.getTotalPages())
-                .pageNumber(orderPage.getNumber())
-                .pageSize(orderPage.getSize())
+                .totalElements(-1L)
+                .totalPages(-1)
+                .pageNumber(orderSlice.getNumber())
+                .pageSize(orderSlice.getSize())
                 .build();
     }
 

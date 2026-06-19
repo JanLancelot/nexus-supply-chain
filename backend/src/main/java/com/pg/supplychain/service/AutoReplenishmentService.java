@@ -56,12 +56,25 @@ public class AutoReplenishmentService {
     }
 
     public void handleProductEvent(String messageJson) {
-        transactionTemplate.executeWithoutResult(status -> {
-            try {
-                ProductEvent event = objectMapper.readValue(messageJson, ProductEvent.class);
-                UUID productId = event.getProductId();
-                log.info("AutoReplenishmentService: Received ProductEvent for product={}", productId);
+        try {
+            ProductEvent event = objectMapper.readValue(messageJson, ProductEvent.class);
+            UUID productId = event.getProductId();
+            log.info("AutoReplenishmentService: Received ProductEvent for product={}", productId);
 
+            // 1. Cooldown guard: skip if a replenishment was already triggered for this
+            // product within the last COOLDOWN_MS milliseconds. This prevents burst-
+            // driven PO cascades during stress tests where thousands of STOCK_ADJUSTED
+            // events fire simultaneously for the same product set.
+            long now = System.currentTimeMillis();
+            Long lastTriggered = replenishmentCooldowns.get(productId);
+            if (lastTriggered != null && (now - lastTriggered) < COOLDOWN_MS) {
+                log.info("AutoReplenishmentService: Cooldown active for product {} ({}ms remaining). Skipping replenishment lookup.",
+                        productId, COOLDOWN_MS - (now - lastTriggered));
+                return;
+            }
+
+            // 2. Execute database operations inside transaction only if cooldown is clear
+            transactionTemplate.executeWithoutResult(status -> {
                 Product product = productRepository.findById(productId).orElse(null);
                 if (product == null) {
                     log.warn("AutoReplenishmentService: Product not found: {}", productId);
@@ -78,20 +91,8 @@ public class AutoReplenishmentService {
                     log.info("AutoReplenishmentService: Product {} is low in stock: {} (reorder level: {})",
                             product.getSku(), product.getStockQuantity(), product.getReorderLevel());
 
-                    // Cooldown guard: skip if a replenishment was already triggered for this
-                    // product within the last COOLDOWN_MS milliseconds. This prevents burst-
-                    // driven PO cascades during stress tests where thousands of STOCK_ADJUSTED
-                    // events fire simultaneously for the same product set.
-                    long now = System.currentTimeMillis();
-                    Long lastTriggered = replenishmentCooldowns.get(productId);
-                    if (lastTriggered != null && (now - lastTriggered) < COOLDOWN_MS) {
-                        log.info("AutoReplenishmentService: Cooldown active for product {} ({}ms remaining). Skipping replenishment.",
-                                product.getSku(), COOLDOWN_MS - (now - lastTriggered));
-                        return;
-                    }
-                    // Record cooldown start before any DB work to block concurrent events
+                    // Record cooldown start and prune stale entries
                     replenishmentCooldowns.put(productId, now);
-                    // Prune stale cooldown entries to prevent unbounded map growth
                     replenishmentCooldowns.entrySet().removeIf(e -> (now - e.getValue()) > COOLDOWN_MS * 2);
 
                     // Check if there is already an open purchase order for this product
@@ -148,9 +149,9 @@ public class AutoReplenishmentService {
                     log.info("AutoReplenishmentService: Successfully created system auto-replenishment PO: {} (Status: {})",
                             orderResponse.getOrderNumber(), orderResponse.getStatus());
                 }
-            } catch (Exception e) {
-                log.error("AutoReplenishmentService: Error handling product event for auto-replenishment", e);
-            }
-        });
+            });
+        } catch (Exception e) {
+            log.error("AutoReplenishmentService: Error handling product event for auto-replenishment", e);
+        }
     }
 }

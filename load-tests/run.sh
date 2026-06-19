@@ -42,6 +42,7 @@ Profiles:
   (default)    Full load test — ramp to 300 VUs, mixed staff/admin workflows
   smoke        Quick sanity check — 1 VU for 10 seconds
   stress       High-load stress test — ramp to 1000 VUs
+  extreme      Extreme-load stress test — ramp to 5000 VUs
   diagnostic   Endpoint isolation — sequential scenarios (~7 min, memory-safe)
 
 Environment variables:
@@ -67,7 +68,7 @@ if [ "$PROFILE" = "-h" ] || [ "$PROFILE" = "--help" ]; then
   exit 0
 fi
 
-if [ -n "$PROFILE" ] && [ "$PROFILE" != "smoke" ] && [ "$PROFILE" != "stress" ] && [ "$PROFILE" != "diagnostic" ]; then
+if [ -n "$PROFILE" ] && [ "$PROFILE" != "smoke" ] && [ "$PROFILE" != "stress" ] && [ "$PROFILE" != "extreme" ] && [ "$PROFILE" != "diagnostic" ]; then
   PROFILE=""
   K6_ARGS=("$@")
 else
@@ -89,6 +90,10 @@ if command -v k6 &> /dev/null; then
     stress)
       echo "Profile: Stress Test (ramp to 1000 VUs)"
       run_k6 stress-test.js "${K6_ARGS[@]}"
+      ;;
+    extreme)
+      echo "Profile: Extreme Stress Test (ramp to 5000 VUs)"
+      run_k6 high-load-stress-test.js "${K6_ARGS[@]}"
       ;;
     diagnostic)
       echo "Profile: Diagnostic Test (sequential endpoint scenarios, max ~${LOAD_TEST_SCALE:-1}x12 VUs)"
@@ -118,6 +123,11 @@ else
     stress)
       echo "Profile: Stress Test (ramp to 1000 VUs)"
       run_k6_docker stress-test.js "${K6_ARGS[@]}"
+      ;;
+    extreme)
+      echo "Profile: Extreme Stress Test (ramp to 5000 VUs)"
+      export K6_DOCKER_MEMORY="4g"
+      run_k6_docker high-load-stress-test.js "${K6_ARGS[@]}"
       ;;
     diagnostic)
       echo "Profile: Diagnostic Test (sequential endpoint scenarios, max ~${LOAD_TEST_SCALE:-1}x12 VUs)"
