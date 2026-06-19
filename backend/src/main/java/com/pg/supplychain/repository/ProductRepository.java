@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import java.math.BigDecimal;
@@ -20,9 +21,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @EntityGraph(attributePaths = {"category", "warehouse"})
     List<Product> findAll();
 
-    @Override
     @EntityGraph(attributePaths = {"category", "warehouse"})
-    Page<Product> findAll(Pageable pageable);
+    Slice<Product> findSliceBy(Pageable pageable);
 
     @Override
     @EntityGraph(attributePaths = {"category", "warehouse"})

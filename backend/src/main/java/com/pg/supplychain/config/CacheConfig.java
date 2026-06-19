@@ -38,7 +38,7 @@ public class CacheConfig {
             return RedisCacheManager.builder(connectionFactory)
                     .cacheDefaults(cacheConfiguration(objectMapper))
                     .withCacheConfiguration("products", cacheConfiguration(objectMapper).entryTtl(Duration.ofSeconds(30)))
-                    .withCacheConfiguration("analytics", cacheConfiguration(objectMapper).entryTtl(Duration.ofMinutes(2)))
+                    .withCacheConfiguration("analytics", cacheConfiguration(objectMapper).entryTtl(Duration.ofSeconds(15)))
                     .build();
         } catch (Exception e) {
             log.warn("CacheConfig: Redis is not available ({}). Falling back to in-memory ConcurrentMapCacheManager.", e.getMessage());

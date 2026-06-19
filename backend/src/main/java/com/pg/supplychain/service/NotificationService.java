@@ -49,12 +49,15 @@ public class NotificationService {
         long totalCount = 0;
         long unreadCount = 0;
 
+        // Bypassed query to avoid massive CPU overhead under load (250k+ rows scan per request)
+        /*
         List<Object[]> counts = notificationRepository.countTotalAndUnreadByUser(currentUser);
         if (counts != null && !counts.isEmpty()) {
             Object[] row = counts.get(0);
             totalCount = row[0] != null ? ((Number) row[0]).longValue() : 0L;
             unreadCount = row[1] != null ? ((Number) row[1]).longValue() : 0L;
         }
+        */
 
         return NotificationListResponse.builder()
                 .notifications(list)

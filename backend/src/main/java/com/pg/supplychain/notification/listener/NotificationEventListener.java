@@ -34,6 +34,9 @@ public class NotificationEventListener {
     private final ObjectMapper objectMapper;
     private final TransactionTemplate transactionTemplate;
 
+    private final java.util.Map<java.util.UUID, Long> lowStockNotificationCooldowns = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final long COOLDOWN_MS = 60_000L; // 60-second cooldown
+
     public NotificationEventListener(
             KafkaLiteBroker broker,
             NotificationService notificationService,
@@ -60,13 +63,27 @@ public class NotificationEventListener {
     }
 
     public void handleProductEvent(String messageJson) {
-        transactionTemplate.executeWithoutResult(status -> {
-            try {
-                ProductEvent event = objectMapper.readValue(messageJson, ProductEvent.class);
-                log.info("NotificationEventListener: Processing ProductEvent for notification logic. productId={}", event.getProductId());
+        try {
+            ProductEvent event = objectMapper.readValue(messageJson, ProductEvent.class);
+            java.util.UUID productId = event.getProductId();
+            log.info("NotificationEventListener: Processing ProductEvent for notification logic. productId={}", productId);
 
-                Product product = productRepository.findById(event.getProductId()).orElse(null);
+            // 1. Cooldown guard: skip if a notification was triggered recently for this product
+            long now = System.currentTimeMillis();
+            Long lastTriggered = lowStockNotificationCooldowns.get(productId);
+            if (lastTriggered != null && (now - lastTriggered) < COOLDOWN_MS) {
+                log.info("NotificationEventListener: Cooldown active for product {}. Skipping notification database lookup.", productId);
+                return;
+            }
+
+            // 2. Wrap DB checks inside database transaction
+            transactionTemplate.executeWithoutResult(status -> {
+                Product product = productRepository.findById(productId).orElse(null);
                 if (product != null && product.isLowStockIndicator() && product.isActive()) {
+                    // Set cooldown and prune old entries
+                    lowStockNotificationCooldowns.put(productId, now);
+                    lowStockNotificationCooldowns.entrySet().removeIf(e -> (now - e.getValue()) > COOLDOWN_MS * 2);
+
                     String message = String.format("Product %s is low in stock: %d left (reorder level: %d)",
                             product.getSku(), product.getStockQuantity(), product.getReorderLevel());
 
@@ -86,10 +103,10 @@ public class NotificationEventListener {
                         notificationService.createNotification(user, "LOW_STOCK", message);
                     }
                 }
-            } catch (Exception e) {
-                log.error("NotificationEventListener: Failed to process ProductEvent for notifications", e);
-            }
-        });
+            });
+        } catch (Exception e) {
+            log.error("NotificationEventListener: Failed to process ProductEvent for notifications", e);
+        }
     }
 
     public void handleOrderEvent(String messageJson) {

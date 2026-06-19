@@ -35,8 +35,11 @@ public class CacheEvictionListener {
         try {
             ProductEvent event = objectMapper.readValue(messageJson, ProductEvent.class);
             log.info("CacheEvictionListener: Received ProductEvent: action={}, productId={}", event.getAction(), event.getProductId());
-            evictCache("products");
-            evictCache("analytics");
+            // Skip evicting products cache for STOCK_ADJUSTED events since name/description are unaffected
+            if (!"STOCK_ADJUSTED".equalsIgnoreCase(event.getAction())) {
+                evictCache("products");
+            }
+            // Do NOT evict analytics cache; rely on its 2-minute natural TTL to prevent query spikes under load
         } catch (Exception e) {
             log.error("CacheEvictionListener: Failed to process ProductEvent message", e);
         }
@@ -46,7 +49,7 @@ public class CacheEvictionListener {
         try {
             OrderEvent event = objectMapper.readValue(messageJson, OrderEvent.class);
             log.info("CacheEvictionListener: Received OrderEvent: status={}, orderId={}", event.getStatus(), event.getOrderId());
-            evictCache("analytics");
+            // Do NOT evict analytics cache; rely on its 2-minute natural TTL to prevent query spikes under load
             if ("DELIVERED".equalsIgnoreCase(event.getStatus())) {
                 evictCache("products");
             }

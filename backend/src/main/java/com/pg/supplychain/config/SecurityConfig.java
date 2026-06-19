@@ -36,6 +36,7 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/v1/auth/login").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 
