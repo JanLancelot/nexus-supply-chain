@@ -607,11 +607,14 @@ export function runMixedUserIteration(data, options = {}) {
     checkHealth(data.baseUrl);
   }
 
+  const includeWrites = options.includeWrites !== undefined ? options.includeWrites : (__VU % 5 === 1);
+  const extendedOptions = { ...options, includeWrites };
+
   const isStaff = (__VU % 5) !== 0;
   if (isStaff) {
-    runStaffWorkflow(data, options);
+    runStaffWorkflow(data, extendedOptions);
   } else {
-    runAdminWorkflow(data, options);
+    runAdminWorkflow(data, extendedOptions);
   }
 
   sleep(randomInt(1, 2));

@@ -17,7 +17,7 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final ExecutorService executorService;
-    
+
     // In-memory queue fallback when Redis is offline
     private final Map<String, LinkedBlockingQueue<String>> inMemoryQueues = new ConcurrentHashMap<>();
     private final Map<String, List<Consumer<String>>> subscribers = new ConcurrentHashMap<>();
@@ -27,7 +27,12 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
     public RedisKafkaLiteBroker(StringRedisTemplate redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
-        this.executorService = Executors.newCachedThreadPool();
+        // Bounded thread pool: 4 core threads, 16 max, 60s idle keepalive, 200-item queue.
+        // Prevents unbounded thread proliferation under high concurrency across multiple test runs.
+        this.executorService = new ThreadPoolExecutor(
+                4, 16, 60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(200),
+                new ThreadPoolExecutor.CallerRunsPolicy());
         
         // Test connection on start asynchronously to avoid blocking startup
         executorService.submit(() -> {

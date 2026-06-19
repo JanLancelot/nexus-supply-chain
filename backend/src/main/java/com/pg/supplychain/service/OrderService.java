@@ -267,12 +267,7 @@ public class OrderService {
         return mapToResponse(updatedOrder);
     }
 
-    @Transactional(readOnly = true)
-    public List<OrderResponse> getAllOrders() {
-        return orderRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
+
 
     @Transactional(readOnly = true)
     public PagedResponse<OrderResponse> getAllOrders(int page, int size) {

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +105,14 @@ public class NotificationService {
         Notification saved = notificationRepository.save(notification);
         log.debug("NotificationService: Created notification for user {}, type={}", user.getEmail(), type);
         return saved;
+    }
+
+    @Scheduled(cron = "0 0 * * * *") // Runs every hour
+    @Transactional
+    public void pruneOldNotifications() {
+        OffsetDateTime threshold = OffsetDateTime.now().minusHours(24);
+        int deleted = notificationRepository.deleteOldNotifications(threshold);
+        log.info("NotificationService: Pruned {} notifications older than 24 hours.", deleted);
     }
 
     private NotificationResponse mapToResponse(Notification notification) {

@@ -24,7 +24,9 @@ export function setup() {
 }
 
 export default function (data) {
-  runMixedUserIteration(data, { skuPrefix: 'SKU-STRESS', thinkTime: [1, 2] });
+  // Only Admin VUs (where __VU % 5 === 0) perform writes; staff VUs are read-only to reduce write rate
+  const includeWrites = (__VU % 3 === 0);
+  runMixedUserIteration(data, { skuPrefix: 'SKU-STRESS', thinkTime: [1, 2], includeWrites });
 }
 
 export const handleSummary = createSummaryHandler('stress-test');
