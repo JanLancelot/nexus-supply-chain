@@ -1,8 +1,8 @@
 import api from './api';
-import { type Product } from '../types';
+import { type Product, type PagedResponse } from '../types';
 
-export const getProducts = async (): Promise<Product[]> => {
-  const response = await api.get('/inventory/products');
+export const getProducts = async (page = 0, size = 50): Promise<PagedResponse<Product>> => {
+  const response = await api.get(`/inventory/products?page=${page}&size=${size}`);
   return response.data;
 };
 

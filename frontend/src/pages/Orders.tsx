@@ -35,6 +35,9 @@ const Orders: React.FC = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   // UI State
   const [loading, setLoading] = useState(true);
@@ -58,20 +61,22 @@ const Orders: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Load Initial Data
-  const loadOrdersData = async () => {
+  const loadOrdersData = async (page = currentPage) => {
     setLoading(true);
     setError(null);
     try {
-      const [ordersData, suppliersData, warehousesData, productsData] = await Promise.all([
-        getOrders(),
+      const [ordersPaged, suppliersData, warehousesData, productsPaged] = await Promise.all([
+        getOrders(page, 50),
         getSuppliers(),
         getWarehouses(),
-        getProducts()
+        getProducts(0, 100)
       ]);
-      setOrders(ordersData);
+      setOrders(ordersPaged.content);
+      setTotalPages(ordersPaged.totalPages);
+      setTotalElements(ordersPaged.totalElements);
       setSuppliers(suppliersData);
       setWarehouses(warehousesData);
-      setProducts(productsData);
+      setProducts(productsPaged.content);
     } catch (err: any) {
       console.error(err);
       setError('Failed to fetch purchase orders data. Make sure the backend service is running.');
@@ -81,8 +86,8 @@ const Orders: React.FC = () => {
   };
 
   useEffect(() => {
-    loadOrdersData();
-  }, []);
+    loadOrdersData(currentPage);
+  }, [currentPage]);
 
   // Sync details if selectedOrderId is set
   useEffect(() => {
@@ -283,7 +288,7 @@ const Orders: React.FC = () => {
               </select>
 
               <button
-                onClick={loadOrdersData}
+                onClick={() => loadOrdersData()}
                 className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-lg border border-gray-800 hover:border-gray-700 transition cursor-pointer"
                 title="Refresh Orders List"
               >
@@ -355,6 +360,31 @@ const Orders: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800/60 bg-gray-900/10">
+                  <div className="text-xs text-gray-400">
+                    Showing page <span className="font-semibold text-white">{currentPage + 1}</span> of{' '}
+                    <span className="font-semibold text-white">{totalPages}</span> ({totalElements} total orders)
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                      disabled={currentPage === 0}
+                      className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
+                      disabled={currentPage === totalPages - 1}
+                      className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>

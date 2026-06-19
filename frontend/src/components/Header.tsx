@@ -11,22 +11,23 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title }) => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const fetchNotifications = async () => {
     try {
       const data = await getNotifications();
-      // Sort: unread first, then newest first
-      const sorted = [...data].sort((a, b) => {
+      const sorted = [...data.notifications].sort((a, b) => {
         if (a.isRead !== b.isRead) {
           return a.isRead ? 1 : -1;
         }
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
       setNotifications(sorted);
+      setTotalCount(data.totalCount);
+      setUnreadCount(data.unreadCount);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     }
@@ -57,6 +58,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
     }
@@ -66,6 +68,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
     try {
       await markAllAsRead();
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setUnreadCount(0);
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
     }
@@ -99,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
           {isOpen && (
             <div className="absolute right-0 mt-2 w-80 glass-panel rounded-xl shadow-2xl overflow-hidden z-50 border border-gray-800">
               <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-gray-900/30">
-                <span className="font-semibold text-sm text-white">Notifications</span>
+                <span className="font-semibold text-sm text-white">Notifications (Total: {totalCount})</span>
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllAsRead}

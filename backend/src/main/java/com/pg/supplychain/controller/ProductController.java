@@ -1,5 +1,6 @@
 package com.pg.supplychain.controller;
 
+import com.pg.supplychain.dto.PagedResponse;
 import com.pg.supplychain.dto.ProductAdjustRequest;
 import com.pg.supplychain.dto.ProductCreateRequest;
 import com.pg.supplychain.dto.ProductResponse;
@@ -21,8 +22,12 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<PagedResponse<ProductResponse>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        int limitSize = Math.min(size, 50);
+        return ResponseEntity.ok(productService.getAllProducts(page, limitSize));
     }
 
     @PostMapping

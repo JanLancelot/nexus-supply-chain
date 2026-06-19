@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1.2-performance-indexes" author="nexus-supply-chain">
+        <!-- Notifications Indexes -->
+        <createIndex tableName="notifications" indexName="idx_notifications_user_created">
+            <column name="user_id"/>
+            <column name="created_at" descending="true"/>
+        </createIndex>
+        <createIndex tableName="notifications" indexName="idx_notifications_user_read">
+            <column name="user_id"/>
+            <column name="is_read"/>
+        </createIndex>
+
+        <!-- Orders Foreign Key Indexes -->
+        <createIndex tableName="orders" indexName="idx_orders_created_by">
+            <column name="created_by"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_supplier_id">
+            <column name="supplier_id"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_warehouse_id">
+            <column name="warehouse_id"/>
+        </createIndex>
+
+        <!-- Products Foreign Key Indexes -->
+        <createIndex tableName="products" indexName="idx_products_category_id">
+            <column name="category_id"/>
+        </createIndex>
+        <createIndex tableName="products" indexName="idx_products_warehouse_id">
+            <column name="warehouse_id"/>
+        </createIndex>
+
+        <!-- Audit Logs Indexes -->
+        <createIndex tableName="audit_logs" indexName="idx_audit_logs_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="audit_logs" indexName="idx_audit_logs_created_at">
+            <column name="created_at" descending="true"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

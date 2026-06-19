@@ -8,8 +8,8 @@ import com.pg.supplychain.model.Product;
 import com.pg.supplychain.model.User;
 import com.pg.supplychain.repository.OrderRepository;
 import com.pg.supplychain.repository.ProductRepository;
-import com.pg.supplychain.repository.UserRepository;
 import com.pg.supplychain.service.NotificationService;
+import com.pg.supplychain.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ public class NotificationEventListener {
     private final NotificationService notificationService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ObjectMapper objectMapper;
     private final TransactionTemplate transactionTemplate;
 
@@ -39,7 +39,7 @@ public class NotificationEventListener {
             NotificationService notificationService,
             ProductRepository productRepository,
             OrderRepository orderRepository,
-            UserRepository userRepository,
+            UserService userService,
             ObjectMapper objectMapper,
             PlatformTransactionManager transactionManager
     ) {
@@ -47,7 +47,7 @@ public class NotificationEventListener {
         this.notificationService = notificationService;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.objectMapper = objectMapper;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
@@ -79,9 +79,7 @@ public class NotificationEventListener {
                     }
 
                     // Add all admins
-                    List<User> admins = userRepository.findAll().stream()
-                            .filter(u -> u.getRole() != null && "ROLE_ADMIN".equals(u.getRole().getName()))
-                            .collect(Collectors.toList());
+                    List<User> admins = userService.getUsersByRole("ROLE_ADMIN");
                     recipients.addAll(admins);
 
                     for (User user : recipients) {
@@ -118,9 +116,7 @@ public class NotificationEventListener {
                     }
 
                     // Add admins
-                    List<User> admins = userRepository.findAll().stream()
-                            .filter(u -> u.getRole() != null && "ROLE_ADMIN".equals(u.getRole().getName()))
-                            .collect(Collectors.toList());
+                    List<User> admins = userService.getUsersByRole("ROLE_ADMIN");
                     recipients.addAll(admins);
 
                     String notificationType = "PENDING_APPROVAL".equalsIgnoreCase(status) ? "ORDER_CREATED" : "ORDER_STATUS_UPDATE";

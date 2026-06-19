@@ -77,3 +77,12 @@ export interface DashboardMetrics {
   warehouseStockCounts: Record<string, number>;
   topProducts: TopProduct[];
 }
+
+export interface PagedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  pageNumber: number;
+  pageSize: number;
+}
+

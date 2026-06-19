@@ -26,6 +26,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import com.pg.supplychain.dto.PagedResponse;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -48,6 +53,23 @@ public class ProductService {
         return productRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "#page + '-' + #size")
+    public PagedResponse<ProductResponse> getAllProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findAll(pageable);
+        List<ProductResponse> content = productPage.getContent().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        return PagedResponse.<ProductResponse>builder()
+                .content(content)
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .pageNumber(productPage.getNumber())
+                .pageSize(productPage.getSize())
+                .build();
     }
 
     @Transactional

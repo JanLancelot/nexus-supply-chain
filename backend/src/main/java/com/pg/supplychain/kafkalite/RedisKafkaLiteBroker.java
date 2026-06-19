@@ -17,7 +17,7 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final ExecutorService executorService;
-    
+
     // In-memory queue fallback when Redis is offline
     private final Map<String, LinkedBlockingQueue<String>> inMemoryQueues = new ConcurrentHashMap<>();
     private final Map<String, List<Consumer<String>>> subscribers = new ConcurrentHashMap<>();
@@ -29,16 +29,20 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
         this.objectMapper = objectMapper;
         this.executorService = Executors.newCachedThreadPool();
         
-        // Test connection on start asynchronously to avoid blocking startup
-        executorService.submit(() -> {
-            try (var connection = redisTemplate.getConnectionFactory().getConnection()) {
-                connection.ping();
-                log.info("KafkaLite Broker: Successfully connected to Redis event queue broker.");
-            } catch (Exception e) {
-                log.warn("KafkaLite Broker: Redis is not available. Falling back to in-memory event queues. Error: {}", e.getMessage());
+        // Test connection on start synchronously to determine fallback immediately
+        try {
+            if (redisTemplate != null && redisTemplate.getConnectionFactory() != null) {
+                try (var connection = redisTemplate.getConnectionFactory().getConnection()) {
+                    connection.ping();
+                    log.info("KafkaLite Broker: Successfully connected to Redis event queue broker.");
+                }
+            } else {
                 this.useFallback = true;
             }
-        });
+        } catch (Exception e) {
+            log.warn("KafkaLite Broker: Redis is not available. Falling back to in-memory event queues. Error: {}", e.getMessage());
+            this.useFallback = true;
+        }
     }
 
     @Override
@@ -66,11 +70,24 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
 
     @Override
     public void subscribe(String topic, Consumer<String> handler) {
-        subscribers.computeIfAbsent(topic, k -> new CopyOnWriteArrayList<>()).add(handler);
+        boolean startWorker = false;
+        synchronized (subscribers) {
+            List<Consumer<String>> list = subscribers.get(topic);
+            if (list == null) {
+                list = new CopyOnWriteArrayList<>();
+                subscribers.put(topic, list);
+                startWorker = true;
+            }
+            list.add(handler);
+        }
         
-        // Start background worker for this topic
-        executorService.submit(() -> pollTopic(topic));
-        log.info("KafkaLite: Subscribed to topic {}", topic);
+        if (startWorker) {
+            // Start background worker for this topic only once
+            executorService.submit(() -> pollTopic(topic));
+            log.info("KafkaLite: Subscribed and started polling thread for topic {}", topic);
+        } else {
+            log.info("KafkaLite: Added subscriber to existing topic {}", topic);
+        }
     }
 
     private void pollTopic(String topic) {
@@ -80,8 +97,11 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
                 String message = null;
                 if (!useFallback) {
                     try {
-                        // Perform a blocking pop with timeout
-                        message = redisTemplate.opsForList().leftPop(redisKey, 1, TimeUnit.SECONDS);
+                        // Perform a non-blocking pop
+                        message = redisTemplate.opsForList().leftPop(redisKey);
+                        if (message == null) {
+                            TimeUnit.MILLISECONDS.sleep(100);
+                        }
                     } catch (Exception e) {
                         log.warn("KafkaLite: Connection issue during polling for {}. Switching to in-memory fallback. Error: {}", topic, e.getMessage());
                         useFallback = true;
@@ -91,7 +111,7 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
                 if (useFallback) {
                     // Poll from local in-memory queue
                     LinkedBlockingQueue<String> queue = inMemoryQueues.computeIfAbsent(topic, k -> new LinkedBlockingQueue<>());
-                    message = queue.poll(1, TimeUnit.SECONDS);
+                    message = queue.poll(100, TimeUnit.MILLISECONDS);
                 }
 
                 if (message != null) {
