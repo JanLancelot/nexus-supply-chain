@@ -34,8 +34,14 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query("SELECT o.status, COUNT(o) FROM Order o GROUP BY o.status")
     List<Object[]> countOrdersByStatus();
 
-    @Query("SELECT p.name, COALESCE(SUM(oi.quantity), 0) as totalQty FROM OrderItem oi JOIN oi.product p GROUP BY p.name ORDER BY totalQty DESC")
-    List<Object[]> findTopOrderedProducts(Pageable pageable);
+    @Query(value = "SELECT p.name, top_prods.totalQty FROM (" +
+                   "  SELECT product_id, SUM(quantity) as totalQty " +
+                   "  FROM order_items " +
+                   "  GROUP BY product_id " +
+                   "  ORDER BY totalQty DESC " +
+                   "  LIMIT 5" +
+                   ") top_prods JOIN products p ON p.id = top_prods.product_id", nativeQuery = true)
+    List<Object[]> findTop5OrderedProducts();
 
     @Query("SELECT COUNT(o) FROM Order o JOIN o.items oi WHERE oi.product.id = :productId AND o.status NOT IN (com.pg.supplychain.model.OrderStatus.DELIVERED, com.pg.supplychain.model.OrderStatus.CANCELLED)")
     long countOpenOrdersForProduct(UUID productId);

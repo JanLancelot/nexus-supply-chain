@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1.5-performance-indexes" author="nexus-supply-chain">
+        <!-- Index-only scan optimization for order totals calculation -->
+        <createIndex tableName="orders" indexName="idx_orders_status_total_amount">
+            <column name="status"/>
+            <column name="total_amount"/>
+        </createIndex>
+
+        <!-- Index-only scan optimization for top ordered products aggregation -->
+        <createIndex tableName="order_items" indexName="idx_order_items_product_quantity">
+            <column name="product_id"/>
+            <column name="quantity"/>
+        </createIndex>
+
+        <!-- Index-only scan optimization for active product inventory value calculation -->
+        <createIndex tableName="products" indexName="idx_products_active_value">
+            <column name="is_active"/>
+            <column name="unit_price"/>
+            <column name="stock_quantity"/>
+        </createIndex>
+
+        <!-- Index-only scan optimization for stock by warehouse calculation -->
+        <createIndex tableName="products" indexName="idx_products_warehouse_stock">
+            <column name="warehouse_id"/>
+            <column name="stock_quantity"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

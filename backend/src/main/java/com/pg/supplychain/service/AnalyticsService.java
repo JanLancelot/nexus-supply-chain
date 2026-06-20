@@ -25,7 +25,7 @@ public class AnalyticsService {
     private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "analytics", key = "'dashboard'")
+    @Cacheable(value = "analytics", key = "'dashboard'", sync = true)
     public AnalyticsDashboardResponse getDashboardAnalytics() {
         log.info("AnalyticsService: Computing dashboard analytics metrics (Cache Miss)");
 
@@ -62,7 +62,7 @@ public class AnalyticsService {
         }
 
         // 6. Top Products
-        List<Object[]> rawTopProducts = orderRepository.findTopOrderedProducts(PageRequest.of(0, 5));
+        List<Object[]> rawTopProducts = orderRepository.findTop5OrderedProducts();
         List<AnalyticsDashboardResponse.TopProduct> topProducts = rawTopProducts.stream()
                 .map(row -> AnalyticsDashboardResponse.TopProduct.builder()
                         .name(row[0].toString())

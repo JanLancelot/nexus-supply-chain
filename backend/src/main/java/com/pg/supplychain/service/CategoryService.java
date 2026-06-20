@@ -24,14 +24,14 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final KafkaLiteBroker kafkaLiteBroker;
 
-    @Cacheable(value = "categories", key = "'all'")
+    @Cacheable(value = "categories", key = "'all'", sync = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "categories", key = "#id")
+    @Cacheable(value = "categories", key = "#id", sync = true)
     public CategoryResponse getCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));

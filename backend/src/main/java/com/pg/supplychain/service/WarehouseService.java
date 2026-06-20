@@ -27,7 +27,7 @@ public class WarehouseService {
     private final KafkaLiteBroker kafkaLiteBroker;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "warehouses", key = "'all'")
+    @Cacheable(value = "warehouses", key = "'all'", sync = true)
     public List<WarehouseResponse> getAllWarehouses() {
         return warehouseRepository.findAll().stream()
                 .map(this::mapToResponse)
@@ -35,7 +35,7 @@ public class WarehouseService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "warehouses", key = "#id")
+    @Cacheable(value = "warehouses", key = "#id", sync = true)
     public WarehouseResponse getWarehouseById(UUID id) {
         Warehouse warehouse = warehouseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with ID: " + id));
