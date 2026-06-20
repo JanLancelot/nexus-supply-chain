@@ -48,7 +48,7 @@ public class ProductService {
     );
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'all'")
+    @Cacheable(value = "products", key = "'all'", sync = true)
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(this::mapToResponse)
@@ -56,7 +56,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "#page + '-' + #size")
+    @Cacheable(value = "products", key = "#page + '-' + #size", sync = true)
     public PagedResponse<ProductResponse> getAllProducts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Product> productSlice = productRepository.findSliceBy(pageable);

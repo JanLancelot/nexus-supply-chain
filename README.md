@@ -18,6 +18,82 @@ A full-stack supply chain management platform built with a Spring Boot backend, 
 
 ---
 
+## Core Features
+
+- **Role-Based Access Control (RBAC)**: Secure access using JWT for two roles:
+  - `ROLE_ADMIN`: Full system access, including the Operations Dashboard and Forensic Audit Logs.
+  - `ROLE_STAFF`: Read/write access to the Product Catalog and Purchase Orders, with restrictions preventing them from advancing orders beyond `DRAFT`/`PENDING_APPROVAL`.
+- **Product Catalog Management**: Track SKUs, inventory stock levels, unit prices, reorder thresholds, and active status. Products are assigned to specific Warehouses and Suppliers.
+- **Purchase Order Management**: Full lifecycle management of purchase orders with an enforce-valid transition Finite State Machine (FSM).
+- **Auto-Replenishment Engine**: Event-driven automation that monitors stock levels. When inventory falls below the reorder threshold, it automatically creates a system draft order. Features:
+  - *Rate-Limiting Cooldown*: 60-second per-product window prevents duplicate orders under heavy load.
+  - *Open Order Detection*: Automatically skips order generation if there are already active open orders.
+- **Debounced Cache Eviction**: Integrated Redis caching for high-read entities (Products, Categories, Warehouses). Eviction is triggered asynchronously via pub-sub events and debounced to prevent cache stampedes.
+- **Forensic Audit Logs**: Immutably record all critical actions (Order Creation, Order Status Updates, Stock adjustments) with before/after state snapshots.
+
+---
+
+## Core Workflows
+
+### 1. Purchase Order Lifecycle (FSM)
+All purchase orders follow a strict, validated state transition flow:
+
+```mermaid
+stateDiagram-v2
+    [*] --> DRAFT : Create Order
+    DRAFT --> PENDING_APPROVAL : Submit for Approval
+    DRAFT --> CANCELLED : Cancel
+    PENDING_APPROVAL --> APPROVED : Approve (Admin Only)
+    PENDING_APPROVAL --> CANCELLED : Cancel
+    APPROVED --> SHIPPED : Mark Shipped (Admin Only)
+    APPROVED --> CANCELLED : Cancel
+    SHIPPED --> DELIVERED : Confirm Delivery (Admin Only)
+    SHIPPED --> CANCELLED : Cancel
+    DELIVERED --> [*]
+    CANCELLED --> [*]
+```
+
+- **Stock Increment**: When an order transitions to `DELIVERED`, the system automatically increments the stock levels of the ordered products in the database.
+- **Permissions**: Only `ROLE_ADMIN` can transition orders into `APPROVED`, `SHIPPED`, or `DELIVERED` states.
+
+### 2. Auto-Replenishment Workflow
+The auto-replenishment process runs asynchronously based on stock levels:
+
+```mermaid
+sequenceDiagram
+    participant Catalog as Product Catalog
+    participant Broker as Event Broker (Kafka/Redis)
+    participant Engine as Auto-Replenishment Service
+    participant DB as PostgreSQL Database
+    
+    Catalog->>Broker: Publish "STOCK_ADJUSTED" / product-events
+    Broker->>Engine: Deliver Product Event
+    activate Engine
+    Engine->>Engine: Verify Cooldown (60s)
+    alt Cooldown Active
+        Engine-->>Broker: Ignore Event
+    else Cooldown Clear
+        Engine->>DB: Check open orders for Product
+        alt Open Order Exists
+            Engine-->>DB: Skip PO creation
+        else No Open Orders
+            Engine->>DB: Fetch Preferred Supplier & Warehouse
+            Engine->>DB: Create System Draft PO (ORD-SYS-...)
+            Engine->>Broker: Publish order-events
+        end
+    end
+    deactivate Engine
+```
+
+### 3. Event-Driven Cache Eviction
+High-read data caches are invalidated automatically using pub-sub topics:
+
+1. **Mutation**: A product, category, or warehouse is updated or an order is delivered.
+2. **Event Broadcast**: The backend publishes a domain event to the corresponding topic (`product-events`, `order-events`, etc.).
+3. **Debounced Eviction**: `CacheEvictionListener` intercepts the event and schedules cache invalidation with a 1-second debounce window to prevent database query spikes during high concurrent writes.
+
+---
+
 ## Prerequisites
 
 Make sure the following are installed on your machine before getting started:
