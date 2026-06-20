@@ -6,6 +6,11 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1.2-performance-indexes" author="nexus-supply-chain">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="idx_notifications_user_created"/>
+            </not>
+        </preConditions>
         <!-- Notifications Indexes -->
         <createIndex tableName="notifications" indexName="idx_notifications_user_created">
             <column name="user_id"/>

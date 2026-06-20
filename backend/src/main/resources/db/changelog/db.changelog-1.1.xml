@@ -6,6 +6,11 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1.1-phase1-fields" author="nexus-supply-chain">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="suppliers" columnName="lead_time_days"/>
+            </not>
+        </preConditions>
         <addColumn tableName="suppliers">
             <column name="lead_time_days" type="int" defaultValueNumeric="3"/>
         </addColumn>

@@ -6,6 +6,11 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1.5-performance-indexes" author="nexus-supply-chain">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="idx_orders_status_total_amount"/>
+            </not>
+        </preConditions>
         <!-- Index-only scan optimization for order totals calculation -->
         <createIndex tableName="orders" indexName="idx_orders_status_total_amount">
             <column name="status"/>
