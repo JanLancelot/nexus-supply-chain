@@ -6,6 +6,11 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1.4-performance-indexes" author="nexus-supply-chain">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="idx_order_items_order_id"/>
+            </not>
+        </preConditions>
         <!-- Order Items Indexes -->
         <createIndex tableName="order_items" indexName="idx_order_items_order_id">
             <column name="order_id"/>
