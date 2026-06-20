@@ -49,6 +49,8 @@ public abstract class BaseIntegrationTest {
             registry.add("spring.datasource.url", postgres::getJdbcUrl);
             registry.add("spring.datasource.username", postgres::getUsername);
             registry.add("spring.datasource.password", postgres::getPassword);
+            registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
+            registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.PostgreSQLDialect");
 
             registry.add("spring.data.redis.host", redis::getHost);
             registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
@@ -59,6 +61,8 @@ public abstract class BaseIntegrationTest {
             registry.add("spring.datasource.url", () -> "jdbc:h2:mem:supply_db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL");
             registry.add("spring.datasource.username", () -> "sa");
             registry.add("spring.datasource.password", () -> "");
+            registry.add("spring.datasource.driver-class-name", () -> "org.h2.Driver");
+            registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.H2Dialect");
             
             // In-memory/local fallbacks
             registry.add("spring.data.redis.host", () -> "localhost");
