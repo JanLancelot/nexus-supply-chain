@@ -20,4 +20,5 @@ public class PagedResponse<T> implements Serializable {
     private int totalPages;
     private int pageNumber;
     private int pageSize;
+    private boolean hasNext;
 }

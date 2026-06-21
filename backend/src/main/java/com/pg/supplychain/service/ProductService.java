@@ -69,6 +69,7 @@ public class ProductService {
                 .totalPages(-1)
                 .pageNumber(productSlice.getNumber())
                 .pageSize(productSlice.getSize())
+                .hasNext(productSlice.hasNext())
                 .build();
     }
 

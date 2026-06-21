@@ -36,8 +36,7 @@ const Orders: React.FC = () => {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
   // UI State
   const [loading, setLoading] = useState(true);
@@ -72,8 +71,7 @@ const Orders: React.FC = () => {
         getProducts(0, 100)
       ]);
       setOrders(ordersPaged.content);
-      setTotalPages(ordersPaged.totalPages);
-      setTotalElements(ordersPaged.totalElements);
+      setHasMore(ordersPaged.hasNext);
       setSuppliers(suppliersData);
       setWarehouses(warehousesData);
       setProducts(productsPaged.content);
@@ -361,23 +359,22 @@ const Orders: React.FC = () => {
                 </table>
               </div>
               {/* Pagination Controls */}
-              {totalPages > 1 && (
+              {(orders.length > 0 || currentPage > 0) && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800/60 bg-gray-900/10">
                   <div className="text-xs text-gray-400">
-                    Showing page <span className="font-semibold text-white">{currentPage + 1}</span> of{' '}
-                    <span className="font-semibold text-white">{totalPages}</span> ({totalElements} total orders)
+                    Showing page <span className="font-semibold text-white">{currentPage + 1}</span>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-                      disabled={currentPage === 0}
+                      disabled={currentPage === 0 || loading}
                       className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                     >
                       Previous
                     </button>
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
-                      disabled={currentPage === totalPages - 1}
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                      disabled={!hasMore || loading}
                       className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                     >
                       Next

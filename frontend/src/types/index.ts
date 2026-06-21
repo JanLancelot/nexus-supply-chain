@@ -84,5 +84,6 @@ export interface PagedResponse<T> {
   totalPages: number;
   pageNumber: number;
   pageSize: number;
+  hasNext: boolean;
 }
 
