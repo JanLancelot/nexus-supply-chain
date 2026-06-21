@@ -282,6 +282,7 @@ public class OrderService {
                 .totalPages(-1)
                 .pageNumber(orderSlice.getNumber())
                 .pageSize(orderSlice.getSize())
+                .hasNext(orderSlice.hasNext())
                 .build();
     }
 
