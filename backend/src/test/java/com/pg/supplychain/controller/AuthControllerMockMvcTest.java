@@ -61,7 +61,7 @@ class AuthControllerMockMvcTest {
 
         when(userRepository.findByEmail("admin@pg.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password123", "hashed")).thenReturn(true);
-        when(jwtService.generateToken("admin@pg.com", "ROLE_ADMIN", userId.toString())).thenReturn("mocked-jwt-token");
+        when(jwtService.generateToken(org.mockito.ArgumentMatchers.eq("admin@pg.com"), org.mockito.ArgumentMatchers.eq("ROLE_ADMIN"), org.mockito.ArgumentMatchers.eq(userId.toString()), org.mockito.ArgumentMatchers.any())).thenReturn("mocked-jwt-token");
 
         LoginRequest request = new LoginRequest("admin@pg.com", "password123");
 

@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Catalog from './pages/Catalog';
 import Orders from './pages/Orders';
 import AuditLogs from './pages/AuditLogs';
+import UserManagement from './pages/UserManagement';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import './App.css';
@@ -109,6 +110,17 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute adminOnly>
             <LayoutWrapper title="Forensic Audit Logs">
               <AuditLogs />
+            </LayoutWrapper>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute adminOnly>
+            <LayoutWrapper title="User Management">
+              <UserManagement />
             </LayoutWrapper>
           </ProtectedRoute>
         }

@@ -61,6 +61,9 @@ public class SecurityConfig {
 
                 // Forensic Audit Log rules
                 .requestMatchers(HttpMethod.GET, "/api/v1/audit-logs").hasAuthority("ROLE_ADMIN")
+
+                // User management rules
+                .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_ADMIN")
                 
                 .anyRequest().authenticated()
             )

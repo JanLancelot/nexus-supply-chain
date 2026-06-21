@@ -7,7 +7,8 @@ import {
   FileSpreadsheet, 
   History, 
   LogOut, 
-  ShieldCheck 
+  ShieldCheck,
+  Users
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -18,6 +19,12 @@ const Sidebar: React.FC = () => {
       name: 'Dashboard',
       path: '/dashboard',
       icon: LayoutDashboard,
+      show: isAdmin,
+    },
+    {
+      name: 'User Management',
+      path: '/users',
+      icon: Users,
       show: isAdmin,
     },
     {

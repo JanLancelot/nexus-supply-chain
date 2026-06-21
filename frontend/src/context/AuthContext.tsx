@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(storedToken);
         setUser({
           id: decoded.userId,
-          fullName: decoded.sub === 'admin@pg.com' ? 'Admin User' : decoded.sub === 'staff@pg.com' ? 'Staff User' : 'Nexus User',
+          fullName: decoded.fullName || (decoded.sub === 'admin@pg.com' ? 'Admin User' : decoded.sub === 'staff@pg.com' ? 'Staff User' : 'Nexus User'),
           email: decoded.sub,
           role: decoded.role,
           status: 'ACTIVE',
@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (decoded) {
         setUser({
           id: decoded.userId,
-          fullName: decoded.sub === 'admin@pg.com' ? 'Admin User' : decoded.sub === 'staff@pg.com' ? 'Staff User' : 'Nexus User',
+          fullName: decoded.fullName || (decoded.sub === 'admin@pg.com' ? 'Admin User' : decoded.sub === 'staff@pg.com' ? 'Staff User' : 'Nexus User'),
           email: decoded.sub,
           role: decoded.role,
           status: 'ACTIVE',
