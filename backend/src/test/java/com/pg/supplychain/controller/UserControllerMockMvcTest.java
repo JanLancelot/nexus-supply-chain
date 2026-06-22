@@ -55,7 +55,7 @@ class UserControllerMockMvcTest {
                 .id(UUID.randomUUID())
                 .fullName("Test User")
                 .email("test@pg.com")
-                .roleName("ROLE_STAFF")
+                .role("ROLE_STAFF")
                 .status("ACTIVE")
                 .createdAt(OffsetDateTime.now())
                 .updatedAt(OffsetDateTime.now())
@@ -69,7 +69,7 @@ class UserControllerMockMvcTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("test@pg.com"))
                 .andExpect(jsonPath("$.fullName").value("Test User"))
-                .andExpect(jsonPath("$.roleName").value("ROLE_STAFF"));
+                .andExpect(jsonPath("$.role").value("ROLE_STAFF"));
     }
 
     @Test
@@ -94,14 +94,14 @@ class UserControllerMockMvcTest {
                 .id(UUID.randomUUID())
                 .fullName("User One")
                 .email("one@pg.com")
-                .roleName("ROLE_ADMIN")
+                .role("ROLE_ADMIN")
                 .build();
 
         UserResponse response2 = UserResponse.builder()
                 .id(UUID.randomUUID())
                 .fullName("User Two")
                 .email("two@pg.com")
-                .roleName("ROLE_STAFF")
+                .role("ROLE_STAFF")
                 .build();
 
         when(userService.getAllUsers()).thenReturn(Arrays.asList(response1, response2));

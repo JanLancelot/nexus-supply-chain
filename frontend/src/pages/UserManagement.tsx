@@ -118,12 +118,13 @@ const UserManagement: React.FC = () => {
   };
 
   // Helper to format role names dynamically
-  const formatRole = (role: string) => {
+  const formatRole = (role?: string) => {
+    if (!role) return '';
     return role.replace('ROLE_', '');
   };
 
   // Helper to render role badge styles
-  const getRoleBadgeStyle = (role: string) => {
+  const getRoleBadgeStyle = (role?: string) => {
     if (role === 'ROLE_ADMIN') {
       return 'bg-red-500/10 text-red-400 border-red-500/20';
     }

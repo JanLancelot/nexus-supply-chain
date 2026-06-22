@@ -119,7 +119,7 @@ class UserServiceTest {
         assertNotNull(response);
         assertEquals(savedUser.getId(), response.getId());
         assertEquals("newuser@pg.com", response.getEmail());
-        assertEquals("ROLE_STAFF", response.getRoleName());
+        assertEquals("ROLE_STAFF", response.getRole());
 
         // Verify userCache is updated (no repository call when fetching by ID now)
         User cachedUser = userService.getUserById(savedUser.getId());

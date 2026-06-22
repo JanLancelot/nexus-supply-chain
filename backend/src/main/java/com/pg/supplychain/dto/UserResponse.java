@@ -12,7 +12,7 @@ public class UserResponse {
     private UUID id;
     private String fullName;
     private String email;
-    private String roleName;
+    private String role;
     private String status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

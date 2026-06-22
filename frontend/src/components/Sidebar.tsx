@@ -91,7 +91,7 @@ const Sidebar: React.FC = () => {
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-white truncate m-0">{user?.fullName}</p>
             <p className="text-[10px] text-indigo-400 font-mono mt-0.5 truncate uppercase">
-              {user?.role.replace('ROLE_', '')}
+              {user?.role?.replace('ROLE_', '') || ''}
             </p>
           </div>
         </div>
