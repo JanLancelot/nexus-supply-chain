@@ -34,6 +34,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD, jakarta.servlet.DispatcherType.ERROR).permitAll()
                 // Public endpoints
+                .requestMatchers("/", "/index.html", "/favicon.ico", "/assets/**", "/login", "/dashboard", "/catalog", "/orders", "/audit-logs", "/users").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/v1/auth/login").permitAll()
                 .requestMatchers("/actuator/**").permitAll()

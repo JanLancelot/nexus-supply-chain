@@ -44,10 +44,11 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: spring_backend_supply
     ports:
+      - "80:8080"
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/supply_db
@@ -60,20 +61,6 @@ services:
       - db
       - redis
       - kafka
-    restart: unless-stopped
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: nginx_frontend_supply
-    ports:
-      - "80:80"
-    environment:
-      - BACKEND_URL=http://backend:8080
-      - NGINX_ENVSUBST_FILTER=BACKEND_URL
-    depends_on:
-      - backend
     restart: unless-stopped
 
   prometheus:
