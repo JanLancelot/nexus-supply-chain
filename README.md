@@ -53,7 +53,7 @@ A full-stack supply chain management platform built with a Spring Boot backend, 
 | **Messaging & Events** | Apache Kafka, Spring Kafka |
 | **DevOps & IaC** | Terraform, Docker |
 | **CI/CD Pipeline** | GitHub Actions |
-| **Staging/Prod Cloud** | Azure Web Apps, Azure Database for PostgreSQL Flexible Server, Azure Managed Redis |
+| **Staging/Prod Cloud** | Azure Web Apps (Consolidated), Azure Database for PostgreSQL Flexible Server, Azure Managed Redis (Balanced_B0) |
 | **Monitoring & Metrics** | Prometheus, Grafana, Node Exporter, Spring Boot Actuator, Micrometer |
 | **Testing - Unit/API** | JUnit 5, Mockito, REST Assured, Spring MockMVC |
 | **Testing - Integration**| Testcontainers |
@@ -229,9 +229,8 @@ docker compose up --build
 
 | Service | URL |
 |---|---|
-| **Frontend** | http://localhost |
-| **Backend API** | http://localhost:8080 |
-| **PostgreSQL** | `localhost:5432` (DB: `supply_db`) |
+| **Consolidated Web App** | `http://localhost` (or `http://localhost:8080`) |
+| **PostgreSQL** | `localhost:5433` (DB: `supply_db`) |
 | **Redis** | `localhost:6379` |
 | **Kafka** | `localhost:9092` |
 
@@ -414,13 +413,12 @@ Nexus is designed to be cloud-native and deployable to Microsoft Azure using Inf
 
 The staging and production environments are provisioned using **Terraform** (located in the [terraform/](file:///Users/janlancelot/Desktop/Projects/nexus-supply-chain/terraform/) directory). The infrastructure comprises:
 
-* **Azure Container Registry (ACR)**: Hosts the Docker images for the frontend and backend.
+* **Azure Container Registry (ACR)**: Hosts the Docker images for the application (Basic SKU).
 * **Azure App Service (Linux Web Apps)**:
-  * `pg-enterprise-supply-api`: Runs the Spring Boot backend inside a Docker container (port `8080`).
-  * `pg-enterprise-supply-ui`: Runs the React/Nginx frontend inside a Docker container (port `80`).
-  * Both services utilize **Deployment Slots** (`staging` slot) for zero-downtime blue/green style releases.
+  * `pg-enterprise-supply-api`: Runs the consolidated application (Spring Boot backend hosting static React UI assets) inside a Docker container (port `8080` / exposed via SSL).
+  * The service utilizes **Deployment Slots** (`staging` slot) for zero-downtime blue/green style releases.
 * **Azure Database for PostgreSQL (Flexible Server)**: A managed PostgreSQL 15 database instance (`supply_db`) with SSL required.
-* **Azure Managed Redis (Balanced_B1)**: Low-latency cache replacing legacy Azure Cache for Redis instances.
+* **Azure Managed Redis (Balanced_B0)**: Low-latency cache (1 GB RAM size).
 
 ### 2. CI/CD Pipeline (GitHub Actions)
 
@@ -433,10 +431,8 @@ The repository includes a complete CI/CD workflow defined in [.github/workflows/
 
 #### Phase 2: Staging Deployment (on Push to `main`)
 * Authenticates securely to Microsoft Azure using **OIDC (OpenID Connect)** federation (no long-lived credentials stored in GitHub).
-* Logs into Azure Container Registry (ACR) and builds/pushes Docker images tagged with `latest` and the specific `github.sha` commit reference.
-* Deploys the built containers to the Azure App Service `staging` slots:
-  * Deploys the backend container to the `staging` slot of `pg-enterprise-supply-api`.
-  * Deploys the frontend container to the `staging` slot of `pg-enterprise-supply-ui`.
+* Logs into Azure Container Registry (ACR) and builds/pushes the consolidated Docker image tagged with `latest` and the specific `github.sha` commit reference.
+* Deploys the built container to the Azure App Service `staging` slot of `pg-enterprise-supply-api`.
 
 ---
 

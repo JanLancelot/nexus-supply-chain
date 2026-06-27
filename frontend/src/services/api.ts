@@ -1,16 +1,6 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  const hostname = window.location.hostname;
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return '/api/v1';
-  }
-  if (hostname.includes('-ui-staging')) {
-    return 'https://pg-enterprise-supply-api-staging.azurewebsites.net/api/v1';
-  }
-  if (hostname.includes('-ui')) {
-    return 'https://pg-enterprise-supply-api.azurewebsites.net/api/v1';
-  }
   return '/api/v1';
 };
 

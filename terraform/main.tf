@@ -25,7 +25,7 @@ resource "azurerm_container_registry" "acr" {
   name                = var.acr_name
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  sku                 = "Standard"
+  sku                 = "Basic"
   admin_enabled       = true
 }
 
@@ -43,7 +43,7 @@ resource "azurerm_managed_redis" "redis" {
   name                = "redis-${var.project_name}-${var.environment}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  sku_name            = "Balanced_B1"
+  sku_name            = "Balanced_B0"
 
   default_database {
     access_keys_authentication_enabled = true
@@ -139,48 +139,4 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
   }
 }
 
-# Frontend App Service (Production)
-resource "azurerm_linux_web_app" "frontend_ui" {
-  name                = "pg-enterprise-supply-ui"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  service_plan_id     = azurerm_service_plan.asp.id
 
-  site_config {
-    always_on = true
-    application_stack {
-      docker_image_name        = "frontend:latest"
-      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
-      docker_registry_username = azurerm_container_registry.acr.admin_username
-      docker_registry_password = azurerm_container_registry.acr.admin_password
-    }
-  }
-
-  app_settings = {
-    "BACKEND_URL"                         = "https://${azurerm_linux_web_app.backend_api.default_hostname}"
-    "NGINX_ENVSUBST_FILTER"               = "BACKEND_URL"
-    "WEBSITES_PORT"                       = "80"
-  }
-}
-
-# Frontend App Service - Staging Slot
-resource "azurerm_linux_web_app_slot" "frontend_ui_staging" {
-  name           = "staging"
-  app_service_id = azurerm_linux_web_app.frontend_ui.id
-
-  site_config {
-    always_on = true
-    application_stack {
-      docker_image_name        = "frontend:latest"
-      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
-      docker_registry_username = azurerm_container_registry.acr.admin_username
-      docker_registry_password = azurerm_container_registry.acr.admin_password
-    }
-  }
-
-  app_settings = {
-    "BACKEND_URL"                         = "https://${azurerm_linux_web_app_slot.backend_api_staging.default_hostname}"
-    "NGINX_ENVSUBST_FILTER"               = "BACKEND_URL"
-    "WEBSITES_PORT"                       = "80"
-  }
-}
