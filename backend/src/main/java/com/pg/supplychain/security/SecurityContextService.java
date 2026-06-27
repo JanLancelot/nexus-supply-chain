@@ -2,7 +2,7 @@ package com.pg.supplychain.security;
 
 import com.pg.supplychain.model.User;
 import com.pg.supplychain.service.UserService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class SecurityContextService {
 
     private final UserService userService;
+
+    public SecurityContextService(@Lazy UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * Retrieves the currently authenticated User from the SecurityContext.

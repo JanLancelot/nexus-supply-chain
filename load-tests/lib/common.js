@@ -142,7 +142,13 @@ export function login(baseUrl, credentials, role) {
 
   const ok = check(res, {
     [`${role} login responded 200`]: (r) => r.status === 200,
-    [`${role} token received`]: (r) => r.json('token') !== null,
+    [`${role} token received`]: (r) => {
+      try {
+        return !!(r.body && r.json('token'));
+      } catch (e) {
+        return false;
+      }
+    },
   });
 
   return ok ? res.json('token') : null;
@@ -154,6 +160,10 @@ export function setupTestData() {
 
   const adminToken = login(baseUrl, ADMIN_CREDENTIALS, 'admin');
   const staffToken = login(baseUrl, STAFF_CREDENTIALS, 'staff');
+
+  if (!adminToken || !staffToken) {
+    throw new Error('Failed to retrieve authentication tokens during setup. Ensure the backend is running and healthy.');
+  }
 
   let categories = [];
   let warehouses = [];

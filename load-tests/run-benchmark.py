@@ -88,6 +88,11 @@ def format_num(val):
         return str(val)
 
 def main():
+    # Ensure working directory is the repository root
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.abspath(os.path.join(script_dir, ".."))
+    os.chdir(repo_root)
+
     profile = "stress" if len(sys.argv) < 2 else sys.argv[1]
     
     print("==================================================================")
@@ -130,7 +135,12 @@ def main():
     env["K6_FULL_SUMMARY"] = "1"
     
     # We want to show output to the user during the run
-    subprocess.run(cmd, env=env)
+    k6_res = subprocess.run(cmd, env=env)
+    
+    if k6_res.returncode not in (0, 99):
+        print(f"\nError: K6 load test failed or aborted with exit code {k6_res.returncode}.")
+        print("Please check the output logs above to diagnose the issue.")
+        sys.exit(k6_res.returncode)
     
     end_time = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     print("Load test execution completed.")
@@ -193,24 +203,29 @@ def main():
     # 4. Read k6 Output File
     k6_summary_file = "load-tests/results/full-summary.json"
     k6_metrics = {}
-    if os.path.exists(k6_summary_file):
-        try:
-            with open(k6_summary_file, 'r') as f:
-                k6_data = json.load(f)
-                metrics = k6_data.get('metrics', {})
-                k6_metrics = {
-                    "http_reqs": metrics.get('http_reqs', {}).get('values', {}).get('count', 0),
-                    "http_req_rate": metrics.get('http_reqs', {}).get('values', {}).get('rate', 0.0),
-                    "failure_rate": metrics.get('http_req_failed', {}).get('values', {}).get('rate', 0.0) * 100,
-                    "avg_latency": metrics.get('http_req_duration', {}).get('values', {}).get('avg', 0.0),
-                    "med_latency": metrics.get('http_req_duration', {}).get('values', {}).get('med', 0.0),
-                    "p90_latency": metrics.get('http_req_duration', {}).get('values', {}).get('p(90)', 0.0),
-                    "p95_latency": metrics.get('http_req_duration', {}).get('values', {}).get('p(95)', 0.0),
-                    "data_received_mb": metrics.get('data_received', {}).get('values', {}).get('count', 0) / (1024*1024),
-                    "data_sent_mb": metrics.get('data_sent', {}).get('values', {}).get('count', 0) / (1024*1024),
-                }
-        except Exception as e:
-            print(f"Error parsing k6 summary JSON: {e}")
+    if not os.path.exists(k6_summary_file):
+        print("\nError: Load test did not complete successfully or no summary statistics were generated.")
+        print("Please check the output above and verify if the backend is running and healthy.")
+        sys.exit(1)
+
+    try:
+        with open(k6_summary_file, 'r') as f:
+            k6_data = json.load(f)
+            metrics = k6_data.get('metrics', {})
+            k6_metrics = {
+                "http_reqs": metrics.get('http_reqs', {}).get('values', {}).get('count', 0),
+                "http_req_rate": metrics.get('http_reqs', {}).get('values', {}).get('rate', 0.0),
+                "failure_rate": metrics.get('http_req_failed', {}).get('values', {}).get('rate', 0.0) * 100,
+                "avg_latency": metrics.get('http_req_duration', {}).get('values', {}).get('avg', 0.0),
+                "med_latency": metrics.get('http_req_duration', {}).get('values', {}).get('med', 0.0),
+                "p90_latency": metrics.get('http_req_duration', {}).get('values', {}).get('p(90)', 0.0),
+                "p95_latency": metrics.get('http_req_duration', {}).get('values', {}).get('p(95)', 0.0),
+                "data_received_mb": metrics.get('data_received', {}).get('values', {}).get('count', 0) / (1024*1024),
+                "data_sent_mb": metrics.get('data_sent', {}).get('values', {}).get('count', 0) / (1024*1024),
+            }
+    except Exception as e:
+        print(f"\nError parsing k6 summary JSON: {e}")
+        sys.exit(1)
 
     # 5. Generate Markdown Report
     print("\n[5/5] Compiling Unified Benchmark Report...")
@@ -277,6 +292,15 @@ def main():
         f.write(report_content)
         
     print(f"\nSuccess! Benchmark Report generated successfully at:\n  {report_filename}")
+
+    # Also update/overwrite the stable latest benchmark report file
+    latest_report_filename = "load-tests/results/latest-benchmark-report.md"
+    try:
+        with open(latest_report_filename, "w") as f:
+            f.write(report_content)
+        print(f"Latest report also updated at:\n  {latest_report_filename}")
+    except Exception as e:
+        print(f"Warning: Could not update stable latest report file: {e}")
     print("\n------------------------------------------------------------------")
     print("Quick Telemetry Summary:")
     print(f"  Throughput: {k6_metrics.get('http_req_rate', 0.0):.2f} req/s | Error Rate: {k6_metrics.get('failure_rate', 0.0):.2f}%")
