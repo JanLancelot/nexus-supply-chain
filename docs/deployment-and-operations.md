@@ -188,3 +188,29 @@ Azure App Service actively checks the application's stability by hitting the emb
 * **Live Traffic Health Probe Context:** `GET /api/v1/actuator/health`
 
 If the database link breaks or memory allocation collapses, the endpoint returns a `503 Service Unavailable` status payload. Azure automatically takes the unhealthy container instance out of rotation and spins up a fresh, isolated node to ensure continuous system availability.
+
+---
+
+## 6. Cost Optimization: Suspending & Resuming the Cloud Environment
+
+To stop consuming credits on Azure when the environment is not in active use, you can suspend the compute resources. This shuts down the PostgreSQL flexible server compute and destroys the App Service Plan, Web App, Staging Slot, and Managed Redis Cache. Database data and container images (ACR) are fully preserved.
+
+### 6.1 Suspend Environment
+Run the following script from the project root to stop cost bleeding:
+```bash
+./bin/suspend.sh
+```
+
+This will:
+1. Run `terraform apply -var="enable_compute=false" -auto-approve` to tear down compute resources.
+2. Stop the PostgreSQL Flexible Server via `az postgres flexible-server stop`.
+
+### 6.2 Resume Environment
+Run the following script from the project root to restore the environment when you need it:
+```bash
+./bin/resume.sh
+```
+
+This will:
+1. Start the PostgreSQL Flexible Server via `az postgres flexible-server start`.
+2. Run `terraform apply -var="enable_compute=true" -auto-approve` to recreate the compute resources.

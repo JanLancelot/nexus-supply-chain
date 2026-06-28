@@ -31,6 +31,7 @@ resource "azurerm_container_registry" "acr" {
 
 # App Service Plan (Standard SKU or higher is required for deployment slots)
 resource "azurerm_service_plan" "asp" {
+  count               = var.enable_compute ? 1 : 0
   name                = "asp-${var.project_name}-${var.environment}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
@@ -40,6 +41,7 @@ resource "azurerm_service_plan" "asp" {
 
 # Azure Managed Redis (Replaces retired Azure Cache for Redis)
 resource "azurerm_managed_redis" "redis" {
+  count               = var.enable_compute ? 1 : 0
   name                = "redis-${var.project_name}-${var.environment}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
@@ -81,10 +83,11 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_service
 
 # Backend App Service (Production)
 resource "azurerm_linux_web_app" "backend_api" {
+  count               = var.enable_compute ? 1 : 0
   name                = "pg-enterprise-supply-api"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  service_plan_id     = azurerm_service_plan.asp.id
+  service_plan_id     = azurerm_service_plan.asp[0].id
 
   site_config {
     always_on = true
@@ -100,9 +103,9 @@ resource "azurerm_linux_web_app" "backend_api" {
     "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
-    "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis.hostname
-    "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis.default_database[0].port)
-    "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis.default_database[0].primary_access_key
+    "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis[0].hostname
+    "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis[0].default_database[0].port)
+    "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis[0].default_database[0].primary_access_key
     "SPRING_REDIS_SSL_ENABLED"            = "true"
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
@@ -112,8 +115,9 @@ resource "azurerm_linux_web_app" "backend_api" {
 
 # Backend App Service - Staging Slot
 resource "azurerm_linux_web_app_slot" "backend_api_staging" {
+  count          = var.enable_compute ? 1 : 0
   name           = "staging"
-  app_service_id = azurerm_linux_web_app.backend_api.id
+  app_service_id = azurerm_linux_web_app.backend_api[0].id
 
   site_config {
     always_on = true
@@ -129,9 +133,9 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
     "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
-    "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis.hostname
-    "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis.default_database[0].port)
-    "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis.default_database[0].primary_access_key
+    "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis[0].hostname
+    "SPRING_REDIS_PORT"                   = tostring(azurerm_managed_redis.redis[0].default_database[0].port)
+    "SPRING_REDIS_PASSWORD"               = azurerm_managed_redis.redis[0].default_database[0].primary_access_key
     "SPRING_REDIS_SSL_ENABLED"            = "true"
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"

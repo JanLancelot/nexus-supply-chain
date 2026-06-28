@@ -434,6 +434,15 @@ The repository includes a complete CI/CD workflow defined in [.github/workflows/
 * Logs into Azure Container Registry (ACR) and builds/pushes the consolidated Docker image tagged with `latest` and the specific `github.sha` commit reference.
 * Deploys the built container to the Azure App Service `staging` slot of `pg-enterprise-supply-api`.
 
+### 3. Environment Cost Optimization (Suspend/Resume)
+
+To stop consuming credits on Azure when the environment is not in active use, you can suspend the compute resources:
+
+* **Suspend**: Run `./bin/suspend.sh` from the root. This tears down the App Service, App Service Plan, and Redis Cache (saving ~$97/mo) and stops the PostgreSQL compute instance.
+* **Resume**: Run `./bin/resume.sh` from the root. This starts the PostgreSQL instance and redeploys the App Service and Redis Cache.
+
+For more details, see the [Deployment & Operations Runbook](file:///Users/janlancelot/Desktop/Projects/nexus-supply-chain/docs/deployment-and-operations.md#6-cost-optimization-suspending--resuming-the-cloud-environment).
+
 ---
 
 ## Project Structure
