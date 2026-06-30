@@ -4,12 +4,19 @@ A full-stack supply chain management platform built with a Spring Boot backend, 
 
 ---
 
-## Key Highlights
-- ⚡ **Event-Driven Replenishment Engine**: Real-time Kafka-based automation triggers draft POs instantly when stock drops below thresholds, complete with a 60-second duplicate order cooldown guard.
-- 💾 **Debounced Cache Eviction**: High-performance Redis read cache with asynchronous pub-sub invalidation, debounced to prevent database stampedes during high-concurrency writes.
-- 🔒 **Role-Based Access Control (RBAC)**: Secure access using JWT for `ROLE_ADMIN` and `ROLE_STAFF` with validated finite state machine (FSM) enforcement.
-- 📜 **Forensic Audit Trails**: Immutable audit logs capturing before-and-after snapshots of critical mutations (state transitions, inventory adjustments) for end-to-end auditability.
-- 🚀 **Proven Performance**: Benchmarked to process **1,134+ req/s** with **0.00% error rate** under extreme load against a database of **3.1 million records**.
+## Key Features
+
+- **Role-Based Access Control (RBAC)**: Secure access using JWT for two roles:
+  - `ROLE_ADMIN`: Full system access, including the Operations Dashboard, Forensic Audit Logs, and User Management (provisioning/managing staff & administrator accounts).
+  - `ROLE_STAFF`: Read/write access to the Product Catalog and Purchase Orders, with restrictions preventing them from advancing orders beyond `DRAFT`/`PENDING_APPROVAL`.
+- **User Management & Provisioning**: Secure administrator-only console to view the system user directory, search and filter users by name, email, or role, and register new administrative (`ROLE_ADMIN`) or staff (`ROLE_STAFF`) credentials. Features client-side/server-side validation and secure password hashing.
+- **Product Catalog Management**: Track SKUs, inventory stock levels, unit prices, reorder thresholds, and active status. Products are assigned to specific Warehouses and Suppliers.
+- **Purchase Order Management**: Full lifecycle management of purchase orders with an enforce-valid transition Finite State Machine (FSM).
+- **Auto-Replenishment Engine**: Event-driven automation that monitors stock levels. When inventory falls below the reorder threshold, it automatically creates a system draft order. Features:
+  - *Rate-Limiting Cooldown*: 60-second per-product window prevents duplicate orders under heavy load.
+  - *Open Order Detection*: Automatically skips order generation if there are already active open orders.
+- **Debounced Cache Eviction**: Integrated Redis caching for high-read entities (Products, Categories, Warehouses). Eviction is triggered asynchronously via pub-sub events and debounced to prevent cache stampedes.
+- **Forensic Audit Logs**: Immutably record all critical actions (Order Creation, Order Status Updates, Stock adjustments) with before/after state snapshots.
 
 ---
 
@@ -115,21 +122,6 @@ Nexus utilizes both layers to solve distinct performance and architectural chall
   * Used as an **in-memory database** for high-performance reading and transient coordination.
   * Caches high-read entity objects (Products, Warehouses, Categories) to bypass PostgreSQL database roundtrips, returning catalog details in sub-millisecond times.
   * Facilitates short-lived state locks (like the 60-second replenishment cooldown window) and lightweight pub-sub for cache eviction debouncing.
-
----
-
-## Core Features
-
-- **Role-Based Access Control (RBAC)**: Secure access using JWT for two roles:
-  - `ROLE_ADMIN`: Full system access, including the Operations Dashboard and Forensic Audit Logs.
-  - `ROLE_STAFF`: Read/write access to the Product Catalog and Purchase Orders, with restrictions preventing them from advancing orders beyond `DRAFT`/`PENDING_APPROVAL`.
-- **Product Catalog Management**: Track SKUs, inventory stock levels, unit prices, reorder thresholds, and active status. Products are assigned to specific Warehouses and Suppliers.
-- **Purchase Order Management**: Full lifecycle management of purchase orders with an enforce-valid transition Finite State Machine (FSM).
-- **Auto-Replenishment Engine**: Event-driven automation that monitors stock levels. When inventory falls below the reorder threshold, it automatically creates a system draft order. Features:
-  - *Rate-Limiting Cooldown*: 60-second per-product window prevents duplicate orders under heavy load.
-  - *Open Order Detection*: Automatically skips order generation if there are already active open orders.
-- **Debounced Cache Eviction**: Integrated Redis caching for high-read entities (Products, Categories, Warehouses). Eviction is triggered asynchronously via pub-sub events and debounced to prevent cache stampedes.
-- **Forensic Audit Logs**: Immutably record all critical actions (Order Creation, Order Status Updates, Stock adjustments) with before/after state snapshots.
 
 ---
 
