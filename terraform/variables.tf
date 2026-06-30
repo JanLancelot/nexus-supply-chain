@@ -45,3 +45,10 @@ variable "postgres_admin_password" {
   description = "The administrator password for the PostgreSQL database server."
   sensitive   = true
 }
+
+variable "enable_compute" {
+  type        = bool
+  description = "Enable compute resources (App Service Plan, App Services, Managed Redis)."
+  default     = true
+}
+

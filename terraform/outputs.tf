@@ -9,12 +9,12 @@ output "acr_login_server" {
 }
 
 output "app_url" {
-  value       = "https://${azurerm_linux_web_app.backend_api.default_hostname}"
+  value       = var.enable_compute ? "https://${azurerm_linux_web_app.backend_api[0].default_hostname}" : "N/A"
   description = "The URL of the consolidated production Application."
 }
 
 output "app_staging_url" {
-  value       = "https://${azurerm_linux_web_app_slot.backend_api_staging.default_hostname}"
+  value       = var.enable_compute ? "https://${azurerm_linux_web_app_slot.backend_api_staging[0].default_hostname}" : "N/A"
   description = "The URL of the consolidated staging Application."
 }
 
@@ -24,6 +24,6 @@ output "postgres_host" {
 }
 
 output "redis_host" {
-  value       = azurerm_managed_redis.redis.hostname
+  value       = var.enable_compute ? azurerm_managed_redis.redis[0].hostname : "N/A"
   description = "The hostname of the Redis cache."
 }
