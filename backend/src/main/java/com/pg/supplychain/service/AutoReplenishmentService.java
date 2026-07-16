@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import tools.jackson.databind.ObjectMapper;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import java.time.Duration;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class AutoReplenishmentService {
     private final OrderService orderService;
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
+    private final StringRedisTemplate redisTemplate;
     private final OrderRepository orderRepository;
     private final WarehouseRepository warehouseRepository;
     private final ObjectMapper objectMapper;
@@ -90,6 +93,22 @@ public class AutoReplenishmentService {
                 if (product.isLowStockIndicator()) {
                     log.info("AutoReplenishmentService: Product {} is low in stock: {} (reorder level: {})",
                             product.getSku(), product.getStockQuantity(), product.getReorderLevel());
+
+                    // 1.5. Distributed cluster-wide lock (Redis TTL rate-limiter)
+                    boolean lockAcquired = false;
+                    try {
+                        String redisKey = "replenishment_cooldown:" + productId;
+                        Boolean success = redisTemplate.opsForValue().setIfAbsent(redisKey, "active", Duration.ofSeconds(60));
+                        lockAcquired = (success != null && success);
+                    } catch (Exception e) {
+                        log.warn("AutoReplenishmentService: Redis is unavailable ({}). Falling back to local in-memory lock for cluster safety.", e.getMessage());
+                        lockAcquired = true; // Fall back to local check (which passed at step 1)
+                    }
+
+                    if (!lockAcquired) {
+                        log.info("AutoReplenishmentService: Distributed cluster cooldown active for product {}. Skipping replenishment lookup.", product.getSku());
+                        return;
+                    }
 
                     // Record cooldown start and prune stale entries
                     replenishmentCooldowns.put(productId, now);

@@ -4,6 +4,10 @@
 **Author:** Technical Engineering & DevOps Lead  
 **Document Target:** Cloud Architecture Review & Infrastructure Budget Team  
 
+> [!NOTE]
+> **Historical Optimization Report:**
+> To showcase advanced enterprise routing, Nginx ingress proxying, and independent container scaling patterns during live job demonstrations, the project runs in a fully decoupled multi-container configuration (separate Nginx frontend and Tomcat backend containers) on the `swagger` branch. This overrides the unified container architecture details below while retaining the cost-savings reports as a validated optimization case study.
+
 ---
 
 ## 1. Executive Summary

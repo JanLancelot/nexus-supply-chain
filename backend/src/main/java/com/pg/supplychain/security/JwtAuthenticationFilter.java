@@ -1,6 +1,7 @@
 package com.pg.supplychain.security;
 
 import io.jsonwebtoken.Claims;
+import org.slf4j.MDC;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         String userId = claims.get("userId", String.class);
 
                         if (userEmail != null && role != null && userId != null) {
+                            MDC.put("userEmail", userEmail);
+                            MDC.put("userId", userId);
+
                             // Reconstruct authorities from the JWT claim
                             SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 

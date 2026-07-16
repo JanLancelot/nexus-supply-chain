@@ -54,6 +54,7 @@ resource "azurerm_managed_redis" "redis" {
 
 # Azure Database for PostgreSQL Flexible Server
 resource "azurerm_postgresql_flexible_server" "postgres" {
+  count                  = var.enable_compute ? 1 : 0
   name                   = "postgres-${var.project_name}-${var.environment}"
   resource_group_name    = azurerm_resource_group.rg.name
   location               = azurerm_resource_group.rg.location
@@ -67,16 +68,18 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
 
 # Database inside PostgreSQL Server
 resource "azurerm_postgresql_flexible_server_database" "db" {
+  count     = var.enable_compute ? 1 : 0
   name      = "supply_db"
-  server_id = azurerm_postgresql_flexible_server.postgres.id
+  server_id = azurerm_postgresql_flexible_server.postgres[0].id
   collation = "en_US.utf8"
   charset   = "utf8"
 }
 
 # Allow Azure Services to access the PostgreSQL DB
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_services" {
+  count            = var.enable_compute ? 1 : 0
   name             = "allow-azure-services"
-  server_id        = azurerm_postgresql_flexible_server.postgres.id
+  server_id        = azurerm_postgresql_flexible_server.postgres[0].id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
 }
@@ -100,7 +103,7 @@ resource "azurerm_linux_web_app" "backend_api" {
   }
 
   app_settings = {
-    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
+    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres[0].fqdn}:5432/${azurerm_postgresql_flexible_server_database.db[0].name}?sslmode=require"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
     "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis[0].hostname
@@ -130,7 +133,7 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
   }
 
   app_settings = {
-    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
+    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres[0].fqdn}:5432/${azurerm_postgresql_flexible_server_database.db[0].name}?sslmode=require"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
     "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis[0].hostname
@@ -140,6 +143,54 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
     "SPRING_CACHE_TYPE"                   = "redis"
     "WEBSITES_PORT"                       = "8080"
     "WEBSITES_CONTAINER_START_TIME_LIMIT" = "1800"
+  }
+}
+
+# Frontend App Service (Production)
+resource "azurerm_linux_web_app" "frontend_ui" {
+  count               = var.enable_compute ? 1 : 0
+  name                = "pg-enterprise-supply-ui"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  service_plan_id     = azurerm_service_plan.asp[0].id
+
+  site_config {
+    always_on = true
+    application_stack {
+      docker_image_name        = "frontend:latest"
+      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
+      docker_registry_username = azurerm_container_registry.acr.admin_username
+      docker_registry_password = azurerm_container_registry.acr.admin_password
+    }
+  }
+
+  app_settings = {
+    "BACKEND_URL"                         = "https://${azurerm_linux_web_app.backend_api[0].default_hostname}"
+    "NGINX_ENVSUBST_FILTER"               = "BACKEND_URL"
+    "WEBSITES_PORT"                       = "80"
+  }
+}
+
+# Frontend App Service - Staging Slot
+resource "azurerm_linux_web_app_slot" "frontend_ui_staging" {
+  count          = var.enable_compute ? 1 : 0
+  name           = "staging"
+  app_service_id = azurerm_linux_web_app.frontend_ui[0].id
+
+  site_config {
+    always_on = true
+    application_stack {
+      docker_image_name        = "frontend:latest"
+      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
+      docker_registry_username = azurerm_container_registry.acr.admin_username
+      docker_registry_password = azurerm_container_registry.acr.admin_password
+    }
+  }
+
+  app_settings = {
+    "BACKEND_URL"                         = "https://${azurerm_linux_web_app_slot.backend_api_staging[0].default_hostname}"
+    "NGINX_ENVSUBST_FILTER"               = "BACKEND_URL"
+    "WEBSITES_PORT"                       = "80"
   }
 }
 

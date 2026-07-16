@@ -96,15 +96,25 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build and Push Consolidated Docker Image
+      - name: Build and Push Docker Images
         run: |
           docker build -t pgsupplyregistry.azurecr.io/backend:${{ github.sha }} -t pgsupplyregistry.azurecr.io/backend:latest -f backend/Dockerfile .
+          docker build -t pgsupplyregistry.azurecr.io/frontend:${{ github.sha }} -t pgsupplyregistry.azurecr.io/frontend:latest -f frontend/Dockerfile ./frontend
           docker push pgsupplyregistry.azurecr.io/backend:${{ github.sha }}
           docker push pgsupplyregistry.azurecr.io/backend:latest
+          docker push pgsupplyregistry.azurecr.io/frontend:${{ github.sha }}
+          docker push pgsupplyregistry.azurecr.io/frontend:latest
 
-      - name: Deploy Consolidated App to Azure App Service (Staging Slot)
+      - name: Deploy Backend API to Azure App Service (Staging Slot)
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'pg-enterprise-supply-api'
           slot-name: 'staging'
           images: 'pgsupplyregistry.azurecr.io/backend:${{ github.sha }}'
+
+      - name: Deploy Frontend UI to Azure App Service (Staging Slot)
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'pg-enterprise-supply-ui'
+          slot-name: 'staging'
+          images: 'pgsupplyregistry.azurecr.io/frontend:${{ github.sha }}'

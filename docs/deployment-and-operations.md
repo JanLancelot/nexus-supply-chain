@@ -125,16 +125,26 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build and Push Production Docker Image
+      - name: Build and Push Docker Images
         run: |
-          docker build -t pgsupplyregistry.azurecr.io/backend:${{ github.sha }} -f docker/backend.Dockerfile .
+          docker build -t pgsupplyregistry.azurecr.io/backend:${{ github.sha }} -t pgsupplyregistry.azurecr.io/backend:latest -f backend/Dockerfile .
+          docker build -t pgsupplyregistry.azurecr.io/frontend:${{ github.sha }} -t pgsupplyregistry.azurecr.io/frontend:latest -f frontend/Dockerfile ./frontend
           docker push pgsupplyregistry.azurecr.io/backend:${{ github.sha }}
+          docker push pgsupplyregistry.azurecr.io/backend:latest
+          docker push pgsupplyregistry.azurecr.io/frontend:${{ github.sha }}
+          docker push pgsupplyregistry.azurecr.io/frontend:latest
 
-      - name: Deploy Container Image to Azure App Service
+      - name: Deploy Backend API to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'pg-enterprise-supply-api'
           images: 'pgsupplyregistry.azurecr.io/backend:${{ github.sha }}'
+
+      - name: Deploy Frontend UI to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'pg-enterprise-supply-ui'
+          images: 'pgsupplyregistry.azurecr.io/frontend:${{ github.sha }}'
 
 ```
 
@@ -193,7 +203,7 @@ If the database link breaks or memory allocation collapses, the endpoint returns
 
 ## 6. Cost Optimization: Suspending & Resuming the Cloud Environment
 
-To stop consuming credits on Azure when the environment is not in active use, you can suspend the compute resources. This shuts down the PostgreSQL flexible server compute and destroys the App Service Plan, Web App, Staging Slot, and Managed Redis Cache. Database data and container images (ACR) are fully preserved.
+To stop consuming credits on Azure when the environment is not in active use, you can suspend the compute and database resources. This destroys the PostgreSQL Flexible Server, the App Service Plan, Web App, Staging Slot, and Managed Redis Cache. Since the site is for demonstration purposes, database storage is not preserved on suspension. Container images (ACR) are fully preserved.
 
 ### 6.1 Suspend Environment
 Run the following script from the project root to stop cost bleeding:
@@ -202,8 +212,7 @@ Run the following script from the project root to stop cost bleeding:
 ```
 
 This will:
-1. Run `terraform apply -var="enable_compute=false" -auto-approve` to tear down compute resources.
-2. Stop the PostgreSQL Flexible Server via `az postgres flexible-server stop`.
+1. Run `terraform apply -var="enable_compute=false" -auto-approve` to tear down compute and database resources.
 
 ### 6.2 Resume Environment
 Run the following script from the project root to restore the environment when you need it:
@@ -212,5 +221,5 @@ Run the following script from the project root to restore the environment when y
 ```
 
 This will:
-1. Start the PostgreSQL Flexible Server via `az postgres flexible-server start`.
-2. Run `terraform apply -var="enable_compute=true" -auto-approve` to recreate the compute resources.
+1. Run `terraform apply -var="enable_compute=true" -auto-approve` to recreate the compute and database resources.
+2. The database schema and seed data are automatically populated on startup.

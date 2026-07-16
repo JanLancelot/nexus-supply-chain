@@ -19,6 +19,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 import tools.jackson.databind.ObjectMapper;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import java.time.Duration;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -39,6 +42,8 @@ class AutoReplenishmentServiceTest {
     @Mock private WarehouseRepository warehouseRepository;
     @Mock private ObjectMapper objectMapper;
     @Mock private PlatformTransactionManager transactionManager;
+    @Mock private StringRedisTemplate redisTemplate;
+    @Mock private ValueOperations<String, String> valueOperations;
 
     @InjectMocks
     private AutoReplenishmentService autoReplenishmentService;
@@ -47,6 +52,8 @@ class AutoReplenishmentServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         when(transactionManager.getTransaction(any())).thenReturn(new SimpleTransactionStatus());
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.setIfAbsent(anyString(), anyString(), any(Duration.class))).thenReturn(true);
         autoReplenishmentService.init();
     }
 

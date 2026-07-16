@@ -2,6 +2,9 @@
 
 A full-stack supply chain management platform built with a Spring Boot backend, React frontend, and a supporting infrastructure of PostgreSQL, Redis, and Kafka.
 
+> [!NOTE]
+> **Resume Claims & Technical Verification:** For detailed documentation, code references, and benchmark metrics verifying the engineering claims of this platform, see the [Resume Claims Verification Guide](file:///Users/janlancelot/Desktop/Projects/nexus-supply-chain/docs/claims-verification.md). For a simplified, high-level summary structured for interviews (STAR method, elevator pitches, and common Q&A), check out the [Interview Prep Cheat Sheet](file:///Users/janlancelot/Desktop/Projects/nexus-supply-chain/docs/interview-cheat-sheet.md).
+
 ---
 
 ## Key Features
@@ -60,7 +63,7 @@ A full-stack supply chain management platform built with a Spring Boot backend, 
 | **Messaging & Events** | Apache Kafka, Spring Kafka |
 | **DevOps & IaC** | Terraform, Docker |
 | **CI/CD Pipeline** | GitHub Actions |
-| **Staging/Prod Cloud** | Azure Web Apps (Consolidated), Azure Database for PostgreSQL Flexible Server, Azure Managed Redis (Balanced_B0) |
+| **Staging/Prod Cloud** | Azure Web Apps (Decoupled SPA Nginx Proxy), Azure Database for PostgreSQL Flexible Server, Azure Managed Redis (Balanced_B0) |
 | **Monitoring & Metrics** | Prometheus, Grafana, Node Exporter, Spring Boot Actuator, Micrometer |
 | **Testing - Unit/API** | JUnit 5, Mockito, REST Assured, Spring MockMVC |
 | **Testing - Integration**| Testcontainers |
@@ -221,7 +224,8 @@ docker compose up --build
 
 | Service | URL |
 |---|---|
-| **Consolidated Web App** | `http://localhost` (or `http://localhost:8080`) |
+| **Frontend UI (Nginx)** | `http://localhost` (or `http://localhost:80`) |
+| **Backend REST API** | `http://localhost:8080` (Proxied via Nginx on `/api/v1`) |
 | **PostgreSQL** | `localhost:5433` (DB: `supply_db`) |
 | **Redis** | `localhost:6379` |
 | **Kafka** | `localhost:9092` |
@@ -428,10 +432,10 @@ The repository includes a complete CI/CD workflow defined in [.github/workflows/
 
 ### 3. Environment Cost Optimization (Suspend/Resume)
 
-To stop consuming credits on Azure when the environment is not in active use, you can suspend the compute resources:
+To stop consuming credits on Azure when the environment is not in active use, you can suspend the compute and database resources:
 
-* **Suspend**: Run `./bin/suspend.sh` from the root. This tears down the App Service, App Service Plan, and Redis Cache (saving ~$97/mo) and stops the PostgreSQL compute instance.
-* **Resume**: Run `./bin/resume.sh` from the root. This starts the PostgreSQL instance and redeploys the App Service and Redis Cache.
+* **Suspend**: Run `./bin/suspend.sh` from the root. This tears down the App Service, App Service Plan, Redis Cache, and PostgreSQL database server completely (saving ~100% of running and storage costs).
+* **Resume**: Run `./bin/resume.sh` from the root. This recreates the PostgreSQL database and compute resources. The database schema and default seed data are automatically populated on startup.
 
 For more details, see the [Deployment & Operations Runbook](file:///Users/janlancelot/Desktop/Projects/nexus-supply-chain/docs/deployment-and-operations.md#6-cost-optimization-suspending--resuming-the-cloud-environment).
 
