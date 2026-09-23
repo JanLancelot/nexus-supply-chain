@@ -6,16 +6,14 @@ Review date: 2026-09-23. Scope: the repository's application code, tests, depend
 
 The review found exploitable credential defaults, missing authorization checks, stale account permissions, unsafe cache deserialization, inventory race conditions, exposed infrastructure credentials, and misleading behavior/documentation. The working tree contains fixes and regression tests. Existing credentials and deployed resources still require operator action; this local change cannot invalidate previously disclosed secrets.
 
-“AI slop” was evaluated as concrete maintenance problems: unsupported claims, generated boilerplate, fabricated or mislabeled metrics, duplicated logic, dead assets, and comments that hide incorrect behavior. Writing style alone is not evidence of how code was authored.
-
 ## Process and boundaries
 
 1. Inventoried tracked files and checked for repository instructions and pre-existing changes. The initial tree had untracked diagnostic archives/directories; they were preserved and excluded from source review.
 2. Split review across backend authentication/configuration, backend data/events, frontend, and infrastructure/documentation. Cross-checked API contracts and configuration between areas.
-3. Traced permissions, JWT handling, password provisioning, deserialization, transactions, concurrency, event delivery, caches, browser storage, and operational scripts. Read the relevant React/general JavaScript security guidance; that skill has no Java/Spring-specific reference, so Spring/Jackson documentation and implementation evidence were used directly.
+3. Traced permissions, JWT handling, password provisioning, deserialization, transactions, concurrency, event delivery, caches, browser storage, and operational scripts. Checked framework behavior against React, Spring, and Jackson documentation.
 4. Fixed confirmed issues and wrote tests that exercise authorization failures, unsafe payload rejection, concurrent mutations, transaction rollback, token lifecycle, and destructive-tool safety.
 5. Checked dependencies against npm advisories and OSV, then checked compatible remediation versions. An advisory match is not proof that every affected feature is reachable in this application.
-6. Rewrote documentation against the actual controllers, DTOs, migrations, deployment files, and observable test results. Removed stale examples rather than preserving fictitious guarantees.
+6. Checked documentation against controllers, DTOs, migrations, deployment files, and test results.
 
 No production access, deployment, Terraform apply, live credential rotation, Git-history rewrite, or destructive benchmark run was performed. Source review and automated tests are not a penetration test or a guarantee that no vulnerabilities remain.
 
@@ -139,11 +137,11 @@ Removed an always-passing write threshold, applied the advertised load scale, co
 
 ## Quality and documentation findings
 
-### 14. Unsupported guarantees and generated material
+### 14. Documentation and code maintenance
 
 **Code:** [README.md:1](README.md#L1), [docs/api-specification.yaml:1](docs/api-specification.yaml#L1), [docs/database-schema.md:1](docs/database-schema.md#L1), [docs/deployment-and-operations.md:1](docs/deployment-and-operations.md#L1).
 
-Replaced the template frontend README and backend HELP guide and rewrote the main README/architecture/runbook/schema/scope/cost documents. Removed claims of immutable audit storage, guaranteed delivery, compliance with P&G standards, sub-millisecond latency, fixed coverage, verified zero-error benchmarks, deployed Key Vault/Log Analytics/zone redundancy, and proven monthly savings that the repository did not substantiate.
+Updated setup, architecture, operations, schema, scope, and cost documentation to match the application and deployment configuration. The guides describe event-delivery limitations, configured infrastructure, and how to measure performance and operating costs.
 
 Corrected local ports, environment variable names, combined deployment behavior, relative links, and actual schema types. Rebuilt OpenAPI from all current controllers and DTOs, including pagination envelopes, notification counts, user/category/warehouse endpoints, UUID audit identifiers, and required IDs/fields. Removed unused starter assets, restored strict lint rules, consolidated duplicated order creation, and made dashboard/filter text reflect available data.
 
@@ -173,8 +171,6 @@ Added request length/precision/collection bounds, explicit invalid-page rejectio
 The Maven run covers 29 test classes, including three H2 concurrency tests and real loopback HTTP tests. Docker was unavailable: tests used their H2/in-memory fallback and did not exercise PostgreSQL/Redis/Kafka containers. Nginx runtime syntax/TLS connectivity, SQL fixture execution, authenticated browser workflows, cloud connectivity, container OS/image scanning, and a dedicated OpenAPI semantic validator were not run. No load test or destructive fixture reset was executed.
 
 Frontend findings and version changes are retained in [frontend dependency evidence](docs/review-evidence/frontend-dependency-audit.json). The final Maven scan and public coordinates are retained in [dependency evidence](docs/review-evidence/maven-dependency-audit.json). The nine originally matched Maven artifacts were addressed through Jackson 2 BOM 2.21.5, Jackson 3 BOM 3.1.5, Netty 4.2.17.Final, Tomcat 11.0.25, Log4j 2.25.5, PostgreSQL JDBC 42.7.12, LZ4 1.11.1, and Commons Compress 1.26.0. Commons Compress remains test-transitive. Final graph size differs because updated dependency metadata changes transitives. Advisory databases change over time; rerun checks for releases.
-
-Sandbox restrictions initially prevented loopback test servers and provider processes from starting. Read-only validation and local tests succeeded after permission-scoped retries. Those environment failures were not application test failures.
 
 ## Remaining operational and design work
 
