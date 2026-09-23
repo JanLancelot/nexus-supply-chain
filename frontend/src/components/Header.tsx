@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useAuth } from '../context/auth-context';
 import { Bell, Check, CheckSquare, AlertTriangle, Info } from 'lucide-react';
 import { getNotifications, markAsRead, markAllAsRead } from '../services/notifications';
 import { type Notification } from '../types';
@@ -14,11 +14,12 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
   const [totalCount, setTotalCount] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [markingRead, setMarkingRead] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const fetchNotifications = async () => {
-    try {
-      const data = await getNotifications();
+  const fetchNotifications = useCallback(() => {
+    return getNotifications().then((data) => {
       const sorted = [...data.notifications].sort((a, b) => {
         if (a.isRead !== b.isRead) {
           return a.isRead ? 1 : -1;
@@ -28,10 +29,11 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
       setNotifications(sorted);
       setTotalCount(data.totalCount);
       setUnreadCount(data.unreadCount);
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
-    }
-  };
+      setError(null);
+    }).catch(() => {
+      setError('Unable to refresh notifications.');
+    });
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -49,28 +51,38 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchNotifications]);
 
   const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (markingRead) return;
+    setMarkingRead(true);
     try {
       await markAsRead(id);
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
+      setError(null);
+    } catch {
+      setError('Unable to mark the notification as read.');
+    } finally {
+      setMarkingRead(false);
     }
   };
 
   const handleMarkAllAsRead = async () => {
+    if (markingRead) return;
+    setMarkingRead(true);
     try {
       await markAllAsRead();
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
-    } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
+      setError(null);
+    } catch {
+      setError('Unable to mark notifications as read.');
+    } finally {
+      setMarkingRead(false);
     }
   };
 
@@ -87,6 +99,8 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         {/* Notification Center */}
         <div className="relative" ref={dropdownRef}>
           <button
+            aria-label="Notifications"
+            aria-expanded={isOpen}
             onClick={() => setIsOpen(!isOpen)}
             className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-200 cursor-pointer"
           >
@@ -106,6 +120,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllAsRead}
+                    disabled={markingRead}
                     className="text-[11px] font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
                   >
                     <CheckSquare className="h-3.5 w-3.5" />
@@ -116,6 +131,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
 
               {/* Notification List */}
               <div className="max-h-72 overflow-y-auto divide-y divide-gray-850">
+                {error && <p role="status" className="p-4 text-xs text-amber-400">{error}</p>}
                 {notifications.length === 0 ? (
                   <div className="p-6 text-center text-gray-500 text-xs">
                     No notifications yet
@@ -161,6 +177,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                             onClick={(e) => handleMarkAsRead(notification.id, e)}
                             className="h-6 w-6 rounded hover:bg-gray-800 text-gray-500 hover:text-white flex items-center justify-center shrink-0 cursor-pointer"
                             title="Mark as read"
+                            disabled={markingRead}
                           >
                             <Check className="h-3.5 w-3.5" />
                           </button>

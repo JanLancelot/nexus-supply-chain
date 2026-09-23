@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   History, 
   Search, 
@@ -14,7 +13,6 @@ import { getAuditLogs } from '../services/audit';
 import { type AuditLog } from '../types';
 
 const AuditLogs: React.FC = () => {
-  useAuth();
   
   // State variables
   const [logs, setLogs] = useState<AuditLog[]>([]);
@@ -32,11 +30,8 @@ const AuditLogs: React.FC = () => {
   const [entityFilter, setEntityFilter] = useState('ALL');
   const [actionFilter, setActionFilter] = useState('ALL');
 
-  const fetchLogs = async (pageNumber: number = 0) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getAuditLogs(pageNumber, 50);
+  const fetchLogs = useCallback((pageNumber: number = 0) => {
+    return getAuditLogs(pageNumber, 50).then((data) => {
       // Sort: newest first
       const sorted = [...data].sort((a, b) => 
         new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
@@ -44,17 +39,17 @@ const AuditLogs: React.FC = () => {
       setLogs(sorted);
       setPage(pageNumber);
       setHasMore(data.length === 50);
-    } catch (err: any) {
-      console.error(err);
-      setError('Access Denied or Failed to fetch forensic logs. Check administrative authorization token.');
-    } finally {
+      setError(null);
+    }).catch(() => {
+      setError('Unable to load audit logs. Please try again.');
+    }).finally(() => {
       setLoading(false);
-    }
-  };
+    });
+  }, []);
 
   useEffect(() => {
-    fetchLogs(0);
-  }, []);
+    void fetchLogs(0);
+  }, [fetchLogs]);
 
   // Action tag color resolver
   const getActionBadgeStyle = (action: string) => {
@@ -71,12 +66,14 @@ const AuditLogs: React.FC = () => {
   };
 
   // Safe JSON parser helper for diff panel
-  const parseJsonSafe = (jsonStr: string | null) => {
+  const parseJsonSafe = (jsonStr: string | null): Record<string, unknown> => {
     if (!jsonStr) return {};
     try {
-      // The old/new values in backend might be stringified JSON like '{"stockQuantity": 1240}'
-      return JSON.parse(jsonStr);
-    } catch (e) {
+      const value: unknown = JSON.parse(jsonStr);
+      return typeof value === 'object' && value !== null && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : { value };
+    } catch {
       // Return raw string mapping if it fails to parse as JSON
       return { value: jsonStr };
     }
@@ -180,7 +177,7 @@ const AuditLogs: React.FC = () => {
               </span>
               <input
                 type="text"
-                placeholder="Search Entity ID or Actor ID..."
+                placeholder="Search IDs on this page..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 text-xs glass-input"
@@ -205,13 +202,13 @@ const AuditLogs: React.FC = () => {
                 className="px-3 py-2 text-xs glass-input cursor-pointer"
               >
                 <option value="ALL">All Actions</option>
-                <option value="ACTION_MANUAL_ADJUSTMENT">Stock Overrides</option>
+                <option value="ACTION_MANUAL_ADJUSTMENT">Stock Adjustments</option>
                 <option value="ACTION_CREATE_ORDER">Create Order</option>
                 <option value="ACTION_UPDATE_ORDER_STATUS">Update Status</option>
               </select>
 
               <button
-                onClick={() => fetchLogs(0)}
+                onClick={() => { setLoading(true); void fetchLogs(0); }}
                 className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-lg border border-gray-800 hover:border-gray-700 transition cursor-pointer"
                 title="Refresh Audit History"
               >
@@ -224,13 +221,13 @@ const AuditLogs: React.FC = () => {
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center">
               <div className="h-8 w-8 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4" />
-              <p className="text-sm text-gray-400">Streaming ledger logs...</p>
+              <p className="text-sm text-gray-400">Loading audit logs...</p>
             </div>
           ) : filteredLogs.length === 0 ? (
             <div className="py-20 text-center glass-panel rounded-2xl">
               <History className="h-10 w-10 text-gray-600 mx-auto mb-3" />
               <h4 className="text-sm font-semibold text-white m-0">No Audit Logs Recorded</h4>
-              <p className="text-xs text-gray-500 mt-1">Forensic traces are completely clean.</p>
+              <p className="text-xs text-gray-500 mt-1">No records match this page and the selected filters.</p>
             </div>
           ) : (
             <div className="glass-panel rounded-2xl overflow-hidden border border-gray-800/60 shadow-lg">
@@ -287,20 +284,23 @@ const AuditLogs: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+
+            </div>
+          )}
               <div className="flex items-center justify-between px-6 py-4 bg-gray-900/20 border-t border-gray-850">
                 <div className="text-xs text-gray-400">
                   Page <span className="font-semibold text-white">{page + 1}</span>
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => fetchLogs(page - 1)}
+                    onClick={() => { setLoading(true); void fetchLogs(page - 1); }}
                     disabled={page === 0 || loading}
                     className="px-3 py-1.5 text-xs font-medium bg-gray-800 hover:bg-gray-700 disabled:opacity-45 disabled:hover:bg-gray-800 text-white rounded-lg border border-gray-750 transition cursor-pointer"
                   >
                     Previous
                   </button>
                   <button
-                    onClick={() => fetchLogs(page + 1)}
+                    onClick={() => { setLoading(true); void fetchLogs(page + 1); }}
                     disabled={!hasMore || loading}
                     className="px-3 py-1.5 text-xs font-medium bg-gray-800 hover:bg-gray-700 disabled:opacity-45 disabled:hover:bg-gray-800 text-white rounded-lg border border-gray-750 transition cursor-pointer"
                   >
@@ -308,8 +308,6 @@ const AuditLogs: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          )}
         </div>
 
         {/* Right side: Inspection Details diff panel */}

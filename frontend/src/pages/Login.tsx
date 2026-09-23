@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth-context';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, AlertTriangle, ShieldCheck } from 'lucide-react';
 
@@ -24,8 +24,8 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
       navigate('/');
-    } catch (err: any) {
-      setError(typeof err === 'string' ? err : 'Login failed. Please check your credentials.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed. Please check your credentials.');
     } finally {
       setIsSubmitting(false);
     }
@@ -43,7 +43,7 @@ const Login: React.FC = () => {
             <ShieldCheck className="h-7 w-7" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-white m-0">Nexus Supply Chain</h1>
-          <p className="text-sm text-gray-400 mt-2">P&G IT Internal Simulated Operations Hub</p>
+          <p className="text-sm text-gray-400 mt-2">Inventory and purchase order management</p>
         </div>
 
         {error && (
@@ -55,8 +55,8 @@ const Login: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-              Corporate Email Address
+            <label htmlFor="email" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              Email Address
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -64,22 +64,20 @@ const Login: React.FC = () => {
               </span>
               <input
                 type="email"
+                id="email"
+                autoComplete="username"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="operator@pg.com"
+                placeholder="name@company.com"
                 className="w-full pl-10 pr-4 py-3 glass-input text-white text-sm"
                 disabled={isSubmitting}
               />
             </div>
-            <div className="mt-1 text-[10px] text-gray-500 flex justify-between">
-              <span>Admin: admin@pg.com</span>
-              <span>Staff: staff@pg.com</span>
-            </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <label htmlFor="password" className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
               Password
             </label>
             <div className="relative">
@@ -88,6 +86,8 @@ const Login: React.FC = () => {
               </span>
               <input
                 type="password"
+                id="password"
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -95,10 +95,6 @@ const Login: React.FC = () => {
                 className="w-full pl-10 pr-4 py-3 glass-input text-white text-sm"
                 disabled={isSubmitting}
               />
-            </div>
-            <div className="mt-1 text-[10px] text-gray-500 flex justify-between">
-              <span>Pass: AdminPassword123</span>
-              <span>Pass: StaffPassword123</span>
             </div>
           </div>
 

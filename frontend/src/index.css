@@ -19,7 +19,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #0b0f19; /* premium deep dark background */
+  background-color: #0b0f19;
   color: #f3f4f6;
   min-height: 100vh;
 }
@@ -43,7 +43,7 @@ body {
 
 .glass-card:hover {
   background: rgba(31, 41, 55, 0.6);
-  border-color: rgba(99, 102, 241, 0.35); /* Glow indigo */
+  border-color: rgba(99, 102, 241, 0.35);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(99, 102, 241, 0.1);
 }
 
