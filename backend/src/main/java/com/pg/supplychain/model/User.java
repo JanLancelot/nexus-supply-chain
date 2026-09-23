@@ -1,5 +1,6 @@
 package com.pg.supplychain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,7 @@ public class User {
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 60)
+    @JsonIgnore
     private String passwordHash;
 
     @ManyToOne(fetch = FetchType.EAGER)

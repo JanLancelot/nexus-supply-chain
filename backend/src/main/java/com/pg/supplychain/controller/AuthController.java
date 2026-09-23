@@ -1,5 +1,6 @@
 package com.pg.supplychain.controller;
 
+import com.pg.supplychain.dto.ApiError;
 import com.pg.supplychain.dto.LoginRequest;
 import com.pg.supplychain.dto.LoginResponse;
 import com.pg.supplychain.model.User;
@@ -12,14 +13,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import java.util.UUID;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
+    // Keep a BCrypt comparison on unknown accounts to avoid a fast account-enumeration path.
+    private static final String DUMMY_PASSWORD_HASH = new BCryptPasswordEncoder(10).encode(UUID.randomUUID().toString());
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -29,13 +33,14 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
 
-        if (userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPasswordHash())) {
-            Map<String, Object> errorDetails = new HashMap<>();
-            errorDetails.put("status", HttpStatus.UNAUTHORIZED.value());
-            errorDetails.put("error", "Unauthorized");
-            errorDetails.put("message", "Invalid email or password");
-            errorDetails.put("timestamp", java.time.OffsetDateTime.now().toString());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetails);
+        String passwordHash = userOpt.map(User::getPasswordHash).orElse(DUMMY_PASSWORD_HASH);
+        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), passwordHash);
+        if (userOpt.isEmpty() || !passwordMatches || !"ACTIVE".equals(userOpt.get().getStatus())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.builder()
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .error("Unauthorized")
+                    .message("Invalid email or password")
+                    .build());
         }
 
         User user = userOpt.get();

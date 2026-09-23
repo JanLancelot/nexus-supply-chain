@@ -5,6 +5,8 @@ import com.pg.supplychain.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.annotation.Value;
+import java.nio.charset.StandardCharsets;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,64 +25,61 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
 
+    @Value("${app.bootstrap.admin-email:}")
+    private String adminEmail;
+
+    @Value("${app.bootstrap.admin-password:}")
+    private String adminPassword;
+
+    @Value("${app.bootstrap.admin-name:Administrator}")
+    private String adminName;
+
+    @Value("${app.seed-demo-data:false}")
+    private boolean seedDemoData;
+
+    @Value("${app.bootstrap.staff-password:}")
+    private String staffPassword;
+
     @Override
     public void run(String... args) {
-        // 1. Seed Roles
-        if (roleRepository.count() == 0) {
-            log.info("No roles found in database. Seeding default roles...");
-            Role staffRole = Role.builder()
-                    .name("ROLE_STAFF")
-                    .description("Inventory Operations Staff")
-                    .build();
+        Role staffRole = ensureRole("ROLE_STAFF", "Inventory Operations Staff");
+        Role adminRole = ensureRole("ROLE_ADMIN", "Supply Chain Administrator");
 
-            Role adminRole = Role.builder()
-                    .name("ROLE_ADMIN")
-                    .description("Supply Chain Administrator")
-                    .build();
-
-            roleRepository.save(staffRole);
-            roleRepository.save(adminRole);
-            log.info("Roles seeded successfully.");
+        if (userRepository.count() == 0) {
+            if (!adminEmail.isBlank() || !adminPassword.isBlank()) {
+                if (adminEmail.isBlank() || !adminEmail.contains("@") || adminEmail.length() > 255) {
+                    throw new IllegalStateException("Set a valid APP_BOOTSTRAP_ADMIN_EMAIL to bootstrap an administrator");
+                }
+                validateBootstrapPassword(adminPassword, "APP_BOOTSTRAP_ADMIN_PASSWORD");
+                userRepository.save(User.builder()
+                        .fullName(adminName)
+                        .email(adminEmail)
+                        .passwordHash(passwordEncoder.encode(adminPassword))
+                        .role(adminRole)
+                        .status("ACTIVE")
+                        .build());
+                log.info("Bootstrap administrator created");
+            } else {
+                log.warn("No users exist. Supply bootstrap administrator credentials to create the first account.");
+            }
         }
 
-        // 2. Seed Users
-        if (userRepository.count() == 0) {
-            log.info("No users found in database. Seeding default accounts...");
-
-            Role staffRole = roleRepository.findByName("ROLE_STAFF")
-                    .orElseThrow(() -> new IllegalStateException("ROLE_STAFF not found"));
-
-            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                    .orElseThrow(() -> new IllegalStateException("ROLE_ADMIN not found"));
-
-            User staff = User.builder()
-                    .fullName("Staff User")
+        if (!seedDemoData) {
+            return;
+        }
+        User adminUser = userRepository.findByRoleName("ROLE_ADMIN").stream().findFirst()
+                .orElseThrow(() -> new IllegalStateException("Create a bootstrap administrator before enabling demo data"));
+        if (userRepository.findByEmail("staff@pg.com").isEmpty()) {
+            validateBootstrapPassword(staffPassword, "APP_BOOTSTRAP_STAFF_PASSWORD");
+            userRepository.save(User.builder()
+                    .fullName("Demo Staff")
                     .email("staff@pg.com")
-                    .passwordHash(passwordEncoder.encode("StaffPassword123"))
+                    .passwordHash(passwordEncoder.encode(staffPassword))
                     .role(staffRole)
                     .status("ACTIVE")
-                    .build();
-
-            User admin = User.builder()
-                    .fullName("Admin User")
-                    .email("admin@pg.com")
-                    .passwordHash(passwordEncoder.encode("AdminPassword123"))
-                    .role(adminRole)
-                    .status("ACTIVE")
-                    .build();
-
-            userRepository.save(staff);
-            userRepository.save(admin);
-
-            log.info("Default accounts seeded successfully: staff@pg.com, admin@pg.com");
-        } else {
-            log.info("Database users already exist. Skipping seeding.");
+                    .build());
         }
 
-        // Retrieve admin user for warehouse manager mapping
-        User adminUser = userRepository.findByEmail("admin@pg.com").orElse(null);
-
-        // 3. Seed Warehouses
         if (warehouseRepository.count() == 0) {
             log.info("Seeding default warehouses...");
             Warehouse mainWh = Warehouse.builder()
@@ -99,7 +98,6 @@ public class DatabaseSeeder implements CommandLineRunner {
             warehouseRepository.save(regionalWh);
         }
 
-        // 4. Seed Categories
         if (categoryRepository.count() == 0) {
             log.info("Seeding default product categories...");
             Category electronics = Category.builder()
@@ -114,7 +112,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             Category office = Category.builder()
                     .name("Office Supplies")
-                    .description("Furniture, stationary, and general office goods")
+                    .description("Furniture, stationery, and general office goods")
                     .build();
 
             categoryRepository.save(electronics);
@@ -122,7 +120,6 @@ public class DatabaseSeeder implements CommandLineRunner {
             categoryRepository.save(office);
         }
 
-        // 5. Seed Suppliers
         if (supplierRepository.count() == 0) {
             log.info("Seeding default suppliers...");
             Supplier apex = Supplier.builder()
@@ -147,7 +144,6 @@ public class DatabaseSeeder implements CommandLineRunner {
             supplierRepository.save(globalParts);
         }
 
-        // 6. Seed Products
         if (productRepository.count() == 0) {
             log.info("Seeding default products...");
             Category electronics = categoryRepository.findByName("Electronics").orElse(null);
@@ -293,6 +289,17 @@ public class DatabaseSeeder implements CommandLineRunner {
             productRepository.save(paper);
             productRepository.save(monitor);
             log.info("Products seeded successfully.");
+        }
+    }
+
+    private Role ensureRole(String name, String description) {
+        return roleRepository.findByName(name).orElseGet(() -> roleRepository.save(
+                Role.builder().name(name).description(description).build()));
+    }
+
+    private void validateBootstrapPassword(String password, String setting) {
+        if (password == null || password.length() < 12 || password.getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new IllegalStateException(setting + " must be at least 12 characters and at most 72 UTF-8 bytes");
         }
     }
 }

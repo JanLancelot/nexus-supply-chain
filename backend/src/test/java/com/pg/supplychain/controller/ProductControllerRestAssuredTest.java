@@ -62,7 +62,6 @@ class ProductControllerRestAssuredTest extends BaseIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        System.out.println("DEBUG: Local server port is " + port);
         RestAssured.port = port;
         jdbcTemplate.update("DELETE FROM supplier_products");
         notificationRepository.deleteAll();
@@ -101,8 +100,16 @@ class ProductControllerRestAssuredTest extends BaseIntegrationTest {
 
     @Test
     void testCreateProduct_UnauthorizedForNonAdmin() {
-        // Create token for ROLE_STAFF
-        String staffToken = jwtService.generateToken("staff-api@pg.com", "ROLE_STAFF", UUID.randomUUID().toString());
+        Role staffRole = roleRepository.findByName("ROLE_STAFF")
+                .orElseGet(() -> roleRepository.save(Role.builder().name("ROLE_STAFF").build()));
+        User staff = userRepository.save(User.builder()
+                .fullName("Staff API Test")
+                .email("staff-api@pg.com")
+                .passwordHash("test-fixture-hash")
+                .role(staffRole)
+                .status("ACTIVE")
+                .build());
+        String staffToken = jwtService.generateToken(staff.getEmail(), staffRole.getName(), staff.getId().toString());
 
         ProductCreateRequest request = ProductCreateRequest.builder()
                 .sku("SKU-RA-UNAUTH")

@@ -1,6 +1,9 @@
 package com.pg.supplychain.security;
 
+import com.pg.supplychain.model.User;
+import com.pg.supplychain.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.UUID;
 import java.util.Map;
 
 @Component
@@ -25,6 +28,7 @@ import java.util.Map;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(
@@ -44,37 +48,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 Claims claims = jwtService.extractAllClaims(jwt);
-                if (claims != null) {
-                    Date expiration = claims.getExpiration();
-                    if (expiration != null && !expiration.before(new Date())) {
-                        String userEmail = claims.getSubject();
-                        String role = claims.get("role", String.class);
-                        String userId = claims.get("userId", String.class);
-
-                        if (userEmail != null && role != null && userId != null) {
-                            // Reconstruct authorities from the JWT claim
-                            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
-
-                            // Custom principal details map to bypass DB lookup during filter authentication
-                            Map<String, Object> principalDetails = new HashMap<>();
-                            principalDetails.put("email", userEmail);
-                            principalDetails.put("role", role);
-                            principalDetails.put("userId", userId);
-
-                            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                    principalDetails,
-                                    null,
-                                    Collections.singletonList(authority)
-                            );
-
-                            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                            SecurityContextHolder.getContext().setAuthentication(authToken);
-                        }
+                Date expiration = claims.getExpiration();
+                String userId = claims.get("userId", String.class);
+                if (expiration != null && expiration.after(new Date()) && userId != null) {
+                    User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
+                    // Read current account state so disabling, deleting, or changing a role takes effect immediately.
+                    if (user != null && "ACTIVE".equals(user.getStatus())
+                            && user.getEmail().equals(claims.getSubject()) && user.getRole() != null) {
+                        String role = user.getRole().getName();
+                        Map<String, Object> principal = Map.of(
+                                "email", user.getEmail(), "role", role, "userId", userId);
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                principal, null, Collections.singletonList(new SimpleGrantedAuthority(role)));
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.error("Cannot set user authentication: " + e.getMessage());
+        } catch (JwtException | IllegalArgumentException e) {
+            // Invalid bearer tokens remain unauthenticated; do not log attacker-controlled token details.
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

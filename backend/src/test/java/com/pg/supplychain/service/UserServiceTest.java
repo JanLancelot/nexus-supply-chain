@@ -51,7 +51,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetUserById_CachedAndUncached() {
+    void testGetUserById_RefreshesAccountState() {
         UUID id = UUID.randomUUID();
         User user = User.builder().id(id).email("test@pg.com").build();
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
@@ -60,10 +60,10 @@ class UserServiceTest {
         assertNotNull(result1);
         assertEquals("test@pg.com", result1.getEmail());
 
-        // Call again to verify cache hit (no second repo call)
+        // Account changes must be visible on the next lookup.
         User result2 = userService.getUserById(id);
         assertSame(result1, result2);
-        verify(userRepository, times(1)).findById(id);
+        verify(userRepository, times(2)).findById(id);
     }
 
     @Test
@@ -73,7 +73,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetUsersByRole_CachedAndUncached() {
+    void testGetUsersByRole_RefreshesRoleMembership() {
         String roleName = "ROLE_ADMIN";
         User user = User.builder().id(UUID.randomUUID()).email("test@pg.com").build();
         when(userRepository.findByRoleName(roleName)).thenReturn(Arrays.asList(user));
@@ -83,7 +83,7 @@ class UserServiceTest {
 
         List<User> result2 = userService.getUsersByRole(roleName);
         assertSame(result1, result2);
-        verify(userRepository, times(1)).findByRoleName(roleName);
+        verify(userRepository, times(2)).findByRoleName(roleName);
     }
 
     @Test
@@ -105,10 +105,6 @@ class UserServiceTest {
                 .status("ACTIVE")
                 .build();
 
-        // Prime the role cache first to verify it gets cleared
-        when(userRepository.findByRoleName("ROLE_STAFF")).thenReturn(List.of());
-        userService.getUsersByRole("ROLE_STAFF"); // now cached
-
         when(userRepository.findByEmail("newuser@pg.com")).thenReturn(Optional.empty());
         when(roleRepository.findByName("ROLE_STAFF")).thenReturn(Optional.of(role));
         when(passwordEncoder.encode("password123")).thenReturn("encoded_password");
@@ -120,18 +116,6 @@ class UserServiceTest {
         assertEquals(savedUser.getId(), response.getId());
         assertEquals("newuser@pg.com", response.getEmail());
         assertEquals("ROLE_STAFF", response.getRole());
-
-        // Verify userCache is updated (no repository call when fetching by ID now)
-        User cachedUser = userService.getUserById(savedUser.getId());
-        assertNotNull(cachedUser);
-        assertEquals("newuser@pg.com", cachedUser.getEmail());
-        verify(userRepository, never()).findById(savedUser.getId());
-
-        // Verify roleCache was invalidated (forces a repository call on next read)
-        when(userRepository.findByRoleName("ROLE_STAFF")).thenReturn(List.of(savedUser));
-        List<User> rolesResult = userService.getUsersByRole("ROLE_STAFF");
-        assertEquals(1, rolesResult.size());
-        verify(userRepository, times(2)).findByRoleName("ROLE_STAFF"); // 1st before create, 2nd after cache invalidation
 
         // Verify audit logging
         verify(auditService, times(1)).logChange(
