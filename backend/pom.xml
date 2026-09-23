@@ -28,8 +28,9 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
-		<testcontainers.version>1.20.4</testcontainers.version>
+		<testcontainers.version>1.21.4</testcontainers.version>
 		<rest-assured.version>5.4.0</rest-assured.version>
+		<integration.containers>false</integration.containers>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -186,6 +187,15 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<integration.containers>${integration.containers}</integration.containers>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
@@ -261,5 +271,13 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>integration</id>
+			<properties>
+				<integration.containers>true</integration.containers>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

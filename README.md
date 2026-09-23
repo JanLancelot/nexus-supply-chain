@@ -2,6 +2,8 @@
 
 A full-stack supply chain management platform built with a Spring Boot backend, React frontend, and a supporting infrastructure of PostgreSQL, Redis, and Kafka.
 
+For local checks, test modes, and coverage reports, see the [development harness guide](docs/development.md).
+
 ---
 
 ## Key Features
