@@ -1,32 +1,21 @@
-# Getting Started
+# Backend development
 
-### Reference Documentation
-For further reference, please consider the following sections:
+Run the backend from this directory with Java 17 or newer:
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.1.0/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/4.1.0/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/4.1.0/reference/web/servlet.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/4.1.0/reference/data/sql.html#data.sql.jpa-and-spring-data)
-* [Spring Security](https://docs.spring.io/spring-boot/4.1.0/reference/web/spring-security.html)
-* [Validation](https://docs.spring.io/spring-boot/4.1.0/reference/io/validation.html)
+```sh
+./mvnw spring-boot:run
+```
 
-### Guides
-The following guides illustrate how to use some features concretely:
+Set `SPRING_DATASOURCE_PASSWORD` and a randomly generated `JWT_SECRET` of at least 32 bytes before starting. The backend uses PostgreSQL on localhost:5432 by default; the root [README](../README.md) describes the Docker setup.
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
-* [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
-* [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
-* [Validation](https://spring.io/guides/gs/validating-form-input/)
+On an empty database, set `APP_BOOTSTRAP_ADMIN_EMAIL` and `APP_BOOTSTRAP_ADMIN_PASSWORD` to create the first administrator. The password must be at least 12 characters and at most 72 UTF-8 bytes. Bootstrap credentials do not overwrite existing accounts. Remove the bootstrap password from the runtime environment after creating the account.
 
-### Maven Parent overrides
+Demo inventory is disabled by default. To load sample categories, warehouses, suppliers, products, and a `staff@pg.com` demo user, set `APP_SEED_DEMO_DATA=true` and provide `APP_BOOTSTRAP_STAFF_PASSWORD` with the same password limits. Demo seeding belongs in local development environments.
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+The application listens on port 8080. Health is available at `/api/health`; it returns no exception details. Management health and Prometheus metrics use a separate listener at `127.0.0.1:9091`. Docker overrides the management address on its internal network without publishing that port. Keep that listener private: Prometheus scrapes it without a bearer token.
 
+Browser requests may originate from localhost and localhost:5173 by default. Set the comma-separated `APP_CORS_ALLOWED_ORIGINS` for another frontend origin. Authentication uses bearer tokens in the Authorization header.
+
+Login requests are limited to 30 attempts per minute per socket peer address per application instance, including successful attempts. Excess requests receive HTTP 429 and `Retry-After`. `APP_LOGIN_MAX_ATTEMPTS_PER_MINUTE` and `APP_LOGIN_MAX_TRACKED_CLIENTS` tune the limit and bounded client table (default 10,000). When the table is full, new addresses wait for a window to expire. Forwarding headers are not trusted, so callers behind the same proxy share a limit. Configure a trusted gateway with a shared limit for multiple instances and verify its proxy-address handling before changing these defaults.
+
+Run unit and application-context tests with `./mvnw test`. Test credentials and the signing key in `src/test/resources/application.properties` are test fixtures. Tests under `integration/` require Docker through Testcontainers; their availability depends on the local Docker daemon.

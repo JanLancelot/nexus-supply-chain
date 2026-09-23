@@ -1,469 +1,1151 @@
 openapi: 3.0.3
 info:
-  title: Enterprise Supply Chain Visibility & Operations API
-  description: Internal P&G IT simulated operations API managing secure inventory lifecycles, deterministic purchase orders, and forensic auditing traces.
+  title: Nexus Supply Chain API
   version: 1.0.0
+  description: Inventory, purchase orders, user administration, notifications, and audit records. Bearer
+    authentication is required unless an operation declares otherwise. Endpoint roles are documented per
+    operation; there is no per-warehouse tenancy model.
 servers:
-  - url: http://localhost:8080/api/v1
-    description: Local Development Environment
-
+- url: http://localhost:8080/api/v1
+  description: Local development
+security:
+- BearerAuth: []
 paths:
   /auth/login:
     post:
-      summary: Authenticate User Identity
-      description: Validates corporate credentials and returns a stateless cryptographically signed JWT bearer token.
-      operationId: loginUser
+      summary: Sign in
+      description: Public endpoint. Requires an active account and valid credentials. Unknown accounts,
+        incorrect passwords, and disabled accounts receive the same authentication error. Rate limiting
+        defaults to 30 attempts per minute per socket-peer IP and process; users behind a proxy share
+        its limit.
+      operationId: postAuthLogin
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          description: Login attempt limit reached or the client counter table is full. Retry after the
+            stated interval.
+          headers:
+            Retry-After:
+              description: Seconds until another attempt may be made.
+              schema:
+                type: integer
+                minimum: 1
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: operator@pg.com
-                password:
-                  type: string
-                  format: password
-                  example: SecurePassword123
+              $ref: '#/components/schemas/LoginRequest'
+  /inventory/products:
+    get:
+      summary: List products
+      description: Staff and administrators. Returns one slice of at most 50 products; no total count
+        is calculated.
+      operationId: getInventoryProducts
       responses:
         '200':
-          description: Authentication Successful
+          description: Successful response
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    description: JWT bearer access token valid for 60 minutes.
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                $ref: '#/components/schemas/ProductPage'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          $ref: '#/components/responses/400'
         '401':
-          description: Invalid Credentials Supplied.
-
-  /inventory/products:
-    get:
-      summary: Retrieve Inventory Catalog List
-      description: Returns a collection of tracking assets. Accessible by ROLE_STAFF and ROLE_ADMIN.
-      security:
-        - BearerAuth: []
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/Size'
+    post:
+      summary: Create a product
+      description: Administrators only. Initial stock is zero.
+      operationId: postInventoryProducts
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+  /inventory/products/{id}/adjust:
+    post:
+      summary: Adjust product stock
+      description: Administrators only. Applies a signed change, records an audit event, and rejects stock
+        underflow or overflow.
+      operationId: postInventoryProductsIdAdjust
       responses:
         '200':
-          description: A list of current inventory records.
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductAdjustRequest'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+  /orders:
+    get:
+      summary: List orders
+      description: Staff and administrators can view orders across the shared workspace. Newest first;
+        at most 50 per page.
+      operationId: getOrders
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPage'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/Size'
+    post:
+      summary: Create a purchase order
+      description: Staff and administrators. Creates a DRAFT using product prices from the database.
+      operationId: postOrders
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+  /orders/{id}:
+    get:
+      summary: Get an order
+      description: Staff and administrators.
+      operationId: getOrdersId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+  /orders/{id}/status:
+    put:
+      summary: Update an order status
+      description: Staff and administrators. Forward transitions are DRAFT → PENDING_APPROVAL → APPROVED
+        → SHIPPED → DELIVERED; any nonterminal state can transition to CANCELLED. Only administrators
+        can move to APPROVED, SHIPPED, or DELIVERED. Staff can submit drafts or cancel orders only while
+        DRAFT or PENDING_APPROVAL. Repeating the current status changes nothing. Delivery adds stock exactly
+        once.
+      operationId: putOrdersIdStatus
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderStatusUpdateRequest'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+  /categories:
+    get:
+      summary: List categories
+      description: Staff and administrators.
+      operationId: getCategories
+      responses:
+        '200':
+          description: Successful response
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Product'
+                  $ref: '#/components/schemas/Category'
         '401':
-          $ref: '#/components/responses/401Unauthorized'
-
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
     post:
-      summary: Create New Product Catalog Definition
-      description: Establishes a brand new material catalog node. Protected by ROLE_ADMIN.
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - sku
-                - name
-                - reorderLevel
-              properties:
-                sku:
-                  type: string
-                  example: PG-FABSOFT-009
-                name:
-                  type: string
-                  example: Downy Fresh Blossom 1L
-                reorderLevel:
-                  type: integer
-                  minimum: 0
-                  example: 50
+      summary: Create a category
+      description: Administrators only.
+      operationId: postCategories
       responses:
         '201':
-          description: Product Successfully Extracted & Cataloged.
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/Category'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
         '403':
-          $ref: '#/components/responses/403Forbidden'
-
-  /inventory/products/{id}/adjust:
-    post:
-      summary: Manually Adjust Inventory Balances
-      description: Forces modifications to historical balance nodes. Requires an explicitly mapped system reason code. Protected by ROLE_ADMIN.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - quantityAdjustment
-                - reasonCode
-              properties:
-                quantityAdjustment:
-                  type: integer
-                  description: Negative values reflect scrap or damage; positive values reflect cyclical additions.
-                  example: -12
-                reasonCode:
-                  type: string
-                  enum: [CYCLIC_COUNT_DISCREPANCY, DAMAGED_GOODS_SCRAP, SUPPLIER_SHORTAGE]
-                  example: DAMAGED_GOODS_SCRAP
+              $ref: '#/components/schemas/CategoryRequest'
+  /categories/{id}:
+    get:
+      summary: Get a category
+      description: Staff and administrators.
+      operationId: getCategoriesId
       responses:
         '200':
-          description: Stock mutation processed successfully and audit trace preserved.
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/Category'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
         '403':
-          $ref: '#/components/responses/403Forbidden'
-
-  /orders:
-    post:
-      summary: Create a Purchase Order Execution Document
-      description: Establishes a brand-new procurement run initialized directly into a DRAFT status footprint. Accessible by ROLE_STAFF and ROLE_ADMIN.
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - supplierName
-                - items
-              properties:
-                supplierName:
-                  type: string
-                  example: Global Chemical Logistics Corp
-                items:
-                  type: array
-                  items:
-                    type: object
-                    required:
-                      - productId
-                      - quantity
-                    properties:
-                      productId:
-                        type: string
-                        format: uuid
-                        example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
-                      quantity:
-                        type: integer
-                        minimum: 1
-                        example: 500
-      responses:
-        '201':
-          description: Purchase order draft cataloged successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-
-  /orders/{id}/status:
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      parameters:
+      - $ref: '#/components/parameters/Id'
     put:
-      summary: Mutate Purchase Order Lifecycle Token State
-      description: Drives the deterministic state engine. State transitions matching APPROVED, SHIPPED, and DELIVERED states are exclusively restricted to ROLE_ADMIN accounts.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      summary: Update a category
+      description: Administrators only. Replaces the editable fields; omitted optional fields become null.
+      operationId: putCategoriesId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - status
-              properties:
-                status:
-                  type: string
-                  enum: [PENDING_APPROVAL, APPROVED, SHIPPED, DELIVERED, CANCELLED]
-                  example: PENDING_APPROVAL
+              $ref: '#/components/schemas/CategoryRequest'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+    delete:
+      summary: Delete a category
+      description: Administrators only. Database references may prevent deletion.
+      operationId: deleteCategoriesId
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+  /warehouses:
+    get:
+      summary: List warehouses
+      description: Staff and administrators.
+      operationId: getWarehouses
       responses:
         '200':
-          description: Lifecycle transition verified and advanced successfully.
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid state logic movement sequence rejected.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIError'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Warehouse'
+        '401':
+          $ref: '#/components/responses/401'
         '403':
-          $ref: '#/components/responses/403Forbidden'
-
+          $ref: '#/components/responses/403'
+    post:
+      summary: Create a warehouse
+      description: Administrators only.
+      operationId: postWarehouses
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WarehouseRequest'
+  /warehouses/{id}:
+    get:
+      summary: Get a warehouse
+      description: Staff and administrators.
+      operationId: getWarehousesId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      summary: Update a warehouse
+      description: Administrators only. Replaces the editable fields; omitted optional fields become null.
+      operationId: putWarehousesId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WarehouseRequest'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+    delete:
+      summary: Delete a warehouse
+      description: Administrators only. Database references may prevent deletion.
+      operationId: deleteWarehousesId
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+  /suppliers:
+    get:
+      summary: List suppliers
+      description: Staff and administrators. Includes active and inactive suppliers.
+      operationId: getSuppliers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supplier'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+  /users:
+    get:
+      summary: List users
+      description: Administrators only. Password hashes are excluded.
+      operationId: getUsers
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+    post:
+      summary: Create a user
+      description: Administrators only. Creates an ACTIVE account with the selected role.
+      operationId: postUsers
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
   /audit-logs:
     get:
-      summary: Extract Immutable Forensic Audit History Records
-      description: Streams historical system interaction metadata trails. Read operations exclusively accessible by ROLE_ADMIN credentials. Path strictly blocks destructive capabilities.
-      security:
-        - BearerAuth: []
+      summary: List audit logs
+      description: Administrators only. Returns a plain array for one page, newest first, with at most
+        50 entries. This endpoint provides no total count or hasNext field.
+      operationId: getAudit-logs
       responses:
         '200':
-          description: Collection of recorded audit entries fetched successfully.
+          description: Successful response
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/AuditLog'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
         '403':
-          $ref: '#/components/responses/403Forbidden'
-
+          $ref: '#/components/responses/403'
+      parameters:
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/Size'
   /notifications:
     get:
-      summary: Retrieve Notifications List
-      description: Returns a collection of notifications for the currently logged in user. Accessible by ROLE_STAFF and ROLE_ADMIN.
-      security:
-        - BearerAuth: []
+      summary: List notifications
+      description: Staff and administrators. Returns the current user’s latest 50 notifications plus counts
+        across that user’s retained notifications.
+      operationId: getNotifications
       responses:
         '200':
-          description: A list of notifications.
+          description: Successful response
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Notification'
+                $ref: '#/components/schemas/NotificationList'
         '401':
-          $ref: '#/components/responses/401Unauthorized'
-
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /notifications/{id}/read:
     put:
-      summary: Mark Notification as Read
-      description: Updates the specific notification as read. Accessible by ROLE_STAFF and ROLE_ADMIN.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      summary: Mark a notification as read
+      description: Only the user who owns the notification can mark it as read.
+      operationId: putNotificationsIdRead
       responses:
         '200':
-          description: Notification marked as read successfully.
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/400'
         '401':
-          $ref: '#/components/responses/401Unauthorized'
+          $ref: '#/components/responses/401'
         '403':
-          $ref: '#/components/responses/403Forbidden'
-
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      parameters:
+      - $ref: '#/components/parameters/Id'
   /notifications/read-all:
     put:
-      summary: Mark All Notifications as Read
-      description: Marks all notifications of the currently logged in user as read. Accessible by ROLE_STAFF and ROLE_ADMIN.
-      security:
-        - BearerAuth: []
+      summary: Mark all notifications as read
+      description: Staff and administrators. Updates only the current user’s notifications.
+      operationId: putNotificationsRead-all
       responses:
         '200':
-          description: All user notifications marked as read.
+          description: Successful response
         '401':
-          $ref: '#/components/responses/401Unauthorized'
-
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /analytics/dashboard:
     get:
-      summary: Retrieve Supply Chain Analytics Dashboard
-      description: Returns aggregate performance and tracking metrics. Restricted to ROLE_ADMIN.
-      security:
-        - BearerAuth: []
+      summary: Get dashboard metrics
+      description: Administrators only. Includes delivered purchase order value, stock value, low-stock
+        counts, order status counts, warehouse units, and most ordered products.
+      operationId: getAnalyticsDashboard
       responses:
         '200':
-          description: Dashboard metrics compiled successfully.
+          description: Successful response
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnalyticsDashboard'
         '401':
-          $ref: '#/components/responses/401Unauthorized'
+          $ref: '#/components/responses/401'
         '403':
-          $ref: '#/components/responses/403Forbidden'
-
+          $ref: '#/components/responses/403'
+  /api/health:
+    get:
+      summary: Check application and database health
+      description: Public endpoint. Checks a simple database query without returning connection details.
+      operationId: getApiHealth
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: Database check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+      security: []
+    servers:
+    - url: http://localhost:8080
+      description: Health endpoint is outside /api/v1.
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        format: int32
+        default: 0
+        minimum: 0
+      description: Zero-based page number.
+    Size:
+      name: size
+      in: query
+      schema:
+        type: integer
+        format: int32
+        default: 50
+        minimum: 1
+      description: Requested page size. Values above 50 are capped at 50.
   schemas:
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          minLength: 1
+          maxLength: 72
+          writeOnly: true
+          description: At most 72 UTF-8 bytes; the character limit alone does not guarantee the byte limit.
+    LoginResponse:
+      type: object
+      required:
+      - token
+      properties:
+        token:
+          type: string
+          description: JWT access token. Default lifetime is 60 minutes, configured by jwt.expiration
+            in milliseconds; read the exp claim for this token.
+    ProductCreateRequest:
+      type: object
+      required:
+      - sku
+      - name
+      - unitPrice
+      - reorderLevel
+      properties:
+        sku:
+          type: string
+          maxLength: 50
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 255
+          nullable: true
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        warehouseId:
+          type: string
+          format: uuid
+          nullable: true
+        unitPrice:
+          type: number
+          minimum: 0
+          maximum: 9999999999.99
+          multipleOf: 0.01
+        reorderLevel:
+          type: integer
+          format: int32
+          minimum: 0
+        isActive:
+          type: boolean
+          default: true
+    ProductAdjustRequest:
+      type: object
+      required:
+      - quantityAdjustment
+      - reasonCode
+      properties:
+        quantityAdjustment:
+          type: integer
+          format: int32
+          description: Signed change in units. The resulting stock must be between zero and 2147483647.
+        reasonCode:
+          type: string
+          enum:
+          - CYCLIC_COUNT_DISCREPANCY
+          - DAMAGED_GOODS_SCRAP
+          - SUPPLIER_SHORTAGE
     Product:
       type: object
       properties:
         id:
           type: string
           format: uuid
-          example: c3b0a7e3-53d7-466d-a7a5-c6bf2d2c12cd
         sku:
           type: string
-          example: PG-TIDE-001
         name:
           type: string
-          example: Tide Liquid Original 1.47L
+        description:
+          type: string
+          nullable: true
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        categoryName:
+          type: string
+          nullable: true
+        unitPrice:
+          type: number
         stockQuantity:
           type: integer
-          example: 1240
+          format: int32
         reorderLevel:
           type: integer
-          example: 200
+          format: int32
+        warehouseId:
+          type: string
+          format: uuid
+          nullable: true
+        warehouseName:
+          type: string
+          nullable: true
         lowStockIndicator:
           type: boolean
-          example: false
-
-    Order:
+        isActive:
+          type: boolean
+    OrderCreateRequest:
       type: object
+      required:
+      - supplierId
+      - warehouseId
+      - items
       properties:
-        id:
+        supplierId:
           type: string
           format: uuid
-          example: f81d4fae-7dec-11d0-a765-00a0c91e6bf6
-        supplierName:
-          type: string
-          example: Global Chemical Logistics Corp
-        status:
-          type: string
-          example: PENDING_APPROVAL
-        createdBy:
+          description: Must identify an active supplier.
+        warehouseId:
           type: string
           format: uuid
-          example: d3b07384-d113-4c32-a52d-9c123456789a
         items:
           type: array
           items:
-            $ref: '#/components/schemas/OrderItem'
-
+            $ref: '#/components/schemas/OrderItemRequest'
+          minItems: 1
+          maxItems: 500
+          description: Each product may appear only once and must be active. Prices come from the server.
+            The order total cannot exceed 9999999999.99.
+    OrderItemRequest:
+      type: object
+      required:
+      - productId
+      - quantity
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 2147483647
+    OrderStatus:
+      type: string
+      enum:
+      - DRAFT
+      - PENDING_APPROVAL
+      - APPROVED
+      - SHIPPED
+      - DELIVERED
+      - CANCELLED
+    OrderStatusUpdateRequest:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+      description: Status names are case-insensitive. Repeating the current status is an idempotent no-op;
+        other updates must follow the documented transition rules.
     OrderItem:
       type: object
       properties:
         productId:
           type: string
           format: uuid
-          example: c3b0a7e3-53d7-466d-a7a5-c6bf2d2c12cd
         quantity:
           type: integer
-          example: 500
-
+          format: int32
+        unitPrice:
+          type: number
+        subtotal:
+          type: number
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderNumber:
+          type: string
+        supplierId:
+          type: string
+          format: uuid
+        supplierName:
+          type: string
+        warehouseId:
+          type: string
+          format: uuid
+        warehouseName:
+          type: string
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        totalAmount:
+          type: number
+        createdBy:
+          type: string
+          format: uuid
+          nullable: true
+          description: Null for automatically created orders.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+    ProductPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        totalElements:
+          type: integer
+          format: int64
+          description: 'Always -1: the service uses slice pagination without a total count.'
+          enum:
+          - -1
+        totalPages:
+          type: integer
+          format: int32
+          description: 'Always -1: use hasNext to navigate.'
+          enum:
+          - -1
+        pageNumber:
+          type: integer
+          format: int32
+          minimum: 0
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+        hasNext:
+          type: boolean
+    OrderPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        totalElements:
+          type: integer
+          format: int64
+          description: 'Always -1: the service uses slice pagination without a total count.'
+          enum:
+          - -1
+        totalPages:
+          type: integer
+          format: int32
+          description: 'Always -1: use hasNext to navigate.'
+          enum:
+          - -1
+        pageNumber:
+          type: integer
+          format: int32
+          minimum: 0
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+        hasNext:
+          type: boolean
+    CategoryRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 255
+          nullable: true
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+    WarehouseRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        location:
+          type: string
+          maxLength: 255
+          nullable: true
+        managerId:
+          type: string
+          format: uuid
+          nullable: true
+    Warehouse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        location:
+          type: string
+          nullable: true
+        managerId:
+          type: string
+          format: uuid
+          nullable: true
+        managerName:
+          type: string
+          nullable: true
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        contactPerson:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        leadTimeDays:
+          type: integer
+          format: int32
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    UserCreateRequest:
+      type: object
+      required:
+      - fullName
+      - email
+      - password
+      - roleName
+      properties:
+        fullName:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 72
+          writeOnly: true
+          description: At most 72 UTF-8 bytes.
+        roleName:
+          type: string
+          enum:
+          - ROLE_ADMIN
+          - ROLE_STAFF
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum:
+          - ROLE_ADMIN
+          - ROLE_STAFF
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     AuditLog:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
-          example: 14502
-        entityName:
           type: string
-          example: Product
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Null for a system action.
+        entityType:
+          type: string
         entityId:
           type: string
           format: uuid
-          example: c3b0a7e3-53d7-466d-a7a5-c6bf2d2c12cd
         action:
           type: string
-          example: ACTION_MANUAL_ADJUSTMENT
         oldValue:
           type: string
-          example: '{"stockQuantity": 1252}'
+          nullable: true
+          description: JSON encoded as a string.
         newValue:
           type: string
-          example: '{"stockQuantity": 1240}'
-        actorId:
-          type: string
-          format: uuid
-          example: d3b07384-d113-4c32-a52d-9c123456789a
-        timestamp:
+          nullable: true
+          description: JSON encoded as a string.
+        createdAt:
           type: string
           format: date-time
-          example: '2026-06-12T16:21:15Z'
-
     Notification:
       type: object
       properties:
         id:
           type: string
           format: uuid
-          example: d3b07384-d113-4c32-a52d-9c123456789a
         userId:
           type: string
           format: uuid
-          example: c3b0a7e3-53d7-466d-a7a5-c6bf2d2c12cd
         type:
           type: string
-          example: LOW_STOCK
         message:
           type: string
-          example: 'Product PG-TIDE-001 is low in stock: 5 left (reorder level: 10)'
         isRead:
           type: boolean
-          example: false
         createdAt:
           type: string
           format: date-time
-          example: '2026-06-12T16:21:15Z'
-
+    NotificationList:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+          maxItems: 50
+        totalCount:
+          type: integer
+          format: int64
+          minimum: 0
+        unreadCount:
+          type: integer
+          format: int64
+          minimum: 0
     AnalyticsDashboard:
       type: object
       properties:
         totalRevenue:
           type: number
-          example: 12500.50
+          description: Sum of totalAmount for delivered purchase orders. The legacy field name does not
+            represent sales revenue.
         orderStatusCounts:
           type: object
           additionalProperties:
             type: integer
-          example: { "DRAFT": 2, "PENDING_APPROVAL": 5 }
+            format: int64
         lowStockCount:
           type: integer
-          example: 3
+          format: int64
         totalInventoryValue:
           type: number
-          example: 450000.00
         warehouseStockCounts:
           type: object
           additionalProperties:
             type: integer
-          example: { "Main Warehouse": 1200 }
+            format: int64
         topProducts:
           type: array
           items:
@@ -471,40 +1153,53 @@ components:
             properties:
               name:
                 type: string
-                example: Tide Liquid Original
               totalQuantityOrdered:
                 type: integer
-                example: 1500
-
-    APIError:
+                format: int64
+    ApiError:
       type: object
       properties:
         status:
           type: integer
-          example: 400
+          format: int32
         error:
           type: string
-          example: Bad Request
         message:
           type: string
-          example: State machine validation error. Cannot advance DRAFT orders directly to SHIPPED status.
         timestamp:
           type: string
           format: date-time
-          example: '2026-06-12T16:21:15Z'
-
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - UP
+          - DOWN
+        database:
+          type: string
+          enum:
+          - HEALTHY
+          - UNHEALTHY
+          - UNEXPECTED_RESPONSE
   responses:
-    400BadRequest:
-      description: Structural runtime request body error or field constraint assertion violation.
+    '400':
+      description: Invalid request or disallowed state transition. Malformed transport input may use Spring’s
+        standard error body.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/APIError'
-    401Unauthorized:
-      description: Request context missing appropriate cryptographic JWT bearer headers.
-    403Forbidden:
-      description: Identity token parsing succeeded, but user context lacks the required scope authorization level.
+            $ref: '#/components/schemas/ApiError'
+    '401':
+      description: Missing, expired, invalid, or revoked credentials. Login returns ApiError; authentication
+        filters may return an empty or framework error body.
+    '403':
+      description: Authenticated user lacks permission. Service errors use ApiError; security-filter rejections
+        may use a framework error body.
+    '404':
+      description: Referenced resource was not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/APIError'
+            $ref: '#/components/schemas/ApiError'
