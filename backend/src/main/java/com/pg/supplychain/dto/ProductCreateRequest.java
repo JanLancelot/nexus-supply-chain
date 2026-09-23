@@ -1,5 +1,6 @@
 package com.pg.supplychain.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +14,9 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+// Deserialize through the no-arg constructor and setters so omitted optional
+// fields retain their defaults instead of becoming creator parameters.
+@AllArgsConstructor(onConstructor_ = @JsonCreator(mode = JsonCreator.Mode.DISABLED))
 @Builder
 public class ProductCreateRequest {
 

@@ -11,6 +11,8 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
@@ -125,5 +127,41 @@ class ProductControllerRestAssuredTest extends BaseIntegrationTest {
                 .post("/api/v1/inventory/products")
                 .then()
                 .statusCode(403);
+    }
+
+    @Test
+    void createProductDefaultsToActiveWhenTheFrontendOmitsTheFlag() {
+        assertProductCreation("", true);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void createProductPreservesAnExplicitActiveFlag(boolean active) {
+        assertProductCreation(",\"isActive\":" + active, active);
+    }
+
+    private void assertProductCreation(String activeProperty, boolean expectedActive) {
+        String productId = given()
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(ContentType.JSON)
+                .body("""
+                        {"sku":"ACTIVE-CONTRACT","name":"Active Contract Product","unitPrice":12.50,"reorderLevel":0%s}
+                        """.formatted(activeProperty))
+                .when()
+                .post("/api/v1/inventory/products")
+                .then()
+                .statusCode(201)
+                .body("isActive", equalTo(expectedActive))
+                .body("stockQuantity", equalTo(0))
+                .extract().path("id");
+
+        given()
+                .header("Authorization", "Bearer " + adminToken)
+                .accept(ContentType.JSON)
+                .when()
+                .get("/api/v1/inventory/products")
+                .then()
+                .statusCode(200)
+                .body("content.find { it.id == '" + productId + "' }.isActive", equalTo(expectedActive));
     }
 }

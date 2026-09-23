@@ -280,7 +280,7 @@ const Catalog: React.FC = () => {
       ) : (
         <div className="glass-panel rounded-2xl overflow-hidden border border-gray-800/60 shadow-lg">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[56rem] text-left border-collapse">
               <thead>
                 <tr className="bg-gray-900/40 text-gray-400 text-[10px] font-semibold uppercase tracking-wider border-b border-gray-850">
                   <th className="py-4 px-6">SKU / Code</th>

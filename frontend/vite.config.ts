@@ -8,6 +8,14 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  preview: {
+    proxy: {
+      '/api': {
+        target: process.env.E2E_API_TARGET || 'http://localhost:8080',
+        changeOrigin: true,
+      }
+    }
+  },
   server: {
     proxy: {
       '/api': {

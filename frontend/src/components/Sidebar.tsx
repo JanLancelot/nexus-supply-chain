@@ -48,9 +48,9 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 bg-[#0c101b] border-r border-gray-800 flex flex-col h-screen sticky top-0 shrink-0">
+    <aside className="relative w-full min-w-0 md:w-64 bg-[#0c101b] border-b md:border-b-0 md:border-r border-gray-800 flex flex-col md:h-screen md:sticky top-0 shrink-0">
       {/* Brand Header */}
-      <div className="h-16 flex items-center gap-3 px-6 border-b border-gray-800/60">
+      <div className="h-16 flex items-center gap-3 px-4 md:px-6 border-b border-gray-800/60">
         <div className="h-8 w-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
           <ShieldCheck className="h-5 w-5" />
         </div>
@@ -58,7 +58,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+      <nav aria-label="Main navigation" className="flex md:block flex-1 gap-1.5 p-2 md:px-4 md:py-6 md:space-y-1.5 overflow-x-auto md:overflow-y-auto">
         {menuItems
           .filter((item) => item.show)
           .map((item) => {
@@ -68,7 +68,7 @@ const Sidebar: React.FC = () => {
                 key={item.name}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                  `flex shrink-0 items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
                     isActive
                       ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/20 shadow-inner'
                       : 'text-gray-400 hover:bg-gray-850 hover:text-white border border-transparent'
@@ -83,8 +83,8 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* User Info & Logout Footer */}
-      <div className="p-4 border-t border-gray-800/60 bg-[#0a0d16]/50">
-        <div className="flex items-center gap-3 mb-4 px-2">
+      <div className="absolute top-2 right-2 md:static md:p-4 md:border-t border-gray-800/60 md:bg-[#0a0d16]/50">
+        <div className="hidden md:flex items-center gap-3 mb-4 px-2">
           <div className="h-9 w-9 rounded-full bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center font-bold text-indigo-400 text-sm">
             {user?.fullName.split(' ').map(n => n[0]).join('') || 'U'}
           </div>
