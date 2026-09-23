@@ -63,4 +63,23 @@ describe('application routing and navigation', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
     expect(getAccessToken()).toBeNull();
   });
+
+  it('toggles the mobile menu, closes it with Escape, and resets it after navigation', async () => {
+    serveApi(authenticatedResponses);
+    setSession(parseSession(sessionToken()));
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByText('75 units');
+    const menu = screen.getByRole('button', { name: 'Menu' });
+    expect(menu).toHaveAttribute('aria-expanded', 'false');
+    await user.click(menu);
+    expect(menu).toHaveAttribute('aria-expanded', 'true');
+    await user.keyboard('{Escape}');
+    expect(menu).toHaveAttribute('aria-expanded', 'false');
+    expect(menu).toHaveFocus();
+    await user.click(menu);
+    await user.click(screen.getByRole('link', { name: 'Product Catalog' }));
+    expect(await screen.findByText('Hand Soap')).toBeInTheDocument();
+    expect(menu).toHaveAttribute('aria-expanded', 'false');
+  });
 });

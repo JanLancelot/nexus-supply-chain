@@ -181,3 +181,34 @@ test('notifications fit a small phone viewport', async ({ page }) => {
   await expect(page.getByText('Protective Work Gloves — Medium is below the reorder level.')).toBeInViewport({ ratio: 1 });
   await capture(page, 'notifications-narrow.png');
 });
+
+for (const width of [320, 390]) {
+  test(`dashboard mobile overview at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await signIn(page);
+    await expect(page.getByText('$128,450.75', { exact: true })).toBeInViewport({ ratio: 1 });
+    await expect(page.getByText('$245,630.50', { exact: true })).toBeInViewport({ ratio: 1 });
+    await expect(page.getByText('All order statuses', { exact: true })).toBeInViewport({ ratio: 1 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    await capture(page, `dashboard-mobile-${width}.png`);
+  });
+}
+
+test('mobile menu exposes every destination and closes after navigation', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signIn(page);
+  const menu = page.getByRole('button', { name: 'Menu', exact: true });
+  await expect(menu).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeHidden();
+  await menu.click();
+  await expect(menu).toHaveAttribute('aria-expanded', 'true');
+  for (const name of ['Dashboard', 'User Management', 'Product Catalog', 'Purchase Orders', 'Audit Logs']) {
+    await expect(page.getByRole('link', { name, exact: true })).toBeInViewport({ ratio: 1 });
+  }
+  await expect(page.getByRole('button', { name: 'Sign Out' })).toBeInViewport({ ratio: 1 });
+  await capture(page, 'mobile-menu.png');
+  await page.getByRole('link', { name: 'Product Catalog', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Product Catalog', exact: true })).toBeVisible();
+  await expect(menu).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeHidden();
+});

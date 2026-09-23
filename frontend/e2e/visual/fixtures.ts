@@ -154,6 +154,10 @@ export async function signIn(page: Page, role: 'admin' | 'staff' = 'admin') {
 }
 
 export async function navigate(page: Page, label: string, readyText: string) {
+  const menu = page.getByRole('button', { name: 'Menu', exact: true });
+  if (await menu.isVisible() && await menu.getAttribute('aria-expanded') === 'false') {
+    await menu.click();
+  }
   await page.getByRole('link', { name: label, exact: true }).click();
   await expect(page.getByText(readyText, { exact: true }).first()).toBeVisible();
 }

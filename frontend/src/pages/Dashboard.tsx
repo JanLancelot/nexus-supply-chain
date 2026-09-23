@@ -76,9 +76,9 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       {/* Welcome banner */}
-      <div className="glass-panel p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-gray-800/80">
+      <div className="glass-panel p-4 sm:p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-gray-800/80">
         <div>
           <h3 className="text-xl font-bold text-white tracking-tight m-0">Welcome Back, {user?.fullName.split(' ')[0]}</h3>
           <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">
@@ -95,47 +95,47 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {/* KPI 1: Total Revenue */}
-        <div className="glass-panel p-6 rounded-2xl flex items-center justify-between border border-gray-850">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Delivered Order Value</span>
-            <p className="text-2xl font-extrabold text-white font-mono leading-none m-0">
+        <div className="glass-panel min-w-0 p-3 sm:p-6 rounded-2xl flex items-center justify-between border border-gray-850">
+          <div className="min-w-0 space-y-1">
+            <span className="block sm:inline min-h-7 sm:min-h-0 text-[10px] font-bold text-gray-400 sm:text-gray-500 uppercase tracking-wider">Delivered Order Value</span>
+            <p className="text-[clamp(0.875rem,4.4vw,1.125rem)] sm:text-2xl break-all font-extrabold text-white font-mono leading-tight sm:leading-none m-0">
               ${metrics.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
-            <span className="text-[9px] text-emerald-400 font-medium">Delivered purchase orders</span>
+            <span className="max-sm:block max-sm:leading-relaxed text-[9px] text-emerald-400 font-medium">Delivered purchase orders</span>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="hidden sm:flex shrink-0 h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 items-center justify-center text-emerald-400">
             <DollarSign className="h-5.5 w-5.5" />
           </div>
         </div>
 
         {/* KPI 2: Total Inventory Value */}
-        <div className="glass-panel p-6 rounded-2xl flex items-center justify-between border border-gray-850">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Inventory Value</span>
-            <p className="text-2xl font-extrabold text-white font-mono leading-none m-0">
+        <div className="glass-panel min-w-0 p-3 sm:p-6 rounded-2xl flex items-center justify-between border border-gray-850">
+          <div className="min-w-0 space-y-1">
+            <span className="block sm:inline min-h-7 sm:min-h-0 text-[10px] font-bold text-gray-400 sm:text-gray-500 uppercase tracking-wider">Inventory Value</span>
+            <p className="text-[clamp(0.875rem,4.4vw,1.125rem)] sm:text-2xl break-all font-extrabold text-white font-mono leading-tight sm:leading-none m-0">
               ${metrics.totalInventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
-            <span className="text-[9px] text-indigo-400 font-medium">Stock quantity × unit price</span>
+            <span className="max-sm:block max-sm:leading-relaxed text-[9px] text-indigo-400 font-medium">Stock quantity × unit price</span>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <div className="hidden sm:flex shrink-0 h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 items-center justify-center text-indigo-400">
             <Boxes className="h-5.5 w-5.5" />
           </div>
         </div>
 
         {/* KPI 3: Low Stock Count */}
-        <div className="glass-panel p-6 rounded-2xl flex items-center justify-between border border-gray-850">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Low Stock Products</span>
-            <p className="text-2xl font-extrabold text-white font-mono leading-none m-0">
+        <div className="glass-panel min-w-0 p-3 sm:p-6 rounded-2xl flex items-center justify-between border border-gray-850">
+          <div className="min-w-0 space-y-1">
+            <span className="block sm:inline min-h-7 sm:min-h-0 text-[10px] font-bold text-gray-400 sm:text-gray-500 uppercase tracking-wider">Low Stock Products</span>
+            <p className="text-[clamp(0.875rem,4.4vw,1.125rem)] sm:text-2xl break-all font-extrabold text-white font-mono leading-tight sm:leading-none m-0">
               {metrics.lowStockCount}
             </p>
-            <span className={`text-[9px] font-bold ${metrics.lowStockCount > 0 ? 'text-amber-400 animate-pulse' : 'text-gray-500'}`}>
+            <span className={`max-sm:block max-sm:leading-relaxed text-[9px] font-bold ${metrics.lowStockCount > 0 ? 'text-amber-400 animate-pulse' : 'text-gray-500'}`}>
               {metrics.lowStockCount > 0 ? 'Low Stock Warnings' : 'No low stock warnings'}
             </span>
           </div>
-          <div className={`h-10 w-10 rounded-xl flex items-center justify-center border ${
+          <div className={`hidden sm:flex shrink-0 h-10 w-10 rounded-xl items-center justify-center border ${
             metrics.lowStockCount > 0 
               ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 shadow shadow-amber-500/5' 
               : 'bg-gray-500/10 border-gray-500/20 text-gray-400'
@@ -145,15 +145,15 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* KPI 4: Total Orders */}
-        <div className="glass-panel p-6 rounded-2xl flex items-center justify-between border border-gray-850">
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Orders</span>
-            <p className="text-2xl font-extrabold text-white font-mono leading-none m-0">
+        <div className="glass-panel min-w-0 p-3 sm:p-6 rounded-2xl flex items-center justify-between border border-gray-850">
+          <div className="min-w-0 space-y-1">
+            <span className="block sm:inline min-h-7 sm:min-h-0 text-[10px] font-bold text-gray-400 sm:text-gray-500 uppercase tracking-wider">Total Orders</span>
+            <p className="text-[clamp(0.875rem,4.4vw,1.125rem)] sm:text-2xl break-all font-extrabold text-white font-mono leading-tight sm:leading-none m-0">
               {totalOrders}
             </p>
-            <span className="text-[9px] text-purple-400 font-medium">All order statuses</span>
+            <span className="max-sm:block max-sm:leading-relaxed text-[9px] text-purple-400 font-medium">All order statuses</span>
           </div>
-          <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+          <div className="hidden sm:flex shrink-0 h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 items-center justify-center text-purple-400">
             <FileSpreadsheet className="h-5.5 w-5.5" />
           </div>
         </div>
@@ -163,10 +163,10 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Chart Card 1: Top Products (Bar chart comparison) */}
-        <div className="lg:col-span-2 glass-panel p-6 rounded-2xl border border-gray-850 flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-gray-850 pb-4 mb-5">
+        <div className="lg:col-span-2 glass-panel p-4 sm:p-6 rounded-2xl border border-gray-850 flex flex-col justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-850 pb-4 mb-5">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider m-0 flex items-center gap-2">
-              <TrendingUp className="h-4.5 w-4.5 text-indigo-400" />
+              <TrendingUp className="h-4.5 w-4.5 shrink-0 text-indigo-400" />
               <span>Most Ordered Products</span>
             </h4>
             <span className="text-[9px] text-gray-500 uppercase font-mono">By units ordered</span>
@@ -182,9 +182,9 @@ const Dashboard: React.FC = () => {
 
                 return (
                   <div key={idx} className="space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-semibold text-gray-200">{p.name}</span>
-                      <span className="font-mono text-indigo-400 font-semibold">{p.totalQuantityOrdered} units</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-3 text-xs">
+                      <span className="min-w-0 break-words font-semibold text-gray-200">{p.name}</span>
+                      <span className="shrink-0 font-mono text-indigo-400 font-semibold">{p.totalQuantityOrdered} units</span>
                     </div>
                     <div className="h-2 w-full bg-gray-800/60 rounded-full overflow-hidden border border-gray-700/10">
                       <div className="h-full bg-indigo-500 rounded-full transition-all duration-500 ease-out" style={{ width: `${pct}%` }} />
@@ -197,10 +197,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Chart Card 2: Order Status Distribution (Horizontal lists comparing state progress) */}
-        <div className="lg:col-span-1 glass-panel p-6 rounded-2xl border border-gray-850">
-          <div className="flex items-center justify-between border-b border-gray-850 pb-4 mb-5">
+        <div className="lg:col-span-1 glass-panel p-4 sm:p-6 rounded-2xl border border-gray-850">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-850 pb-4 mb-5">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider m-0 flex items-center gap-2">
-              <BarChart3 className="h-4.5 w-4.5 text-indigo-400" />
+              <BarChart3 className="h-4.5 w-4.5 shrink-0 text-indigo-400" />
               <span>Orders by Status</span>
             </h4>
             <span className="text-[9px] text-gray-500 uppercase font-mono">Order counts</span>
@@ -230,10 +230,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Warehouse Stock Counts comparison row */}
-      <div className="glass-panel p-6 rounded-2xl border border-gray-850">
-        <div className="flex items-center justify-between border-b border-gray-850 pb-4 mb-5">
+      <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-gray-850">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-850 pb-4 mb-5">
           <h4 className="text-xs font-bold text-white uppercase tracking-wider m-0 flex items-center gap-2">
-            <Warehouse className="h-4.5 w-4.5 text-indigo-400" />
+            <Warehouse className="h-4.5 w-4.5 shrink-0 text-indigo-400" />
             <span>Warehouse Inventory Distribution</span>
           </h4>
           <span className="text-[9px] text-gray-500 uppercase font-mono">Stored item volume</span>
@@ -249,9 +249,9 @@ const Dashboard: React.FC = () => {
               
               return (
                 <div key={whName} className="p-4 bg-gray-950/20 border border-gray-850 rounded-xl space-y-3">
-                  <div className="flex justify-between items-start gap-3">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-3">
                     <div>
-                      <span className="font-semibold text-white text-xs block truncate max-w-[180px]" title={whName}>{whName}</span>
+                      <span className="font-semibold text-white text-xs block break-words sm:truncate sm:max-w-[180px]" title={whName}>{whName}</span>
                       <span className="text-[9px] text-gray-500 font-mono">Units in stock</span>
                     </div>
                     <span className="font-mono text-indigo-400 text-xs font-bold shrink-0">{whQty.toLocaleString()} units</span>

@@ -149,6 +149,8 @@ results, stock and creation dialogs, order lists/wizard/details, audit history
 and changes, user forms/validation, staff permissions, and phone-width screens.
 Narrow catalog checks also require contained horizontal overflow, visible primary
 controls, and a usable creation dialog.
+Dashboard checks at 320px and 390px keep all summary metrics in the first screen;
+mobile navigation checks cover the expandable menu and closing it after routing.
 
 Baseline PNGs live in `frontend/e2e/visual/__screenshots__/`. Comparisons allow
 zero changed pixels and fail when a baseline is missing. Review the actual,
