@@ -8,6 +8,10 @@ project_name = "nexus-supply"
 environment  = "prod"
 acr_name     = "pgsupplyregistry"
 
-# Database Configuration
+# Supply secrets through TF_VAR_postgres_admin_password and TF_VAR_jwt_secret.
+# For first startup only: TF_VAR_bootstrap_admin_email / TF_VAR_bootstrap_admin_password.
 postgres_admin_username = "enterprise_admin"
-postgres_admin_password = "replace-with-a-secure-password-123!"
+
+# Get production and staging outboundIpAddresses/possibleOutboundIpAddresses
+# from Azure. The empty default blocks PostgreSQL network access.
+postgres_allowed_ips = {}

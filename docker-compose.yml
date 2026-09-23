@@ -5,11 +5,11 @@ services:
     image: postgres:15-alpine
     container_name: pg_enterprise_supply
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     environment:
       POSTGRES_DB: supply_db
       POSTGRES_USER: enterprise_admin
-      POSTGRES_PASSWORD: secure_dev_password
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:?Set SPRING_DATASOURCE_PASSWORD}
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -19,14 +19,14 @@ services:
     image: redis:7-alpine
     container_name: redis_enterprise_supply
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     restart: unless-stopped
 
   kafka:
     image: apache/kafka:4.3.0
     container_name: kafka_enterprise_supply
     ports:
-      - "9092:9092"
+      - "127.0.0.1:9092:9092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: 'broker,controller'
@@ -48,12 +48,18 @@ services:
       dockerfile: backend/Dockerfile
     container_name: spring_backend_supply
     ports:
-      - "80:8080"
-      - "8080:8080"
+      - "127.0.0.1:80:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/supply_db
       - SPRING_DATASOURCE_USERNAME=enterprise_admin
-      - SPRING_DATASOURCE_PASSWORD=secure_dev_password
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:?Set SPRING_DATASOURCE_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET to at least 32 random bytes}
+      - APP_BOOTSTRAP_ADMIN_EMAIL=${APP_BOOTSTRAP_ADMIN_EMAIL:-}
+      - APP_BOOTSTRAP_ADMIN_PASSWORD=${APP_BOOTSTRAP_ADMIN_PASSWORD:-}
+      - APP_SEED_DEMO_DATA=${APP_SEED_DEMO_DATA:-false}
+      - APP_BOOTSTRAP_STAFF_PASSWORD=${APP_BOOTSTRAP_STAFF_PASSWORD:-}
+      - MANAGEMENT_SERVER_ADDRESS=0.0.0.0
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
@@ -73,7 +79,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     depends_on:
       - backend
     restart: unless-stopped
@@ -82,12 +88,12 @@ services:
     image: grafana/grafana:11.0.0
     container_name: grafana_supply
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
       - prometheus
@@ -97,7 +103,7 @@ services:
     image: prom/node-exporter:v1.8.1
     container_name: node_exporter_supply
     ports:
-      - "9100:9100"
+      - "127.0.0.1:9100:9100"
     restart: unless-stopped
 
 volumes:

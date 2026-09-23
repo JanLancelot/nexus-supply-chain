@@ -7,7 +7,6 @@ on:
     branches: [ "main" ]
 
 permissions:
-  id-token: write # Required for Azure OIDC
   contents: read
 
 jobs:
@@ -57,23 +56,30 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Lint frontend
         working-directory: frontend
         run: npm run lint
+
+      - name: Test frontend sessions
+        working-directory: frontend
+        run: npm test
 
       - name: Build frontend
         working-directory: frontend
         run: npm run build
 
   deploy-to-staging:
+    permissions:
+      contents: read
+      id-token: write
     needs: build-and-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -90,11 +96,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Log in to Azure Container Registry (ACR)
-        uses: azure/docker-login@v1
-        with:
-          login-server: pgsupplyregistry.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+        run: az acr login --name pgsupplyregistry
 
       - name: Build and Push Consolidated Docker Image
         run: |
