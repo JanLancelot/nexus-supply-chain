@@ -20,9 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -40,14 +38,6 @@ public class AutoReplenishmentService {
 
     private TransactionTemplate transactionTemplate;
 
-    /**
-     * Per-product cooldown timestamps (epoch ms). Prevents burst write amplification during
-     * stress tests where thousands of STOCK_ADJUSTED events fire in rapid succession and each
-     * would otherwise create a new system PO, bloating the DB across multiple runs.
-     */
-    private final Map<UUID, Long> replenishmentCooldowns = new ConcurrentHashMap<>();
-    private static final long COOLDOWN_MS = 60_000L; // 60-second per-product cooldown
-
     @PostConstruct
     public void init() {
         this.transactionTemplate = new TransactionTemplate(transactionManager);
@@ -61,21 +51,9 @@ public class AutoReplenishmentService {
             UUID productId = event.getProductId();
             log.info("AutoReplenishmentService: Received ProductEvent for product={}", productId);
 
-            // 1. Cooldown guard: skip if a replenishment was already triggered for this
-            // product within the last COOLDOWN_MS milliseconds. This prevents burst-
-            // driven PO cascades during stress tests where thousands of STOCK_ADJUSTED
-            // events fire simultaneously for the same product set.
-            long now = System.currentTimeMillis();
-            Long lastTriggered = replenishmentCooldowns.get(productId);
-            if (lastTriggered != null && (now - lastTriggered) < COOLDOWN_MS) {
-                log.info("AutoReplenishmentService: Cooldown active for product {} ({}ms remaining). Skipping replenishment lookup.",
-                        productId, COOLDOWN_MS - (now - lastTriggered));
-                return;
-            }
-
-            // 2. Execute database operations inside transaction only if cooldown is clear
+            // Serialize the stock check and open-order lookup across all application instances.
             transactionTemplate.executeWithoutResult(status -> {
-                Product product = productRepository.findById(productId).orElse(null);
+                Product product = productRepository.findByIdForUpdate(productId).orElse(null);
                 if (product == null) {
                     log.warn("AutoReplenishmentService: Product not found: {}", productId);
                     return;
@@ -90,10 +68,6 @@ public class AutoReplenishmentService {
                 if (product.isLowStockIndicator()) {
                     log.info("AutoReplenishmentService: Product {} is low in stock: {} (reorder level: {})",
                             product.getSku(), product.getStockQuantity(), product.getReorderLevel());
-
-                    // Record cooldown start and prune stale entries
-                    replenishmentCooldowns.put(productId, now);
-                    replenishmentCooldowns.entrySet().removeIf(e -> (now - e.getValue()) > COOLDOWN_MS * 2);
 
                     // Check if there is already an open purchase order for this product
                     long openOrdersCount = orderRepository.countOpenOrdersForProduct(productId);
@@ -131,7 +105,7 @@ public class AutoReplenishmentService {
                     }
 
                     // Reorder Quantity calculation (e.g. reorderLevel * 2, minimum 10 units)
-                    int reorderQuantity = Math.max(product.getReorderLevel() * 2, 10);
+                    int reorderQuantity = (int) Math.min(Integer.MAX_VALUE, Math.max((long) product.getReorderLevel() * 2, 10L));
 
                     log.info("AutoReplenishmentService: Triggering DRAFT PO for product {} (Quantity: {}) to supplier {} for warehouse {}.",
                             product.getSku(), reorderQuantity, supplier.getName(), destinationWarehouse.getName());

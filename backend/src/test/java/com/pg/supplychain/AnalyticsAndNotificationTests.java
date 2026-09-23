@@ -175,7 +175,6 @@ class AnalyticsAndNotificationTests {
     }
 
     @Test
-    @Transactional
     void testAnalyticsAggregationAndCacheEviction() throws InterruptedException {
         setSecurityContext(adminUser);
 
@@ -189,12 +188,20 @@ class AnalyticsAndNotificationTests {
         AnalyticsDashboardResponse initialResponse = analyticsService.getDashboardAnalytics();
         assertNotNull(initialResponse);
 
+        if (cacheManager instanceof org.springframework.cache.support.NoOpCacheManager) {
+            assertNull(cache.get("dashboard"), "Redis outage must leave analytics uncached");
+            assertNotSame(initialResponse, analyticsService.getDashboardAnalytics());
+            return;
+        }
+
         // Verify cache is populated
         assertNotNull(cache.get("dashboard"), "Analytics dashboard should be cached");
 
-        // Wait to ensure cache is NOT evicted by the background event listener (relying on TTL instead)
-        Thread.sleep(1000);
-        assertNotNull(cache.get("dashboard"), "Analytics cache should NOT be evicted by the background event listener");
+        broker.send("product-events", new ProductEvent(UUID.randomUUID(), "STOCK_ADJUSTED"));
+        for (int i = 0; i < 50 && cache.get("dashboard") != null; i++) {
+            Thread.sleep(100);
+        }
+        assertNull(cache.get("dashboard"), "Inventory events must invalidate cached analytics");
     }
 
     @Test

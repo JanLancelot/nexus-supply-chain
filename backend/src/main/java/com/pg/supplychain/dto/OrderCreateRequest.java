@@ -3,6 +3,7 @@ package com.pg.supplychain.dto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class OrderCreateRequest {
     private UUID warehouseId;
 
     @NotEmpty(message = "Order must contain at least one item")
+    @Size(max = 500, message = "Order must contain at most 500 items")
     @Valid
-    private List<OrderItemRequest> items;
+    private List<@NotNull OrderItemRequest> items;
 }

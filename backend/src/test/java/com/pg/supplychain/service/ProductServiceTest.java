@@ -132,7 +132,7 @@ class ProductServiceTest {
 
         ProductAdjustRequest request = new ProductAdjustRequest(5, "CYCLIC_COUNT_DISCREPANCY");
 
-        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(id)).thenReturn(Optional.of(product));
         when(productRepository.save(any(Product.class))).thenAnswer(i -> i.getArgument(0));
 
         ProductResponse response = productService.adjustProductStock(id, request);
@@ -149,7 +149,7 @@ class ProductServiceTest {
         Product product = Product.builder().id(id).stockQuantity(10).build();
         ProductAdjustRequest request = new ProductAdjustRequest(5, "INVALID_REASON");
 
-        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(id)).thenReturn(Optional.of(product));
 
         assertThrows(BadRequestException.class, () -> productService.adjustProductStock(id, request));
     }
@@ -160,8 +160,22 @@ class ProductServiceTest {
         Product product = Product.builder().id(id).stockQuantity(10).build();
         ProductAdjustRequest request = new ProductAdjustRequest(-15, "CYCLIC_COUNT_DISCREPANCY");
 
-        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(id)).thenReturn(Optional.of(product));
 
         assertThrows(BadRequestException.class, () -> productService.adjustProductStock(id, request));
+    }
+
+    @Test
+    void testAdjustProductStock_RejectsIntegerOverflow() {
+        UUID id = UUID.randomUUID();
+        Product product = Product.builder().id(id).stockQuantity(Integer.MAX_VALUE).build();
+        when(productRepository.findByIdForUpdate(id)).thenReturn(Optional.of(product));
+
+        assertThrows(BadRequestException.class, () -> productService.adjustProductStock(id,
+                new ProductAdjustRequest(1, "CYCLIC_COUNT_DISCREPANCY")));
+
+        assertEquals(Integer.MAX_VALUE, product.getStockQuantity());
+        verify(productRepository, never()).save(any());
+        verifyNoInteractions(auditService, kafkaLiteBroker);
     }
 }

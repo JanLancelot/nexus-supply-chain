@@ -54,11 +54,15 @@ class NotificationServiceTest {
 
         when(securityContextService.getCurrentUser()).thenReturn(user);
         when(notificationRepository.findListByUser(eq(user), any())).thenReturn(Collections.singletonList(n));
+        when(notificationRepository.countTotalAndUnreadByUser(user))
+                .thenReturn(Collections.singletonList(new Object[]{75L, 12L}));
 
         NotificationListResponse response = notificationService.getNotificationsForCurrentUser();
         assertNotNull(response);
         assertEquals(1, response.getNotifications().size());
         assertEquals("Msg", response.getNotifications().get(0).getMessage());
+        assertEquals(75L, response.getTotalCount());
+        assertEquals(12L, response.getUnreadCount());
     }
 
     @Test

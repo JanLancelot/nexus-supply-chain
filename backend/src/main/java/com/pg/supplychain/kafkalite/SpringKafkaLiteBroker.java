@@ -1,11 +1,13 @@
 package com.pg.supplychain.kafkalite;
 
 import lombok.extern.slf4j.Slf4j;
+import jakarta.annotation.PreDestroy;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -26,27 +28,29 @@ import java.util.function.Consumer;
 @Component
 @Primary
 @Slf4j
-public class SpringKafkaLiteBroker implements KafkaLiteBroker {
+public class SpringKafkaLiteBroker implements KafkaLiteBroker, SmartInitializingSingleton {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final RedisKafkaLiteBroker redisFallbackBroker;
     private final ObjectMapper objectMapper;
     private final String bootstrapServers;
+    private final String consumerGroup;
     private final Map<String, List<Consumer<String>>> subscribers = new ConcurrentHashMap<>();
     private final Map<String, KafkaMessageListenerContainer<String, String>> containers = new ConcurrentHashMap<>();
     private boolean kafkaActive = false;
-
-    private final String groupIdSuffix = java.util.UUID.randomUUID().toString().substring(0, 8);
+    private volatile boolean started = false;
 
     public SpringKafkaLiteBroker(
             KafkaTemplate<String, String> kafkaTemplate,
             RedisKafkaLiteBroker redisFallbackBroker,
             ObjectMapper objectMapper,
-            @Value("${spring.kafka.bootstrap-servers:localhost:9092}") String bootstrapServers) {
+            @Value("${spring.kafka.bootstrap-servers:localhost:9092}") String bootstrapServers,
+            @Value("${spring.kafka.consumer.group-id:nexus-supply-chain}") String consumerGroup) {
         this.kafkaTemplate = kafkaTemplate;
         this.redisFallbackBroker = redisFallbackBroker;
         this.objectMapper = objectMapper;
         this.bootstrapServers = bootstrapServers;
+        this.consumerGroup = consumerGroup;
 
         // Check if Kafka is reachable on start
         try {
@@ -57,7 +61,7 @@ public class SpringKafkaLiteBroker implements KafkaLiteBroker {
             try (AdminClient adminClient = AdminClient.create(config)) {
                 adminClient.listTopics().names().get(1500, TimeUnit.MILLISECONDS);
                 this.kafkaActive = true;
-                log.info("SpringKafkaLiteBroker: Apache Kafka is ONLINE at {}. Real event-driven queue is active.", bootstrapServers);
+                log.info("Kafka broker is available at {}", bootstrapServers);
             }
         } catch (Exception e) {
             log.warn("SpringKafkaLiteBroker: Apache Kafka is OFFLINE at {}. Falling back to Redis/In-Memory broker. Details: {}", bootstrapServers, e.getMessage());
@@ -67,8 +71,12 @@ public class SpringKafkaLiteBroker implements KafkaLiteBroker {
 
     @Override
     public void send(String topic, Object payload) {
+        TransactionEventPublication.afterCommit(() -> sendImmediately(topic, payload));
+    }
+
+    private void sendImmediately(String topic, Object payload) {
         if (!kafkaActive) {
-            redisFallbackBroker.send(topic, payload);
+            redisFallbackBroker.sendImmediately(topic, payload);
             return;
         }
 
@@ -87,7 +95,7 @@ public class SpringKafkaLiteBroker implements KafkaLiteBroker {
     }
 
     @Override
-    public void subscribe(String topic, Consumer<String> handler) {
+    public synchronized void subscribe(String topic, Consumer<String> handler) {
         if (!kafkaActive) {
             redisFallbackBroker.subscribe(topic, handler);
             return;
@@ -98,7 +106,7 @@ public class SpringKafkaLiteBroker implements KafkaLiteBroker {
         containers.computeIfAbsent(topic, t -> {
             Map<String, Object> props = new HashMap<>();
             props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-            props.put(ConsumerConfig.GROUP_ID_CONFIG, "nexus-supply-chain-group-" + t + "-" + groupIdSuffix);
+            props.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroup + "-" + t);
             props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
             props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
             props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -119,9 +127,21 @@ public class SpringKafkaLiteBroker implements KafkaLiteBroker {
             });
 
             KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
-            container.start();
-            log.info("SpringKafkaLiteBroker: Started Spring Kafka listener container for topic {}", t);
+            if (started) {
+                container.start();
+            }
             return container;
         });
+    }
+
+    @Override
+    public synchronized void afterSingletonsInstantiated() {
+        started = true;
+        containers.values().forEach(KafkaMessageListenerContainer::start);
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        containers.values().forEach(KafkaMessageListenerContainer::stop);
     }
 }
