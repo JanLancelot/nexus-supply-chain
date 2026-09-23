@@ -110,26 +110,12 @@ class KafkaLiteTests {
         }
 
         // Call Service to populate cache
-        var products = productService.getAllProducts();
-        System.out.println("DEBUG: productService.getAllProducts() returned: " + products);
+        productService.getAllProducts();
 
-        // Verify cache is populated
-        System.out.println("DEBUG: Cache object = " + cache);
-        if (cache != null) {
-            try {
-                cache.put("test-key", "test-value");
-                System.out.println("DEBUG: Direct cache get (test-key) = " + (cache.get("test-key") != null ? cache.get("test-key").get() : null));
-                org.springframework.cache.Cache.ValueWrapper wrapper = cache.get("all");
-                System.out.println("DEBUG: ValueWrapper = " + wrapper);
-                if (wrapper != null) {
-                    System.out.println("DEBUG: Cached value = " + wrapper.get());
-                } else {
-                    System.out.println("DEBUG: ValueWrapper is null!");
-                }
-            } catch (Exception e) {
-                System.out.println("DEBUG: Exception during cache.get('all')");
-                e.printStackTrace();
-            }
+        assertNotNull(cache);
+        if (cacheManager instanceof org.springframework.cache.support.NoOpCacheManager) {
+            assertNull(cache.get("all"), "Redis outage must disable caches instead of retaining local stock values");
+            return;
         }
         assertNotNull(cache.get("all"), "Cache should be populated after retrieval");
 

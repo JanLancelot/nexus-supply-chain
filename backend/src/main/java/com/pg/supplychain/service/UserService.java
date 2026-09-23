@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,21 +25,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuditService auditService;
 
-    private final Map<UUID, User> userCache = new ConcurrentHashMap<>();
-    private final Map<String, List<User>> roleCache = new ConcurrentHashMap<>();
-
     public User getUserById(UUID id) {
         if (id == null) {
             return null;
         }
-        return userCache.computeIfAbsent(id, key -> userRepository.findById(key).orElse(null));
+        return userRepository.findById(id).orElse(null);
     }
 
     public List<User> getUsersByRole(String roleName) {
         if (roleName == null) {
             return List.of();
         }
-        return roleCache.computeIfAbsent(roleName, key -> userRepository.findByRoleName(key));
+        return userRepository.findByRoleName(roleName);
     }
 
     public UserResponse createUser(UserCreateRequest request) {
@@ -61,11 +57,6 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        // Update caches: cache the user details, invalidate the role list to fetch updated users
-        userCache.put(savedUser.getId(), savedUser);
-        roleCache.remove(role.getName());
-
-        // Publish audit event
         auditService.logChange(
                 "User",
                 savedUser.getId(),

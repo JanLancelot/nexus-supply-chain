@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { getErrorMessage } from '../services/errors';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../context/auth-context';
 import { 
+  CheckSquare,
   Plus, 
   Search, 
   AlertTriangle, 
@@ -48,7 +50,7 @@ const Orders: React.FC = () => {
   // Navigation: list, create, details
   const [viewMode, setViewMode] = useState<'list' | 'create' | 'details'>('list');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const selectedOrder = orders.find(order => order.id === selectedOrderId) ?? null;
 
   // Create Order Wizard State
   const [wizardOrder, setWizardOrder] = useState<CreateOrderData>({
@@ -60,44 +62,29 @@ const Orders: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Load Initial Data
-  const loadOrdersData = async (page = currentPage) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [ordersPaged, suppliersData, warehousesData, productsPaged] = await Promise.all([
+  const loadOrdersData = useCallback((page: number) => {
+    return Promise.all([
         getOrders(page, 50),
         getSuppliers(),
         getWarehouses(),
-        getProducts(0, 100)
-      ]);
+        getProducts(0, 50)
+      ]).then(([ordersPaged, suppliersData, warehousesData, productsPaged]) => {
       setOrders(ordersPaged.content);
       setHasMore(ordersPaged.hasNext);
-      setSuppliers(suppliersData);
+      setSuppliers(suppliersData.filter(supplier => supplier.active));
       setWarehouses(warehousesData);
       setProducts(productsPaged.content);
-    } catch (err: any) {
-      console.error(err);
-      setError('Failed to fetch purchase orders data. Make sure the backend service is running.');
-    } finally {
+      setError(null);
+    }).catch(() => {
+      setError('Unable to load purchase orders. Please try again.');
+    }).finally(() => {
       setLoading(false);
-    }
-  };
+    });
+  }, []);
 
   useEffect(() => {
-    loadOrdersData(currentPage);
-  }, [currentPage]);
-
-  // Sync details if selectedOrderId is set
-  useEffect(() => {
-    if (selectedOrderId) {
-      const found = orders.find(o => o.id === selectedOrderId);
-      if (found) {
-        setSelectedOrder(found);
-      }
-    } else {
-      setSelectedOrder(null);
-    }
-  }, [selectedOrderId, orders]);
+    void loadOrdersData(currentPage);
+  }, [currentPage, loadOrdersData]);
 
   // Status badge style resolver
   const getStatusBadgeStyle = (status: string) => {
@@ -131,23 +118,20 @@ const Orders: React.FC = () => {
       setOrders(prev => prev.map(o => o.id === updated.id ? updated : o));
       setSuccessMsg(`Order ${updated.orderNumber} successfully advanced to ${targetStatus}`);
       
-      // Also update selectedOrder details immediately
-      setSelectedOrder(updated);
-    } catch (err: any) {
-      console.error(err);
-      setError(typeof err === 'string' ? err : err.response?.data?.message || 'Unauthorized state transition rejected by FSM rules.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Unable to update the order status. Please refresh and try again.'));
     } finally {
       setSubmitting(false);
     }
   };
 
   // Wizard Item Changes
-  const handleWizardItemChange = (index: number, field: 'productId' | 'quantity', value: any) => {
-    const newItems = [...wizardOrder.items];
+  const handleWizardItemChange = (index: number, field: 'productId' | 'quantity', value: string) => {
+    const newItems = wizardOrder.items.map(item => ({ ...item }));
     if (field === 'productId') {
       newItems[index].productId = value;
     } else if (field === 'quantity') {
-      newItems[index].quantity = parseInt(value) || 1;
+      newItems[index].quantity = Number(value);
     }
     setWizardOrder({ ...wizardOrder, items: newItems });
   };
@@ -187,9 +171,14 @@ const Orders: React.FC = () => {
       return;
     }
 
-    const hasEmptyProduct = wizardOrder.items.some(item => !item.productId || item.quantity <= 0);
+    const hasEmptyProduct = wizardOrder.items.some(item => !item.productId || !Number.isSafeInteger(item.quantity) || item.quantity <= 0 || item.quantity > 2_147_483_647);
     if (hasEmptyProduct) {
       setError('Please select a valid product and positive quantity for all items.');
+      return;
+    }
+
+    if (new Set(wizardOrder.items.map(item => item.productId)).size !== wizardOrder.items.length) {
+      setError('Select each product only once per order.');
       return;
     }
 
@@ -204,8 +193,7 @@ const Orders: React.FC = () => {
         warehouseId: '',
         items: [{ productId: '', quantity: 1 }]
       });
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
       setError(typeof err === 'string' ? err : 'Failed to create purchase order. Check fields.');
     } finally {
       setSubmitting(false);
@@ -242,7 +230,7 @@ const Orders: React.FC = () => {
       {successMsg && (
         <div className="p-4 bg-emerald-950/40 border border-emerald-500/25 text-emerald-300 text-sm rounded-xl flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CheckSquareIcon className="h-5 w-5 text-emerald-400 shrink-0" />
+            <CheckSquare className="h-5 w-5 text-emerald-400 shrink-0" />
             <span>{successMsg}</span>
           </div>
           <button onClick={() => setSuccessMsg(null)} className="text-emerald-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
@@ -261,7 +249,7 @@ const Orders: React.FC = () => {
               </span>
               <input
                 type="text"
-                placeholder="Search by Order Number, Supplier, Warehouse..."
+                placeholder="Search orders on this page..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 text-xs glass-input"
@@ -286,7 +274,7 @@ const Orders: React.FC = () => {
               </select>
 
               <button
-                onClick={() => loadOrdersData()}
+                onClick={() => { setLoading(true); void loadOrdersData(currentPage); }}
                 className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-lg border border-gray-800 hover:border-gray-700 transition cursor-pointer"
                 title="Refresh Orders List"
               >
@@ -313,7 +301,7 @@ const Orders: React.FC = () => {
             <div className="py-20 text-center glass-panel rounded-2xl">
               <ClipboardList className="h-10 w-10 text-gray-600 mx-auto mb-3" />
               <h4 className="text-sm font-semibold text-white m-0">No Purchase Orders Found</h4>
-              <p className="text-xs text-gray-500 mt-1">Try launching a new procurement wizard draft.</p>
+              <p className="text-xs text-gray-500 mt-1">Create an order or change the filters.</p>
             </div>
           ) : (
             <div className="glass-panel rounded-2xl overflow-hidden border border-gray-800/60 shadow-lg">
@@ -358,6 +346,9 @@ const Orders: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+
+            </div>
+          )}
               {/* Pagination Controls */}
               {(orders.length > 0 || currentPage > 0) && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800/60 bg-gray-900/10">
@@ -366,14 +357,14 @@ const Orders: React.FC = () => {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                      onClick={() => { setLoading(true); setCurrentPage((prev) => Math.max(0, prev - 1)); }}
                       disabled={currentPage === 0 || loading}
                       className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                     >
                       Previous
                     </button>
                     <button
-                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                      onClick={() => { setLoading(true); setCurrentPage((prev) => prev + 1); }}
                       disabled={!hasMore || loading}
                       className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                     >
@@ -382,8 +373,6 @@ const Orders: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
-          )}
         </>
       )}
 
@@ -392,8 +381,8 @@ const Orders: React.FC = () => {
         <div className="w-full max-w-4xl mx-auto glass-panel rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
           <div className="p-5 border-b border-gray-800 flex items-center justify-between bg-gray-900/35">
             <div>
-              <span className="font-bold text-sm text-white">New Purchase Order Execution Wizard</span>
-              <p className="text-[10px] text-gray-400 mt-1">Submit draft procurement lists to trigger review gates.</p>
+              <span className="font-bold text-sm text-white">New Purchase Order</span>
+              <p className="text-[10px] text-gray-400 mt-1">Save a draft, then submit it for approval.</p>
             </div>
             <button
               onClick={() => setViewMode('list')}
@@ -440,10 +429,11 @@ const Orders: React.FC = () => {
             {/* Items block */}
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-gray-800 pb-2">
-                <span className="text-xs font-bold text-white uppercase tracking-wider">Itemized Allocations</span>
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Order Items</span>
                 <button
                   type="button"
                   onClick={addWizardItem}
+                  disabled={wizardOrder.items.length >= 500}
                   className="flex items-center gap-1.5 px-3 py-1 bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white text-[11px] font-semibold rounded border border-indigo-500/20 transition cursor-pointer"
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -480,6 +470,7 @@ const Orders: React.FC = () => {
                         <input
                           type="number"
                           min="1"
+                          max="2147483647"
                           required
                           placeholder="Qty"
                           value={item.quantity}
@@ -514,7 +505,7 @@ const Orders: React.FC = () => {
             <div className="flex items-center justify-between p-4 bg-gray-900/40 border border-gray-800 rounded-xl">
               <div>
                 <span className="text-xs text-gray-400 font-medium">Estimated Purchase Total</span>
-                <p className="text-[10px] text-indigo-400 font-mono mt-0.5 uppercase">Draft Ledger</p>
+                <p className="text-[10px] text-indigo-400 font-mono mt-0.5 uppercase">Draft order</p>
               </div>
               <span className="text-2xl font-extrabold text-white font-mono">${calculateWizardTotal().toFixed(2)}</span>
             </div>
@@ -533,7 +524,7 @@ const Orders: React.FC = () => {
                 disabled={submitting}
                 className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-medium border border-indigo-500/20 transition cursor-pointer"
               >
-                {submitting ? 'Generating...' : 'Save Draft Order'}
+                {submitting ? 'Saving...' : 'Save Draft Order'}
               </button>
             </div>
           </form>
@@ -562,7 +553,7 @@ const Orders: React.FC = () => {
 
           {/* Stepper Progression visual component */}
           <div className="glass-panel p-6 rounded-2xl border border-gray-800">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-6">Order Lifecycle Journey</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-6">Order Progress</h4>
             
             {/* Steps line */}
             <div className="relative flex justify-between items-center max-w-3xl mx-auto">
@@ -614,7 +605,7 @@ const Orders: React.FC = () => {
             {selectedOrder.status === 'CANCELLED' && (
               <div className="mt-6 p-3 bg-red-950/20 border border-red-500/15 rounded-xl text-center text-xs text-red-300 flex items-center justify-center gap-2 max-w-md mx-auto">
                 <AlertTriangle className="h-4.5 w-4.5 text-red-400" />
-                <span>This purchase order has been **CANCELLED** and is void.</span>
+                <span>This purchase order has been cancelled.</span>
               </div>
             )}
           </div>
@@ -625,7 +616,7 @@ const Orders: React.FC = () => {
             <div className="lg:col-span-1 space-y-6">
               {/* Summary card */}
               <div className="glass-panel p-6 rounded-2xl border border-gray-850 space-y-4">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-gray-850 pb-2">Order Metadata</h4>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-gray-850 pb-2">Order Details</h4>
                 
                 <div className="space-y-3.5 text-xs text-gray-400">
                   <div className="flex justify-between">
@@ -657,7 +648,7 @@ const Orders: React.FC = () => {
 
               {/* FSM CONTROLLER BUTTONS PANEL */}
               <div className="glass-panel p-6 rounded-2xl border border-gray-850 space-y-4 bg-gray-900/10">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-gray-850 pb-2">Lifecycle Controller</h4>
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-gray-850 pb-2">Order Actions</h4>
                 
                 {/* Logic gate details */}
                 <div className="space-y-3.5">
@@ -694,7 +685,7 @@ const Orders: React.FC = () => {
                             className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/20 text-xs font-semibold rounded-lg transition cursor-pointer flex items-center justify-center gap-2"
                           >
                             <CheckCircle className="h-4 w-4" />
-                            <span>Approve & Verify</span>
+                            <span>Approve Order</span>
                           </button>
                           <button
                             onClick={() => handleTransition('CANCELLED')}
@@ -710,7 +701,7 @@ const Orders: React.FC = () => {
                           <Info className="h-4.5 w-4.5 text-amber-400 shrink-0 mt-0.5" />
                           <div>
                             <span className="font-semibold text-white block">Awaiting Review</span>
-                            Staff operators cannot approve orders. Pending administrative evaluation.
+                            An administrator must approve this order.
                           </div>
                         </div>
                       )}
@@ -744,7 +735,7 @@ const Orders: React.FC = () => {
                           <Info className="h-4.5 w-4.5 text-indigo-400 shrink-0 mt-0.5" />
                           <div>
                             <span className="font-semibold text-white block">Order Approved</span>
-                            Admin approval logged. Dispatch queue locks until shipping dispatch.
+                            An administrator can mark this order as shipped.
                           </div>
                         </div>
                       )}
@@ -778,7 +769,7 @@ const Orders: React.FC = () => {
                           <Info className="h-4.5 w-4.5 text-purple-400 shrink-0 mt-0.5" />
                           <div>
                             <span className="font-semibold text-white block">In Transit</span>
-                            Materials shipped. Reception ledger requires Admin verification upon cargo arrival.
+                            An administrator can confirm delivery when the shipment arrives.
                           </div>
                         </div>
                       )}
@@ -789,7 +780,7 @@ const Orders: React.FC = () => {
                   {(selectedOrder.status === 'DELIVERED' || selectedOrder.status === 'CANCELLED') && (
                     <div className="p-4 bg-gray-950/20 border border-gray-850 rounded-xl text-center text-xs text-gray-400">
                       <Sparkles className="h-5 w-5 text-indigo-400 mx-auto mb-2" />
-                      <span>Order Lifecycle Concluded</span>
+                      <span>Order Closed</span>
                       <p className="text-[10px] text-gray-500 mt-1">Status changes are locked.</p>
                     </div>
                   )}
@@ -801,7 +792,7 @@ const Orders: React.FC = () => {
             <div className="lg:col-span-2 space-y-6">
               <div className="glass-panel rounded-2xl overflow-hidden border border-gray-850 shadow-lg">
                 <div className="p-4 bg-gray-900/35 border-b border-gray-850">
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider m-0">Itemized Allocation Listing</h4>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider m-0">Order Items</h4>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -820,8 +811,8 @@ const Orders: React.FC = () => {
                         return (
                           <tr key={idx} className="hover:bg-gray-900/5 transition">
                             <td className="py-4 px-6">
-                              <div className="font-semibold text-white">{productDetail?.name || 'Unknown Product'}</div>
-                              <div className="text-[10px] text-indigo-400 font-mono mt-0.5">{productDetail?.sku || 'N/A'}</div>
+                              <div className="font-semibold text-white">{item.productName || productDetail?.name || 'Unknown Product'}</div>
+                              <div className="text-[10px] text-indigo-400 font-mono mt-0.5">{item.productSku || productDetail?.sku || 'N/A'}</div>
                             </td>
                             <td className="py-4 px-6 text-center font-mono text-gray-200 font-semibold">{item.quantity}</td>
                             <td className="py-4 px-6 text-right font-mono text-gray-400">${item.unitPrice.toFixed(2)}</td>
@@ -840,24 +831,5 @@ const Orders: React.FC = () => {
     </div>
   );
 };
-
-// Helper check mark icon inside success message
-const CheckSquareIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="9 11 12 14 22 4" />
-    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-  </svg>
-);
 
 export default Orders;

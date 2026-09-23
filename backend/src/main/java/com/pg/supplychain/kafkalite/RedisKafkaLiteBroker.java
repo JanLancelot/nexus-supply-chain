@@ -1,6 +1,7 @@
 package com.pg.supplychain.kafkalite;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
@@ -12,7 +13,7 @@ import java.util.function.Consumer;
 
 @Component
 @Slf4j
-public class RedisKafkaLiteBroker implements KafkaLiteBroker {
+public class RedisKafkaLiteBroker implements KafkaLiteBroker, SmartInitializingSingleton {
 
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
@@ -23,6 +24,7 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
     private final Map<String, List<Consumer<String>>> subscribers = new ConcurrentHashMap<>();
     private volatile boolean useFallback = false;
     private volatile boolean running = true;
+    private volatile boolean started = false;
 
     public RedisKafkaLiteBroker(StringRedisTemplate redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
@@ -47,6 +49,10 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
 
     @Override
     public void send(String topic, Object payload) {
+        TransactionEventPublication.afterCommit(() -> sendImmediately(topic, payload));
+    }
+
+    void sendImmediately(String topic, Object payload) {
         try {
             String json = objectMapper.writeValueAsString(payload);
             if (!useFallback) {
@@ -76,7 +82,7 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
             if (list == null) {
                 list = new CopyOnWriteArrayList<>();
                 subscribers.put(topic, list);
-                startWorker = true;
+                startWorker = started;
             }
             list.add(handler);
         }
@@ -87,6 +93,15 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
             log.info("KafkaLite: Subscribed and started polling thread for topic {}", topic);
         } else {
             log.info("KafkaLite: Added subscriber to existing topic {}", topic);
+        }
+    }
+
+    @Override
+    public void afterSingletonsInstantiated() {
+        // All listener beans must register before a queued event can be consumed.
+        synchronized (subscribers) {
+            started = true;
+            subscribers.keySet().forEach(topic -> executorService.submit(() -> pollTopic(topic)));
         }
     }
 
@@ -151,6 +166,7 @@ public class RedisKafkaLiteBroker implements KafkaLiteBroker {
             }
         } catch (InterruptedException e) {
             executorService.shutdownNow();
+            Thread.currentThread().interrupt();
         }
         log.info("KafkaLite Broker: Shutdown completed.");
     }

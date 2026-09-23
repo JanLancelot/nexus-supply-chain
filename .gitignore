@@ -9,3 +9,13 @@ target/
 *.tfstate.backup
 *.tfvars
 *.tfvars.json
+
+# Local credentials, state/plan variants, diagnostic exports
+.env
+.env.*
+!.env.example
+*.tfstate.*
+*.tfplan
+*-logs/
+*-logs.zip
+__pycache__/

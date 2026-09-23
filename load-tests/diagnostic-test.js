@@ -24,13 +24,15 @@ import {
 } from './lib/common.js';
 
 const PHASE_DURATION = __ENV.DIAG_PHASE_DURATION || '40s';
-const PHASE_SECONDS = parseInt(PHASE_DURATION, 10) || 40;
+const phaseMatch = /^(\d+)(s|m)$/.exec(PHASE_DURATION);
+if (!phaseMatch || Number(phaseMatch[1]) < 1) throw new Error('DIAG_PHASE_DURATION must be a positive duration in s or m.');
+const PHASE_SECONDS = Number(phaseMatch[1]) * (phaseMatch[2] === 'm' ? 60 : 1);
 
 function phaseStart(index) {
-  return `${index * PHASE_SECONDS}s`;
+  return `${index * (PHASE_SECONDS + 30)}s`;
 }
 
-// Scenarios run one at a time to keep memory use low (~15 VUs max vs 213 parallel).
+// Leave room for the default 30-second graceful stop between phases.
 function buildSequentialScenarios() {
   const scenarios = {};
   let index = 0;

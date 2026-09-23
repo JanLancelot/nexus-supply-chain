@@ -1,8 +1,8 @@
 # Stage 1: Build the React frontend
-FROM node:20-alpine AS frontend-build
+FROM node:24-alpine AS frontend-build
 WORKDIR /frontend
 COPY frontend/package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY frontend/ ./
 RUN npm run build
 
@@ -21,6 +21,8 @@ RUN mvn package -DskipTests -B
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=backend-build /app/target/*.jar app.jar
+RUN groupadd --system app && useradd --system --gid app --no-create-home app
+USER app
 EXPOSE 8080
 ENTRYPOINT ["java", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=200", "-XX:+UseStringDeduplication", "-Xms512m", "-Xmx768m", "-jar", "app.jar"]
 

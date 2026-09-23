@@ -1,6 +1,7 @@
 package com.pg.supplychain.security;
 
 import io.jsonwebtoken.Claims;
+import jakarta.annotation.PostConstruct;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,17 @@ public class JwtService {
 
     @Value("${jwt.expiration:3600000}")
     private long jwtExpiration;
+
+    @PostConstruct
+    void validateConfiguration() {
+        if (secretKey == null || secretKey.isBlank() || secretKey.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT_SECRET must contain at least 32 bytes of randomly generated secret material");
+        }
+        if (jwtExpiration <= 0) {
+            throw new IllegalStateException("JWT expiration must be positive");
+        }
+        getSigningKey();
+    }
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = this.secretKey.getBytes(StandardCharsets.UTF_8);
@@ -69,20 +81,26 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username)) && !isTokenExpired(token);
+        try {
+            final Claims claims = extractAllClaims(token);
+            return username != null && username.equals(claims.getSubject())
+                    && claims.getExpiration() != null && claims.getExpiration().after(new Date());
+        } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public boolean isTokenValid(String token) {
         try {
             return !isTokenExpired(token);
-        } catch (Exception e) {
+        } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        Date expiration = extractExpiration(token);
+        return expiration == null || !expiration.after(new Date());
     }
 
     private Date extractExpiration(String token) {

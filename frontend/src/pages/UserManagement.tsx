@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { getErrorMessage } from '../services/errors';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   UserPlus, 
   Users, 
@@ -17,7 +17,6 @@ import { getUsers, createUser, type UserCreateData } from '../services/users';
 import { type User } from '../types';
 
 const UserManagement: React.FC = () => {
-  useAuth();
 
   // State variables
   const [users, setUsers] = useState<User[]>([]);
@@ -43,25 +42,22 @@ const UserManagement: React.FC = () => {
     password?: string;
   }>({});
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getUsers();
+  const fetchUsers = useCallback(() => {
+    return getUsers().then((data) => {
       // Sort users by name
       const sorted = [...data].sort((a, b) => a.fullName.localeCompare(b.fullName));
       setUsers(sorted);
-    } catch (err: any) {
-      console.error(err);
-      setError('Access Denied or Failed to fetch users directory. Confirm administrative session permissions.');
-    } finally {
+      setError(null);
+    }).catch(() => {
+      setError('Unable to load users. Please try again.');
+    }).finally(() => {
       setLoading(false);
-    }
-  };
+    });
+  }, []);
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    void fetchUsers();
+  }, [fetchUsers]);
 
   const validateForm = () => {
     const errors: typeof validationErrors = {};
@@ -75,6 +71,8 @@ const UserManagement: React.FC = () => {
     }
     if (!password) {
       errors.password = 'Password is required';
+    } else if (new TextEncoder().encode(password).length > 72) {
+      errors.password = 'Password must be at most 72 UTF-8 bytes';
     } else if (password.length < 8) {
       errors.password = 'Password must be at least 8 characters long';
     }
@@ -109,9 +107,8 @@ const UserManagement: React.FC = () => {
       setValidationErrors({});
       // Refresh directory list
       await fetchUsers();
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.message || err.message || 'An error occurred while creating the user.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Unable to create the user. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -197,7 +194,7 @@ const UserManagement: React.FC = () => {
               </select>
 
               <button
-                onClick={fetchUsers}
+                onClick={() => { setLoading(true); void fetchUsers(); }}
                 className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-lg border border-gray-800 hover:border-gray-700 transition cursor-pointer"
                 title="Refresh Directory"
               >
@@ -271,8 +268,8 @@ const UserManagement: React.FC = () => {
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-white m-0">Provision New User</h3>
-              <p className="text-[10px] text-gray-500 m-0 mt-0.5">Register administrative or operational credentials.</p>
+              <h3 className="font-bold text-sm text-white m-0">Create User</h3>
+              <p className="text-[10px] text-gray-500 m-0 mt-0.5">Add a staff member or administrator.</p>
             </div>
           </div>
 
@@ -336,6 +333,8 @@ const UserManagement: React.FC = () => {
                 </span>
                 <input
                   type="password"
+                  autoComplete="new-password"
+                  maxLength={72}
                   placeholder="Min 8 characters"
                   value={password}
                   onChange={(e) => {
@@ -364,7 +363,7 @@ const UserManagement: React.FC = () => {
                 <option value="ROLE_ADMIN">Administrator</option>
               </select>
               <p className="text-[10px] text-gray-500 leading-relaxed pt-1">
-                Admins possess full read/write capabilities across catalog, logistics, and audit. Staff users possess operational catalog and PO flow access.
+                Administrators manage users, stock, and approvals. Staff can view the catalog and create orders.
               </p>
             </div>
 
@@ -377,7 +376,7 @@ const UserManagement: React.FC = () => {
               {submitting ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin" />
-                  <span>Provisioning Account...</span>
+                  <span>Creating Account...</span>
                 </>
               ) : (
                 <>

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
-import java.util.concurrent.*;
 
 @Component
 @RequiredArgsConstructor
@@ -18,9 +17,6 @@ public class CacheEvictionListener {
     private final KafkaLiteBroker broker;
     private final CacheManager cacheManager;
     private final ObjectMapper objectMapper;
-
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final ConcurrentHashMap<String, ScheduledFuture<?>> pendingEvictions = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void registerListeners() {
@@ -35,11 +31,8 @@ public class CacheEvictionListener {
         try {
             ProductEvent event = objectMapper.readValue(messageJson, ProductEvent.class);
             log.info("CacheEvictionListener: Received ProductEvent: action={}, productId={}", event.getAction(), event.getProductId());
-            // Skip evicting products cache for STOCK_ADJUSTED events since name/description are unaffected
-            if (!"STOCK_ADJUSTED".equalsIgnoreCase(event.getAction())) {
-                evictCache("products");
-            }
-            // Do NOT evict analytics cache; rely on its 2-minute natural TTL to prevent query spikes under load
+            evictCache("products");
+            evictCache("analytics");
         } catch (Exception e) {
             log.error("CacheEvictionListener: Failed to process ProductEvent message", e);
         }
@@ -49,7 +42,7 @@ public class CacheEvictionListener {
         try {
             OrderEvent event = objectMapper.readValue(messageJson, OrderEvent.class);
             log.info("CacheEvictionListener: Received OrderEvent: status={}, orderId={}", event.getStatus(), event.getOrderId());
-            // Do NOT evict analytics cache; rely on its 2-minute natural TTL to prevent query spikes under load
+            evictCache("analytics");
             if ("DELIVERED".equalsIgnoreCase(event.getStatus())) {
                 evictCache("products");
             }
@@ -63,6 +56,7 @@ public class CacheEvictionListener {
             CategoryEvent event = objectMapper.readValue(messageJson, CategoryEvent.class);
             log.info("CacheEvictionListener: Received CategoryEvent: action={}, categoryId={}", event.getAction(), event.getCategoryId());
             evictCache("categories");
+            evictCache("products");
         } catch (Exception e) {
             log.error("CacheEvictionListener: Failed to process CategoryEvent message", e);
         }
@@ -73,35 +67,17 @@ public class CacheEvictionListener {
             WarehouseEvent event = objectMapper.readValue(messageJson, WarehouseEvent.class);
             log.info("CacheEvictionListener: Received WarehouseEvent: action={}, warehouseId={}", event.getAction(), event.getWarehouseId());
             evictCache("warehouses");
+            evictCache("products");
+            evictCache("analytics");
         } catch (Exception e) {
             log.error("CacheEvictionListener: Failed to process WarehouseEvent message", e);
         }
     }
 
     private void evictCache(String cacheName) {
-        ScheduledFuture<?> future = pendingEvictions.put(cacheName, scheduler.schedule(() -> {
-            var cache = cacheManager.getCache(cacheName);
-            if (cache != null) {
-                cache.clear();
-                log.info("CacheEvictionListener: Evicted '{}' cache after debounce.", cacheName);
-            }
-            pendingEvictions.remove(cacheName);
-        }, 1, TimeUnit.SECONDS));
-
-        if (future != null) {
-            future.cancel(false);
-        }
-    }
-
-    @jakarta.annotation.PreDestroy
-    public void shutdown() {
-        scheduler.shutdown();
-        try {
-            if (!scheduler.awaitTermination(2, TimeUnit.SECONDS)) {
-                scheduler.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            scheduler.shutdownNow();
+        var cache = cacheManager.getCache(cacheName);
+        if (cache != null) {
+            cache.clear();
         }
     }
 }

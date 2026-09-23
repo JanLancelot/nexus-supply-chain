@@ -1,216 +1,55 @@
-# ⚙️ Deployment & Operations Runbook (Azure Optimized)
+# Deployment and operations
 
-**Project Name:** Nexus Supply Chain
+## What is provisioned
 
-**Document Target:** DevOps, Site Reliability Engineering (SRE) & Cloud Operations
+[Terraform](../terraform/main.tf) defines a resource group, Basic container registry, PostgreSQL Flexible Server, Managed Redis, an S1 Linux App Service plan, one Web App, and a staging slot. The app and slot serve the combined frontend/backend image. They share PostgreSQL and Redis, so staging writes affect the same data as production.
 
-**Infrastructure Target:** Microsoft Azure
+The configuration does not provision Key Vault, a Log Analytics workspace, database zone redundancy, private endpoints, or automated slot swaps. Application logs use the configured Spring console output, not the JSON format previously claimed in this guide.
 
----
+## Secrets and bootstrap accounts
 
-## 1. Cloud-Native Architecture Mapping
+Supply `TF_VAR_postgres_admin_password` and `TF_VAR_jwt_secret` through your secret-management process. Never commit Terraform state, plan files, `.tfvars`, or `.env`. Terraform's sensitive flag hides values in normal output; state still contains secrets. Use a secured backend with access controls and backups. See [HashiCorp's sensitive-data guidance](https://developer.hashicorp.com/terraform/language/manage-sensitive-data).
 
-To match P&G's internal IT standards, the containerized application is mapped to production-ready, fully managed Microsoft Azure services:
+For first startup, supply `TF_VAR_bootstrap_admin_email` and `TF_VAR_bootstrap_admin_password`. Remove bootstrap values after the account is created. Demo data is disabled in Terraform. Existing known-password accounts are not automatically removed or reset by this code change; rotate or disable them explicitly.
 
-* **Compute Plane:** **Azure App Service (Linux Web App for Containers)** or **Azure Container Apps (ACA)** hosting the dockerized backend API and frontend SPA.
-* **Data Plane:** **Azure Database for PostgreSQL (Flexible Server)** running PostgreSQL 15 with zone-redundancy and automated backup lifecycles.
-* **Identity & Secrets Plane:** **Azure Key Vault (AKV)** acting as the central hardware security module (HSM) for cryptographic keys and configuration secrets.
-* **Container Registry:** **Azure Container Registry (ACR)** providing a private, secure, geo-replicated Docker registry with automated vulnerability scanning.
+A formerly tracked Terraform backup contained PostgreSQL and ACR credentials. Removing the working copy is not credential rotation or Git-history cleanup. Rotate the affected credentials, rotate the previous JWT signing key, invalidate old access where possible, and coordinate any history rewrite with collaborators. Do not restore the old backup into source control.
 
----
+## PostgreSQL access
 
-## 2. Environment Configuration Matrix
+`postgres_allowed_ips` maps rule names to individual approved IPv4 addresses. The default empty map denies client access; the previous all-Azure-services rule has been removed. That rule allowed resources in other Azure subscriptions to reach the database login boundary, as described in [Microsoft's firewall documentation](https://learn.microsoft.com/en-us/azure/postgresql/security/security-firewall-rules).
 
-The application follows the Twelve-Factor App methodology. All secrets and environment-specific parameters are injected dynamically into the runtime containers via Azure App Service Application Settings, backed by strict Azure Key Vault references.
+For an existing deployment, obtain the production and staging app's possible outbound IP addresses from Azure, populate the map, and review the plan. For a new deployment, the app resources may need to be created first to discover these addresses; then apply the allowlist and verify startup. Terraform exposes both address lists as outputs. Review them again when changing the plan or recreating compute resources. Private networking with controlled egress is a future improvement.
 
-### 2.1 Non-Secret Configuration Properties
+Database JDBC URLs use `sslmode=verify-full` with the JVM default trust store to verify certificate trust and hostname. Ensure the runtime JRE trusts the managed database certificate chain before deployment; production connectivity was not exercised locally. See [pgJDBC TLS configuration](https://jdbc.postgresql.org/documentation/ssl/).
 
-| Variable Name | Description | Default Dev Value | Azure Production Context |
-| --- | --- | --- | --- |
-| `SERVER_PORT` | Port hosting the application framework. | `8080` | `8080` |
-| `SPRING_PROFILES_ACTIVE` | Dictates runtime environmental profile logic. | `dev` | `prod` |
-| `CORS_ALLOWED_ORIGINS` | Permitted origins for web browser traffic. | `http://localhost:5173` | `https://supplychain.pg.com` |
-| `LOGGING_LEVEL_APP` | Minimal logging ingestion threshold. | `DEBUG` | `INFO` |
+## Application and management listeners
 
-### 2.2 Secret Configuration Properties (Azure Key Vault Managed)
+App Service and its staging slot require HTTPS and TLS 1.2 or newer. FTP and basic publishing authentication are disabled. The application listener is port 8080. `/api/health` checks a database query and returns a bounded status response.
 
-Production values are injected securely via the Azure Key Vault reference syntax: `@Microsoft.KeyVault(SecretUri=https://<vault-name>.vault.azure.net/secrets/<secret-name>/)`.
+The management listener defaults to `127.0.0.1:9091`. It exposes health and Prometheus metrics without publishing them through the application listener. Compose sets its address to `0.0.0.0` for internal Prometheus scraping but does not publish that port. Keep this listener on a trusted network if overriding the bind address. No HSTS policy was added.
 
-| Variable Name | Description | Dev Blueprint | Azure Production Source |
-| --- | --- | --- | --- |
-| `DB_URL` | Explicit connection URL path. | `jdbc:postgresql://db:5432/supply_db` | `jdbc:postgresql://pg-prod-srv.postgres.database.azure.com:5432/supply_db?sslmode=require` |
-| `DB_USERNAME` | Credential profile owning DB rights. | `enterprise_admin` | `@Microsoft.KeyVault(SecretUri=...)` |
-| `DB_PASSWORD` | Cryptographic database password. | `secure_dev_password` | `@Microsoft.KeyVault(SecretUri=...)` |
-| `JWT_SECRET` | Signature key for stateless access tokens. | `DevSecretKeyMustBeAtLeast32BytesLong!` | `@Microsoft.KeyVault(SecretUri=...)` |
+Login is limited to 30 attempts per minute per socket-peer IP, per application instance (`APP_LOGIN_MAX_ATTEMPTS_PER_MINUTE`). The counter table is bounded at 10,000 peers (`APP_LOGIN_MAX_TRACKED_CLIENTS`). Forwarding headers are not trusted. Users behind a proxy share that peer limit; configure trusted gateway rate limiting and capacity deliberately before rollout. Diagnostic authentication stress tests need a higher limit only in a disposable environment.
 
----
+## CI and deployment
 
-## 3. Local Infrastructure Orchestration
+[ci.yml](../.github/workflows/ci.yml) runs Maven verification, frontend lint, and a production frontend build. On a successful push to `main`, it builds and pushes the combined image and deploys the commit tag to the `staging` slot. It does not promote the slot to production.
 
-To maintain environmental parity with Azure Database for PostgreSQL, developers use local Docker environments that mimic cloud configurations, including mandatory SSL behaviors.
+GitHub's Azure identity needs `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`, configured for OIDC federation. It also needs permission to push to the registry and deploy the Web App. Registry login uses `az acr login`; the workflow no longer requires `ACR_USERNAME`/`ACR_PASSWORD`. OIDC token permission is restricted to the deployment job. App Service and staging use system-assigned identities with `AcrPull`; registry admin authentication is disabled in Terraform. The Terraform caller needs permission to create those role assignments. Verify identity propagation before removing existing registry credentials from a live deployment.
 
-### 3.1 Execution Directives
+Review role assignments and secrets in the actual Azure/GitHub environment before using the workflow. They were not inspected or changed by this local review.
 
-To spin up the isolated local data layer, navigate to the project directory root and execute:
+## Events and releases
 
-```bash
-# Build and execute infrastructure context in detached background threads
-docker-compose -f docker/dev.docker-compose.yml up -d
+When deploying the stable Kafka consumer-group change to existing topics, initialize group offsets intentionally to avoid replaying historical notifications/audit events. Kafka is not provisioned by the Terraform configuration; without external Kafka, the app uses its Redis/memory fallback. See [event limitations](data-flow-and-integration.md).
 
-```
+After deployment, verify login, staff/admin permissions, a stock adjustment, the order lifecycle, notification counts, and metrics scraping. Check logs for failed migrations or event handlers. Automated build success alone does not prove a deployed environment is healthy.
 
-### 3.2 Local Verification Baseline
+## Suspend and resume
 
-Verify data layer stability by confirming container health markers:
+`bin/suspend.sh` destroys the compute resources and Redis after Terraform presents a plan for confirmation, then stops PostgreSQL. Database storage and registry images remain. Redis cache and queued data are lost; the scripts are not a production availability strategy.
 
-```bash
-docker ps --filter "name=pg_enterprise_supply"
+`bin/resume.sh` starts PostgreSQL and recreates compute resources. Both scripts read names from Terraform outputs and stop on failure instead of reporting false success. Older state may need its outputs refreshed before the new `postgres_server_name` output exists.
 
-```
+Stopping PostgreSQL does not eliminate storage costs, and Azure can automatically restart it after its allowed stop interval. See [Microsoft's stop/start documentation](https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/how-to-stop-server). Recheck the database firewall after recreating App Service.
 
----
-
-## 4. CI/CD Pipeline Architecture (GitHub Actions + Azure)
-
-Continuous Integration and Continuous Deployment workflows are executed via GitHub Actions, integrating natively with Azure via OpenID Connect (OIDC) service principals to eliminate persistent, hardcoded deployment credentials.
-
-### 4.1 Production Workflow Automation Blueprint (`.github/workflows/deploy.yml`)
-
-```yaml
-name: Enterprise Azure Deployment Pipeline
-
-on:
-  push:
-    branches: [ main ]
-
-permissions:
-  id-token: write # Required for Azure OIDC authentication
-  contents: read
-
-jobs:
-  validate-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Set up Java/Ecosystem SDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Run Transactional Integration Test Suite
-        run: mvn clean test
-
-  build-and-ship:
-    needs: validate-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Log in to Azure via OIDC
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Log in to Azure Container Registry (ACR)
-        uses: azure/docker-login@v1
-        with:
-          login-server: pgsupplyregistry.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      - name: Build and Push Production Docker Image
-        run: |
-          docker build -t pgsupplyregistry.azurecr.io/backend:${{ github.sha }} -f docker/backend.Dockerfile .
-          docker push pgsupplyregistry.azurecr.io/backend:${{ github.sha }}
-
-      - name: Deploy Container Image to Azure App Service
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'pg-enterprise-supply-api'
-          images: 'pgsupplyregistry.azurecr.io/backend:${{ github.sha }}'
-
-```
-
----
-
-## 5. Observability, Telemetry & Azure Log Runbook
-
-Operating software at enterprise scale requires feeding raw logs and state metrics into centralized ingestion systems without adding processing overhead to the application runtime.
-
-### 5.1 Azure Monitor & Log Analytics Integration
-
-The backend streaming log output is directed completely to standard output (`stdout`) formatting. When running inside Azure App Service or Azure Container Apps, the Azure Diagnostic Logging engine intercepts these streams and pipes them directly into an **Azure Log Analytics Workspace**.
-
-Production logs match a structured JSON layout, making them immediately searchable via Kusto Query Language (KQL) inside the Azure Portal:
-
-```json
-{
-  "timestamp": "2026-06-12T16:25:00.124Z",
-  "level": "WARN",
-  "thread": "http-nio-8080-exec-2",
-  "logger": "com.pg.supplychain.service.InventoryService",
-  "message": "Dynamic safety stock boundary crossed.",
-  "context": {
-    "product_id": "c3b0a7e3-53d7-466d-a7a5-c6bf2d2c12cd",
-    "sku": "PG-TIDE-001",
-    "current_stock": 184,
-    "reorder_level": 200,
-    "low_stock_indicator": true
-  }
-}
-
-```
-
-### 5.2 Enterprise KQL Operational Query Example
-
-SRE teams can execute the following Kusto query within Azure Log Analytics to generate real-time metrics on automated low-stock warnings across the warehouse footprint:
-
-```kusto
-AppServiceConsoleLogs
-| extend parsed_log = parse_json(ResultText)
-| where parsed_log.level == "WARN" and parsed_log.context.low_stock_indicator == true
-| project TimeGenerated, SKU = tostring(parsed_log.context.sku), CurrentStock = toint(parsed_log.context.current_stock)
-| order by TimeGenerated desc
-
-```
-
-### 5.3 Live Infrastructure Health Audits
-
-Azure App Service actively checks the application's stability by hitting the embedded orchestration framework path every 10 seconds:
-
-* **Live Traffic Health Probe Context:** `GET /api/v1/actuator/health`
-
-If the database link breaks or memory allocation collapses, the endpoint returns a `503 Service Unavailable` status payload. Azure automatically takes the unhealthy container instance out of rotation and spins up a fresh, isolated node to ensure continuous system availability.
-
----
-
-## 6. Cost Optimization: Suspending & Resuming the Cloud Environment
-
-To stop consuming credits on Azure when the environment is not in active use, you can suspend the compute resources. This shuts down the PostgreSQL flexible server compute and destroys the App Service Plan, Web App, Staging Slot, and Managed Redis Cache. Database data and container images (ACR) are fully preserved.
-
-### 6.1 Suspend Environment
-Run the following script from the project root to stop cost bleeding:
-```bash
-./bin/suspend.sh
-```
-
-This will:
-1. Run `terraform apply -var="enable_compute=false" -auto-approve` to tear down compute resources.
-2. Stop the PostgreSQL Flexible Server via `az postgres flexible-server stop`.
-
-### 6.2 Resume Environment
-Run the following script from the project root to restore the environment when you need it:
-```bash
-./bin/resume.sh
-```
-
-This will:
-1. Start the PostgreSQL Flexible Server via `az postgres flexible-server start`.
-2. Run `terraform apply -var="enable_compute=true" -auto-approve` to recreate the compute resources.
+No Terraform apply, Azure mutation, deployment, credential rotation, or destructive load test was performed during this review.

@@ -55,6 +55,22 @@ class JwtServiceTest {
     }
 
     @Test
+    void rejectsWeakSigningKeysAtStartup() {
+        ReflectionTestUtils.setField(jwtService, "secretKey", "short");
+        assertThrows(IllegalStateException.class, jwtService::validateConfiguration);
+    }
+
+    @Test
+    void rejectsNonExpiringTokensAndInvalidSignatures() {
+        String token = io.jsonwebtoken.Jwts.builder().subject("test@example.test")
+                .signWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes(java.nio.charset.StandardCharsets.UTF_8)))
+                .compact();
+        assertFalse(jwtService.isTokenValid(token));
+        assertFalse(jwtService.isTokenValid(token, "test@example.test"));
+        assertFalse(jwtService.isTokenValid("malformed", "test@example.test"));
+    }
+
+    @Test
     void testExpiredToken() {
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", -1000L); // expired 1s ago
         String token = jwtService.generateToken("testuser", "ROLE_USER", "123");

@@ -1,0 +1,103 @@
+{
+  "reviewDate": "2026-09-23",
+  "recordedAt": "2026-09-23T08:42:27.226054+00:00",
+  "ecosystem": "npm",
+  "scope": "frontend/package-lock.json; production and development dependencies",
+  "source": {
+    "before": "npm audit --json --cache /tmp/nexus-frontend-npm-cache (online advisory query captured in this review tool output)",
+    "remediation": "npm audit fix --ignore-scripts --cache /tmp/nexus-frontend-npm-cache",
+    "after": "Remediation command re-audited the resulting dependency tree and reported found 0 vulnerabilities.",
+    "retention": "Original raw npm audit JSON was returned in tool output, not saved to /tmp. This file preserves the observed public package summary; versions are read from the original Git lockfile and reviewed working-tree lockfile."
+  },
+  "before": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 7,
+      "critical": 0,
+      "total": 9
+    },
+    "packages": [
+      {
+        "name": "axios",
+        "severity": "high",
+        "direct": true,
+        "beforeVersion": "1.17.0",
+        "afterVersion": "1.20.0"
+      },
+      {
+        "name": "baseline-browser-mapping",
+        "severity": "moderate",
+        "direct": false,
+        "beforeVersion": "2.10.35",
+        "afterVersion": "2.11.25"
+      },
+      {
+        "name": "brace-expansion",
+        "severity": "high",
+        "direct": false,
+        "beforeVersion": "5.0.6",
+        "afterVersion": "5.0.12"
+      },
+      {
+        "name": "browserslist",
+        "severity": "high",
+        "direct": false,
+        "beforeVersion": "4.28.2",
+        "afterVersion": "4.29.0"
+      },
+      {
+        "name": "form-data",
+        "severity": "high",
+        "direct": false,
+        "beforeVersion": "4.0.5",
+        "afterVersion": "4.0.6"
+      },
+      {
+        "name": "nanoid",
+        "severity": "high",
+        "direct": false,
+        "beforeVersion": "3.3.12",
+        "afterVersion": "3.3.19"
+      },
+      {
+        "name": "postcss",
+        "severity": "high",
+        "direct": true,
+        "beforeVersion": "8.5.15",
+        "afterVersion": "8.5.28"
+      },
+      {
+        "name": "react-router",
+        "severity": "high",
+        "direct": false,
+        "beforeVersion": "7.17.0",
+        "afterVersion": "7.18.4"
+      },
+      {
+        "name": "react-router-dom",
+        "severity": "moderate",
+        "direct": true,
+        "beforeVersion": "7.17.0",
+        "afterVersion": "7.18.4"
+      }
+    ]
+  },
+  "after": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "packagesChangedByRemediation": 13
+  },
+  "limitations": [
+    "Advisory matching is not proof of reachability or exploitability in this application.",
+    "Several Axios and React Router advisories concern server-only adapters or rendering modes absent from this browser SPA.",
+    "Container operating-system layers and image contents are outside this npm audit."
+  ]
+}

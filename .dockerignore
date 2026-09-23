@@ -1,0 +1,12 @@
+.git
+**/node_modules
+**/dist
+**/target
+**/.env
+**/.env.*
+**/*.tfstate*
+**/*.tfvars*
+**/*.tfplan
+terraform/.terraform
+*-logs*
+load-tests/results

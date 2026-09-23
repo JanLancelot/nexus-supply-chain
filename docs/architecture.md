@@ -1,143 +1,37 @@
-# 🏛️ System Architecture Design
+# Architecture
 
-**Project Name:** Nexus Supply Chain
+The React UI calls a Spring Boot API using JSON and a bearer token. PostgreSQL stores application data. Redis caches selected responses. Domain events trigger cache eviction, notifications, and draft replenishment orders.
 
-**Document Target:** Technical Interview Panel & Engineering Alignment
-
-**Design Standard:** Simplified C4 Model (Context & Containers)
-
----
-
-## 1. System Context (C4 Level 1)
-
-The System Context diagram outlines the external boundaries of the Supply Chain Platform, illustrating how distinct corporate personas and upstream logistics infrastructure interact with the core system application.
-
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│                        P&G Enterprise Network                          │
-│                                                                        │
-│  ┌───────────────────────┐                  ┌───────────────────────┐  │
-│  │  Logistics Specialist │                  │ Regional Administrator│  │
-│  │     (ROLE_STAFF)      │                  │     (ROLE_ADMIN)      │  │
-│  └───────────┬───────────┘                  └───────────┬───────────┘  │
-│              │                                          │              │
-│              └───────────────────┬──────────────────────┘              │
-│                                  │ HTTPS / JSON                        │
-│                                  ▼                                     │
-│                  ┌───────────────────────────────┐                     │
-│                  │  Enterprise Supply Chain      │                     │
-│                  │  & Operations Platform        │                     │
-│                  └───────────────┬───────────────┘                     │
-│                                  │ JDBC / TCP                          │
-│                                  ▼                                     │
-│                  ┌───────────────────────────────┐                     │
-│                  │      Corporate Database       │                     │
-│                  │       (PostgreSQL 15)         │                     │
-│                  └───────────────────────────────┘                     │
-└────────────────────────────────────────────────────────────────────────┘
-
+```mermaid
+flowchart LR
+    Browser[React UI] -->|JSON / bearer token| API[Spring Boot]
+    API --> DB[(PostgreSQL)]
+    API --> Cache[(Redis cache)]
+    API --> Broker[Kafka or fallback broker]
+    Broker --> Consumers[Cache eviction / notifications / replenishment]
+    Consumers --> DB
 ```
 
----
+## Deployment shapes
 
-## 2. Container Architecture (C4 Level 2)
+The root Compose file builds the React bundle into the Spring Boot JAR and includes PostgreSQL, Redis, Kafka, Prometheus, Grafana, and node-exporter. The optional frontend Dockerfile provides a separate Nginx deployment. During development, Vite proxies API requests to port 8080.
 
-The Container diagram details the high-level technological building blocks that compose the application ecosystem, their individual responsibilities, and how data moves across system boundaries securely.
+Terraform creates one App Service and a staging slot, backed by one PostgreSQL database and one Redis instance. Production and staging currently share data. Terraform does not provision Kafka, Key Vault, Log Analytics, private networking, database high availability, or deployment-slot swaps.
 
-```text
- ┌──────────────────────────────────────────────────────────────────────────────┐
- │ Browser Layer                                                                │
- │   ┌──────────────────────────────────────────────────────────────────────┐   │
- │   │ SPA Container (React + TypeScript + Tailwind CSS)                    │   │
- │   │ Provides stateful inventory monitoring dashboards and order inputs.  │   │
- │   └──────────────────────────────────┬───────────────────────────────────┘   │
- └──────────────────────────────────────┼───────────────────────────────────────┘
-                                        │ HTTPS / REST (Port 8080 / JWT Bearer)
-                                        ▼
- ┌──────────────────────────────────────────────────────────────────────────────┐
- │ Application Server (Spring Boot / .NET Core Execution Context)                │
- │                                                                              │
- │   ┌───────────────────────┐   ┌───────────────────────┐   ┌──────────────┐   │
- │   │ Security Controller   │──>│ Core Business Services│──>│ Persistence  │   │
- │   │  (JWT Interception)   │   │ (State Engine/Auditing)   │   │  (JPA / EF)  │   │
- │   └───────────────────────┘   └───────────────────────┘   └──────┬───────┘   │
- └──────────────────────────────────────────────────────────────────┼───────────┘
-                                                                    │ SQL / JDBC
-                                                                    ▼
- ┌──────────────────────────────────────────────────────────────────────────────┐
- │ Database Management Infrastructure                                           │
- │   ┌──────────────────────────────────────────────────────────────────────┐   │
- │   │ PostgreSQL 15 Engine Container                                       │   │
- │   │ Isolates and persists domain models, relational arrays, & audit logs.│   │
- │   └──────────────────────────────────────────────────────────────────────┘   │
- └──────────────────────────────────────────────────────────────────────────────┘
+## Authentication and authorization
 
-```
+Login checks a BCrypt password hash and issues an expiring JWT. API requests validate the signature and load the active user and current role from the database. Administrators manage catalog definitions, stock adjustments, user creation, analytics, and audit views. Staff can read catalog data and create/submit orders. Notification reads and updates are scoped to the signed-in user.
 
----
+The frontend keeps its token in memory and signs out on expiry or an API authentication failure. Browser route checks improve navigation; the API enforces permissions.
 
-## 3. Core Architectural Components
+## Storage and consistency
 
-### 3.1 Presentation Layer (Single Page Application)
+Services use database transactions for stock and order mutations. Product/order row locks serialize competing updates. Audit snapshots record selected actions in the same application database; there is no database-enforced append-only or tamper-evident guarantee.
 
-* **Technology Stack:** React, TypeScript, Tailwind CSS, Axios.
-* **Responsibilities:**
-* Client-side rendering of inventory analytics dashboards and transactional workflow modules.
-* Local session state enforcement via secure token-storage mechanisms.
-* Outbound request interception to append bearer authentication structures (`Authorization: Bearer <JWT>`) uniformly to all transactional API requests.
+Cache eviction runs when asynchronous mutation events are consumed, so readers can briefly see older data. Redis TTLs provide a further bound on stale cache entries. If Redis is unavailable at startup, caching is disabled and reads go to the database.
 
+Events are published after the database transaction commits. There is no transactional outbox: a process crash between commit and publish can lose an event. Redis-list consumption removes a message before handlers finish, and memory queues disappear on restart. These mechanisms should not be described as guaranteed delivery or exactly-once processing.
 
+## Boundaries
 
-### 3.2 Application Layer (Enterprise REST API Context)
-
-* **Technology Stack:** Java + Spring Boot (or C# + .NET Core equivalent).
-* **Responsibilities:**
-* **API Security Gate:** Intercepts incoming processing streams, extracts token payloads, validates signatures, and maps security context profiles (`ROLE_STAFF`, `ROLE_ADMIN`) down the execution thread.
-* **Domain Logic Execution Engine:** Controls state transition mechanics for orders and ensures that safety-stock data validations trigger when processing operations execute.
-* **Transactional Boundary Controller:** Enforces atomic isolation boundaries (`@Transactional`). If sub-queries fail during multicatalog balance mutations, the system executes matching rollbacks to preserve historical database consistency.
-
-
-
-### 3.3 Persistence Layer (Relational Data Store)
-
-* **Technology Stack:** PostgreSQL 15.
-* **Responsibilities:**
-* Structured storage of core transactional state tables.
-* Referential integrity maintenance across key domain nodes via foreign-key constraints.
-* Append-only ingestion performance optimization for capturing system modification tracking parameters within the `audit_logs` model context.
-
-
-
----
-
-## 4. Key Cross-Cutting Architecture Design Patterns
-
-### 4.1 Token-Based Stateless Authentication Flow
-
-To maximize system throughput and remove state synchronization overloads across application runtimes, user authorization relies on stateless authentication mechanisms.
-
-```text
-[ Client SPA ]                  [ API Security Layer ]           [ Database Store ]
-      │                                    │                              │
-      │ 1. POST /api/v1/auth/login ───────>│                              │
-      │                                    │ 2. Query User Entity ───────>│
-      │                                    │<─────── Return Record -------│
-      │                                    │                              │
-      │   Verify BCrypt Hash Integrity ────┘                              │
-      │   Generate Signed JWT Payload ─────┐                              │
-      │<─ 3. Return Bearer Token (JWT) ────┘                              │
-      │                                    │                              │
-      │ 4. GET /api/v1/audit (With Token) ─>│                              │
-      │                                    │ Validates Signature & Role ──┐│
-      │                                    │ Accesses Protected Resource ─┘│
-      │<─ 5. Stream Requested Payload ─────│                              │
-
-```
-
-### 4.2 Automated Reactive Auditing Architecture
-
-To satisfy non-functional requirement `REQ-AUD-01` without littering operational service methods with boilerplate persistence logs, the backend leverages a decoupled structural interception routine.
-
-* **The Interceptor Pattern:** The infrastructure maps domain listener hooks (`@EntityListeners` / Interceptors) directly over tracking schema models.
-* **The Lifecycle Interception:** When any active transactional operation successfully schedules an insert, update, or delete modification against the `products` or `orders` datasets, the lifecycle framework hooks into the event thread before committing changes to storage.
-* **The Logging Payload Capture:** The runtime interceptor routine reads the mutating entity context, matches active metadata against original object snapshots to compile old state vs. new state properties, extracts identity tags from the ambient thread security context, and automatically streams a record to the `audit_logs` entity cache.
+The application has a shared staff/admin data model, not tenant isolation. Suppliers are reference records; the repository does not send orders to external suppliers. Shipment tracking, refresh-token rotation, and a dedicated stock-movement ledger are not implemented workflows, even though baseline database tables exist for some of them.

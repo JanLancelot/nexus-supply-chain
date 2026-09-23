@@ -7,7 +7,7 @@ import com.pg.supplychain.dto.PagedResponse;
 import com.pg.supplychain.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import com.pg.supplychain.exception.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,9 @@ public class OrderController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size
     ) {
+        if (page < 0 || size < 1) {
+            throw new BadRequestException("Page must be non-negative and size must be positive");
+        }
         int limitSize = Math.min(size, 50);
         return ResponseEntity.ok(orderService.getAllOrders(page, limitSize));
     }

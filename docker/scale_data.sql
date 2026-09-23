@@ -1,3 +1,40 @@
+-- Destructive fixture reset for a disposable benchmark database only.
+-- Invoke psql with -v ALLOW_DESTRUCTIVE_SEED=true to opt in.
+\set ON_ERROR_STOP on
+\if :{?ALLOW_DESTRUCTIVE_SEED}
+\else
+  \echo 'Refusing fixture reset: ALLOW_DESTRUCTIVE_SEED must be true.'
+  DO $$ BEGIN RAISE EXCEPTION 'Fixture reset not authorized'; END $$;
+\endif
+\if :ALLOW_DESTRUCTIVE_SEED
+\else
+  \echo 'Refusing fixture reset: ALLOW_DESTRUCTIVE_SEED must be true.'
+  DO $$ BEGIN RAISE EXCEPTION 'Fixture reset not authorized'; END $$;
+\endif
+BEGIN;
+-- Validate the optional demo fixtures before acquiring destructive table locks.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM users u JOIN roles r ON r.id = u.role_id
+                   WHERE u.status = 'ACTIVE' AND r.name = 'ROLE_ADMIN')
+       OR NOT EXISTS (SELECT 1 FROM users u JOIN roles r ON r.id = u.role_id
+                      WHERE u.status = 'ACTIVE' AND r.name = 'ROLE_STAFF') THEN
+        RAISE EXCEPTION 'Benchmark fixtures require active administrator and staff accounts. Enable APP_SEED_DEMO_DATA and configure bootstrap passwords in a disposable environment first.';
+    END IF;
+    IF (SELECT count(DISTINCT name) FROM product_categories
+        WHERE name IN ('Electronics', 'Industrial', 'Office Supplies')) <> 3 THEN
+        RAISE EXCEPTION 'Benchmark fixtures require the three demo product categories. Load demo data before resetting fixtures.';
+    END IF;
+    IF (SELECT count(DISTINCT name) FROM warehouses
+        WHERE name IN ('Main Distribution Center', 'Regional Fulfillment Hub')) <> 2 THEN
+        RAISE EXCEPTION 'Benchmark fixtures require the two demo warehouses. Load demo data before resetting fixtures.';
+    END IF;
+    IF (SELECT count(DISTINCT name) FROM suppliers WHERE is_active = TRUE
+        AND name IN ('Apex Logistics & Supplies', 'Global Tech Parts')) <> 2 THEN
+        RAISE EXCEPTION 'Benchmark fixtures require the two active demo suppliers. Load demo data before resetting fixtures.';
+    END IF;
+END $$;
+
 -- Clean up existing transaction logs to start seeding cleanly
 TRUNCATE TABLE audit_logs CASCADE;
 TRUNCATE TABLE notifications CASCADE;
@@ -7,7 +44,7 @@ TRUNCATE TABLE supplier_products CASCADE;
 DELETE FROM products WHERE sku LIKE 'SKU-GEN-%';
 
 -- Create dynamic lookup temporary tables to handle dynamically generated base UUIDs
-CREATE TEMP TABLE lookup_users AS SELECT id, email FROM users;
+CREATE TEMP TABLE lookup_users AS SELECT u.id, r.name AS role FROM users u JOIN roles r ON r.id = u.role_id WHERE u.status = 'ACTIVE';
 CREATE TEMP TABLE lookup_categories AS SELECT id, name FROM product_categories;
 CREATE TEMP TABLE lookup_warehouses AS SELECT id, name FROM warehouses;
 CREATE TEMP TABLE lookup_suppliers AS SELECT id, name FROM suppliers;
@@ -46,8 +83,8 @@ SELECT
          WHEN (i % 4) = 2 THEN 'APPROVED'
          ELSE 'DELIVERED' END,
     0.00,
-    CASE WHEN (i % 2) = 0 THEN (SELECT id FROM lookup_users WHERE email = 'admin@pg.com' LIMIT 1)
-         ELSE (SELECT id FROM lookup_users WHERE email = 'staff@pg.com' LIMIT 1) END,
+    CASE WHEN (i % 2) = 0 THEN (SELECT id FROM lookup_users WHERE role = 'ROLE_ADMIN' LIMIT 1)
+         ELSE (SELECT id FROM lookup_users WHERE role = 'ROLE_STAFF' LIMIT 1) END,
     NOW() - (i % 365) * INTERVAL '1 day',
     NOW() - (i % 365) * INTERVAL '1 day'
 FROM generate_series(1, 500000) i;
@@ -92,8 +129,8 @@ WHERE o.id = sub.order_id AND o.order_number LIKE 'ORD-GEN-%';
 INSERT INTO audit_logs (id, user_id, entity_type, entity_id, action, old_value, new_value, created_at)
 SELECT 
     gen_random_uuid(),
-    CASE WHEN (i % 2) = 0 THEN (SELECT id FROM lookup_users WHERE email = 'admin@pg.com' LIMIT 1)
-         ELSE (SELECT id FROM lookup_users WHERE email = 'staff@pg.com' LIMIT 1) END,
+    CASE WHEN (i % 2) = 0 THEN (SELECT id FROM lookup_users WHERE role = 'ROLE_ADMIN' LIMIT 1)
+         ELSE (SELECT id FROM lookup_users WHERE role = 'ROLE_STAFF' LIMIT 1) END,
     'Order',
     o.id,
     'ACTION_UPDATE_ORDER_STATUS',
@@ -110,8 +147,8 @@ JOIN (
 INSERT INTO notifications (id, user_id, type, message, is_read, created_at)
 SELECT 
     gen_random_uuid(),
-    CASE WHEN (i % 2) = 0 THEN (SELECT id FROM lookup_users WHERE email = 'admin@pg.com' LIMIT 1)
-         ELSE (SELECT id FROM lookup_users WHERE email = 'staff@pg.com' LIMIT 1) END,
+    CASE WHEN (i % 2) = 0 THEN (SELECT id FROM lookup_users WHERE role = 'ROLE_ADMIN' LIMIT 1)
+         ELSE (SELECT id FROM lookup_users WHERE role = 'ROLE_STAFF' LIMIT 1) END,
     'ORDER_STATUS_UPDATE',
     'Order ORD-GEN-' || (i % 500000 + 1) || ' has been approved.',
     (i % 3) = 0,
@@ -130,3 +167,5 @@ FROM products;
 -- Refresh query planner statistics for the newly generated records
 ANALYZE;
 
+
+COMMIT;

@@ -24,6 +24,10 @@ run_k6_docker() {
   docker run --rm -i \
     --memory="${K6_DOCKER_MEMORY:-512m}" \
     --network="$network" \
+    -e LOAD_TEST_ADMIN_EMAIL \
+    -e LOAD_TEST_ADMIN_PASSWORD \
+    -e LOAD_TEST_STAFF_EMAIL \
+    -e LOAD_TEST_STAFF_PASSWORD \
     -e BASE_URL="$base_url" \
     -e LOAD_TEST_SCALE="${LOAD_TEST_SCALE:-1}" \
     -e DIAG_PHASE_DURATION="${DIAG_PHASE_DURATION:-40s}" \
@@ -42,10 +46,12 @@ Profiles:
   (default)    Full load test — ramp to 300 VUs, mixed staff/admin workflows
   smoke        Quick sanity check — 1 VU for 10 seconds
   stress       High-load stress test — ramp to 1000 VUs
-  extreme      Extreme-load stress test — ramp to 5000 VUs
+  extreme      Extreme-load stress test — ramp to 3000 VUs
   diagnostic   Endpoint isolation — sequential scenarios (~7 min, memory-safe)
 
 Environment variables:
+  LOAD_TEST_ADMIN_EMAIL / LOAD_TEST_ADMIN_PASSWORD   Required administrator credentials
+  LOAD_TEST_STAFF_EMAIL / LOAD_TEST_STAFF_PASSWORD   Required staff credentials
   LOAD_TEST_SCALE=0.5       Reduce VUs if you still hit OOM (default: 1)
   DIAG_PHASE_DURATION=30s   Duration per diagnostic phase (default: 40s)
   K6_DOCKER_MEMORY=512m     Docker memory limit for k6 container
@@ -92,7 +98,7 @@ if command -v k6 &> /dev/null; then
       run_k6 stress-test.js "${K6_ARGS[@]}"
       ;;
     extreme)
-      echo "Profile: Extreme Stress Test (ramp to 5000 VUs)"
+      echo "Profile: Extreme Stress Test (ramp to 3000 VUs)"
       run_k6 high-load-stress-test.js "${K6_ARGS[@]}"
       ;;
     diagnostic)
@@ -125,7 +131,7 @@ else
       run_k6_docker stress-test.js "${K6_ARGS[@]}"
       ;;
     extreme)
-      echo "Profile: Extreme Stress Test (ramp to 5000 VUs)"
+      echo "Profile: Extreme Stress Test (ramp to 3000 VUs)"
       export K6_DOCKER_MEMORY="4g"
       run_k6_docker high-load-stress-test.js "${K6_ARGS[@]}"
       ;;

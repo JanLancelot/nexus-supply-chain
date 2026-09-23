@@ -1,5 +1,6 @@
 package com.pg.supplychain.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,14 @@ public class NotificationResponse {
     private String message;
     private boolean isRead;
     private OffsetDateTime createdAt;
+
+    @JsonProperty("isRead")
+    public boolean isRead() {
+        return isRead;
+    }
+
+    @JsonProperty("isRead")
+    public void setRead(boolean read) {
+        this.isRead = read;
+    }
 }
