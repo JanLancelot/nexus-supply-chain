@@ -71,8 +71,78 @@ jobs:
           path: frontend/coverage/
           retention-days: 14
 
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci --ignore-scripts
+      - name: Install browser
+        working-directory: frontend
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Verify browser workflows
+        working-directory: frontend
+        run: npx playwright test --project=${{ matrix.browser }}
+      - name: Save browser reports and failure artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.browser }}
+          path: |
+            frontend/playwright-report/e2e/
+            frontend/test-results/e2e/
+          retention-days: 7
+
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare canonical browser screenshots
+        run: ./bin/verify.sh visual
+      - name: Save visual report, traces, and image diffs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regressions
+          path: |
+            frontend/playwright-report/visual/
+            frontend/test-results/visual/
+          retention-days: 14
+
+  tooling:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify benchmark tooling
+        run: python3 -m unittest discover -s load-tests -p 'test_*.py'
+      - name: Verify disposable test launcher
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Check harness shell syntax
+        run: bash -n bin/verify.sh bin/start-e2e-backend.sh bin/visual-tests.sh
+
   deploy-to-staging:
-    needs: [backend, frontend]
+    needs: [backend, frontend, e2e, visual, tooling]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:

@@ -92,10 +92,10 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
   };
 
   return (
-    <header className="h-16 bg-[#0c101b]/80 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-8 sticky top-0 z-40">
-      <h2 className="text-xl font-bold text-white tracking-tight m-0">{title}</h2>
+    <header className="h-16 bg-[#0c101b]/80 backdrop-blur-md border-b border-gray-800 flex items-center justify-between gap-3 px-4 md:px-8 sticky top-0 z-40">
+      <h2 className="text-lg sm:text-xl min-w-0 truncate font-bold text-white tracking-tight m-0">{title}</h2>
 
-      <div className="flex items-center gap-6">
+      <div className="flex shrink-0 items-center gap-6">
         {/* Notification Center */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -114,7 +114,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
 
           {/* Notifications Dropdown */}
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-80 glass-panel rounded-xl shadow-2xl overflow-hidden z-50 border border-gray-800">
+            <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-[#0c101b] rounded-xl shadow-2xl overflow-hidden z-50 border border-gray-800">
               <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-gray-900/30">
                 <span className="font-semibold text-sm text-white">Notifications (Total: {totalCount})</span>
                 {unreadCount > 0 && (
@@ -192,7 +192,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         </div>
 
         {/* User Info Capsule */}
-        <div className="flex items-center gap-3 pl-4 border-l border-gray-800">
+        <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-gray-800">
           <div className="h-8 w-8 rounded-lg bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center font-semibold text-indigo-400 text-xs select-none">
             {user?.role === 'ROLE_ADMIN' ? 'AD' : 'ST'}
           </div>

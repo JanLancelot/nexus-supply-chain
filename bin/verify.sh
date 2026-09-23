@@ -5,7 +5,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 mode="${1:-all}"
 if [[ $# -gt 1 ]]; then
-  echo "Usage: $0 [all|frontend|backend|containers]" >&2
+  echo "Usage: $0 [all|frontend|backend|containers|e2e|visual|full]" >&2
   exit 2
 fi
 
@@ -24,7 +24,12 @@ backend() {
 }
 
 case "$mode" in
-  all) frontend; backend ;;
+  all)
+    frontend
+    backend
+    python3 -m unittest discover -s "$repo_root/load-tests" -p 'test_*.py'
+    python3 -m unittest discover -s "$repo_root/tests" -p 'test_*.py'
+    ;;
   frontend) frontend ;;
   backend) backend ;;
   containers)
@@ -34,5 +39,13 @@ case "$mode" in
     fi
     backend -Pintegration
     ;;
-  *) echo "Usage: $0 [all|frontend|backend|containers]" >&2; exit 2 ;;
+  e2e) cd "$repo_root/frontend"; npm run test:e2e:all ;;
+  visual) "$repo_root/bin/visual-tests.sh" ;;
+  full)
+    "$repo_root/bin/verify.sh" all
+    "$repo_root/bin/verify.sh" containers
+    "$repo_root/bin/verify.sh" e2e
+    "$repo_root/bin/verify.sh" visual
+    ;;
+  *) echo "Usage: $0 [all|frontend|backend|containers|e2e|visual|full]" >&2; exit 2 ;;
 esac

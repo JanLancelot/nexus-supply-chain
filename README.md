@@ -95,20 +95,16 @@ Browser tokens are held in memory. Reloading the page requires signing in again.
 
 ## Verification
 
-```bash
-cd backend
-./mvnw verify
-```
-
-The backend includes unit, controller, repository, and integration tests. Testcontainers requires a working Docker daemon. Check the test summary for skipped tests; a green build with skipped containers does not verify PostgreSQL/Kafka integration.
+Use Node 24, Java 17, Python 3, and Docker. The [development guide](docs/development.md)
+explains individual suites, disposable test data, reports, and reviewed screenshot updates.
 
 ```bash
+npm --prefix frontend ci --ignore-scripts
 cd frontend
-npm ci
-npm run lint
-npm test
-npm run build
-npm audit
+npx playwright install --with-deps chromium firefox webkit
+cd ..
+./bin/verify.sh        # Lint, component/session tests, coverage, builds, backend, tooling
+./bin/verify.sh full   # Also real infrastructure, three-browser E2E, and visual tests
 ```
 
 For load tests, use a disposable stack with sample catalog data and both administrator and staff accounts. Before starting that stack, set `APP_SEED_DEMO_DATA=true` and configure `APP_BOOTSTRAP_ADMIN_PASSWORD` and `APP_BOOTSTRAP_STAFF_PASSWORD` with generated passwords. Export those values into the terminal that runs the commands below. Alternatively, provision equivalent test accounts and catalog data through the API and supply their credentials explicitly:
