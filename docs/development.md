@@ -9,14 +9,14 @@ application stack.
 ```sh
 nvm install
 nvm use
-npm --prefix frontend ci
+npm --prefix frontend ci --ignore-scripts
 ./bin/verify.sh
 ```
 
 The default command runs frontend lint, tests with coverage, TypeScript checking,
 the production frontend build, and a clean backend build with tests and JaCoCo.
 It stops at the first failed check and works from any working directory. Install
-dependencies again with `npm ci` after pulling a changed frontend lockfile.
+dependencies again with `npm ci --ignore-scripts` after pulling a changed frontend lockfile.
 
 | Command | Purpose |
 | --- | --- |
@@ -49,9 +49,10 @@ they do not validate production migrations.
 
 ## Frontend tests
 
+The upstream session suite runs with Node's test runner before Vitest.
 Vitest runs React tests in jsdom with Testing Library. Tests exercise the public
 session hook, login form, and Axios request/response boundary. Shared setup resets
-the DOM, local storage, history, and mocks between tests. Session fixtures contain
+the DOM, in-memory sessions, local storage, history, and mocks between tests. Session fixtures contain
 unsigned tokens for client tests only. No live API or user credentials are needed.
 
 Use `*.test.ts` or `*.test.tsx` beside the behavior being tested. Prefer observable
@@ -60,7 +61,7 @@ internals. New tests should demonstrate the behavior they protect, including a
 failure path where relevant.
 
 Coverage includes untested application files so gaps stay visible. The initial
-suite covers login, session restoration/expiry, roles, logout, authentication
+suite covers login, in-memory sessions/expiry, roles, logout, authentication
 headers, and HTTP errors. It does not yet cover the catalog, orders, dashboards,
 or full browser workflows. jsdom tests do not verify layout or real navigation.
 
@@ -74,5 +75,4 @@ Reports are uploaded even after a failing step and retained for 14 days. Staging
 deployment requires every verification job to pass and still runs only on pushes
 to `main`. Local verification never deploys the application.
 
-The existing lint configuration reports legacy warnings without failing the
-build. Treat new warnings as work to resolve; do not weaken rules to hide them.
+Lint fails on warnings as well as errors. Do not weaken rules to hide them.

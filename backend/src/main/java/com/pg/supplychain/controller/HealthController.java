@@ -20,7 +20,6 @@ public class HealthController {
     public ResponseEntity<Map<String, Object>> healthCheck() {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Perform basic database viability check
             Integer result = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
             if (result != null && result == 1) {
                 response.put("status", "UP");
@@ -34,7 +33,6 @@ public class HealthController {
         } catch (Exception e) {
             response.put("status", "DOWN");
             response.put("database", "UNHEALTHY");
-            response.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
         }
     }

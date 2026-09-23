@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,10 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Override
     @EntityGraph(attributePaths = {"category", "warehouse"})
     Optional<Product> findById(UUID id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Product p WHERE p.id = :id")
+    Optional<Product> findByIdForUpdate(UUID id);
     Optional<Product> findBySku(String sku);
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.stockQuantity < p.reorderLevel AND p.isActive = true")

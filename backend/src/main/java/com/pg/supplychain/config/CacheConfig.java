@@ -4,7 +4,7 @@ import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -41,8 +41,9 @@ public class CacheConfig {
                     .withCacheConfiguration("analytics", cacheConfiguration(objectMapper).entryTtl(Duration.ofSeconds(15)))
                     .build();
         } catch (Exception e) {
-            log.warn("CacheConfig: Redis is not available ({}). Falling back to in-memory ConcurrentMapCacheManager.", e.getMessage());
-            return new ConcurrentMapCacheManager();
+            log.warn("Redis is not available ({}). Caching is disabled until the application restarts.", e.getMessage());
+            // A local cache cannot observe events consumed by another application instance.
+            return new NoOpCacheManager();
         }
     }
 }

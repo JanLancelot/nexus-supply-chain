@@ -70,7 +70,7 @@ class AutoReplenishmentServiceTest {
         // isLowStockIndicator returns stockQuantity < reorderLevel
         assertTrue(product.isLowStockIndicator());
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdForUpdate(productId)).thenReturn(Optional.of(product));
         when(orderRepository.countOpenOrdersForProduct(productId)).thenReturn(0L);
 
         Supplier supplier = Supplier.builder().id(UUID.randomUUID()).name("Preferred Supplier").build();
@@ -85,7 +85,7 @@ class AutoReplenishmentServiceTest {
     }
 
     @Test
-    void testHandleProductEvent_CooldownBlocks() throws Exception {
+    void testHandleProductEvent_ExistingOrderBlocksDuplicate() throws Exception {
         UUID productId = UUID.randomUUID();
         ProductEvent event = new ProductEvent(productId, "STOCK_ADJUSTED");
         String json = "{}";
@@ -101,8 +101,8 @@ class AutoReplenishmentServiceTest {
                 .warehouse(Warehouse.builder().id(UUID.randomUUID()).name("WH-1").build())
                 .build();
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(orderRepository.countOpenOrdersForProduct(productId)).thenReturn(0L);
+        when(productRepository.findByIdForUpdate(productId)).thenReturn(Optional.of(product));
+        when(orderRepository.countOpenOrdersForProduct(productId)).thenReturn(0L, 1L);
         Supplier supplier = Supplier.builder().id(UUID.randomUUID()).build();
         when(supplierRepository.findPreferredSupplierForProduct(productId)).thenReturn(Optional.of(supplier));
         when(orderService.createSystemOrder(any(), any(), any())).thenReturn(OrderResponse.builder().build());
@@ -112,7 +112,7 @@ class AutoReplenishmentServiceTest {
         // Second event immediately after
         autoReplenishmentService.handleProductEvent(json);
 
-        // Verify only 1 system order is created due to cooldown
+        // The database lookup, rather than an instance-local timer, prevents another order.
         verify(orderService, times(1)).createSystemOrder(any(), any(), any());
     }
 }

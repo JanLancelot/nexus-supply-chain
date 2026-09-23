@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/auth-context';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Catalog from './pages/Catalog';
@@ -9,23 +10,13 @@ import AuditLogs from './pages/AuditLogs';
 import UserManagement from './pages/UserManagement';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import './App.css';
 
 // Route protection component for authenticated users
 const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({ 
   children, 
   adminOnly = false 
 }) => {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#070b13] text-gray-400">
-        <div className="h-10 w-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-4" />
-        <span className="text-sm font-medium tracking-wider">Verifying Session...</span>
-      </div>
-    );
-  }
+  const { isAuthenticated, isAdmin } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -108,7 +99,7 @@ const AppRoutes: React.FC = () => {
         path="/audit-logs"
         element={
           <ProtectedRoute adminOnly>
-            <LayoutWrapper title="Forensic Audit Logs">
+            <LayoutWrapper title="Audit Logs">
               <AuditLogs />
             </LayoutWrapper>
           </ProtectedRoute>

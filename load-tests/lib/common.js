@@ -13,16 +13,15 @@ export const orderCreateDuration = new Trend('custom_order_create_duration', tru
 export const orderStatusDuration = new Trend('custom_order_status_duration', true);
 export const stockAdjustDuration = new Trend('custom_stock_adjust_duration', true);
 export const writeOperations = new Counter('custom_write_operations');
-export const cacheMissReads = new Counter('custom_cache_miss_reads');
 
 export const ADMIN_CREDENTIALS = {
-  email: 'admin@pg.com',
-  password: 'AdminPassword123',
+  email: __ENV.LOAD_TEST_ADMIN_EMAIL,
+  password: __ENV.LOAD_TEST_ADMIN_PASSWORD,
 };
 
 export const STAFF_CREDENTIALS = {
-  email: 'staff@pg.com',
-  password: 'StaffPassword123',
+  email: __ENV.LOAD_TEST_STAFF_EMAIL,
+  password: __ENV.LOAD_TEST_STAFF_PASSWORD,
 };
 
 export const ENDPOINTS = {
@@ -155,6 +154,9 @@ export function login(baseUrl, credentials, role) {
 }
 
 export function setupTestData() {
+  if (!ADMIN_CREDENTIALS.email || !ADMIN_CREDENTIALS.password || !STAFF_CREDENTIALS.email || !STAFF_CREDENTIALS.password) {
+    throw new Error('Set LOAD_TEST_ADMIN_EMAIL/PASSWORD and LOAD_TEST_STAFF_EMAIL/PASSWORD before running.');
+  }
   const baseUrl = __ENV.BASE_URL || 'http://localhost:8080';
   console.log(`[Setup] Initializing load test data from: ${baseUrl}`);
 
@@ -413,7 +415,6 @@ export function createProduct(baseUrl, token, categories, warehouses, skuPrefix)
   const ok = check(res, { 'Admin - POST create product 201': (r) => r.status === 201 });
   if (ok) {
     writeOperations.add(1);
-    cacheMissReads.add(1);
     return res.json('id');
   }
   return null;
@@ -438,7 +439,6 @@ export function adjustStock(baseUrl, token, productId) {
   const ok = check(res, { 'Admin - POST stock adjust 200': (r) => r.status === 200 });
   if (ok) {
     writeOperations.add(1);
-    cacheMissReads.add(1);
   }
   return ok;
 }
@@ -467,7 +467,6 @@ export function createOrder(baseUrl, token, role, suppliers, warehouses, product
   const ok = check(res, { [`${role} - POST create order 201`]: (r) => r.status === 201 });
   if (ok) {
     writeOperations.add(1);
-    cacheMissReads.add(1);
     return res.json();
   }
   return null;
@@ -489,7 +488,6 @@ export function updateOrderStatus(baseUrl, token, role, orderId, status) {
   });
   if (ok) {
     writeOperations.add(1);
-    cacheMissReads.add(1);
   }
   return ok ? res.json() : null;
 }
@@ -567,7 +565,7 @@ export function runStaffWorkflow(data, options = {}) {
 }
 
 export function runAdminWorkflow(data, options = {}) {
-  const { adminToken, categories, warehouses, products, pendingOrders, baseUrl } = data;
+  const { adminToken, categories, warehouses, products, baseUrl } = data;
   const { includeWrites = true, thinkTime = [2, 4], skuPrefix = 'SKU-LOAD' } = options;
 
   if (!adminToken) {
@@ -592,9 +590,7 @@ export function runAdminWorkflow(data, options = {}) {
 
   group('Admin - Orders Overview', () => {
     listOrders(baseUrl, adminToken, 'admin');
-    if (pendingOrders.length > 0 && Math.random() < 0.2) {
-      updateOrderStatus(baseUrl, adminToken, 'admin', pickRandom(pendingOrders).id, 'APPROVED');
-    }
+
   });
 
   if (includeWrites) {
@@ -635,7 +631,7 @@ export function buildEndpointThresholds(p95Ms = 500) {
   const thresholds = {
     http_req_failed: ['rate<0.01'],
     http_req_duration: [`p(95)<${p95Ms}`],
-    custom_write_operations: ['count>=0'],
+    checks: ['rate>0.99'],
   };
 
   endpoints.forEach((endpoint) => {

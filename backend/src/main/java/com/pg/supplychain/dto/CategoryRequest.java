@@ -1,6 +1,7 @@
 package com.pg.supplychain.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.UUID;
@@ -12,7 +13,9 @@ import java.util.UUID;
 public class CategoryRequest {
 
     @NotBlank(message = "Category name is required")
+    @Size(max = 255)
     private String name;
 
+    @Size(max = 255)
     private String description;
 }

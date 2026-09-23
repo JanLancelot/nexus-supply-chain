@@ -58,7 +58,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Verify frontend
         run: ./bin/verify.sh frontend
@@ -91,11 +91,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Log in to Azure Container Registry (ACR)
-        uses: azure/docker-login@v1
-        with:
-          login-server: pgsupplyregistry.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+        run: az acr login --name pgsupplyregistry
 
       - name: Build and Push Consolidated Docker Image
         run: |

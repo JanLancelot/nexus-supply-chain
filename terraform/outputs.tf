@@ -27,3 +27,15 @@ output "redis_host" {
   value       = var.enable_compute ? azurerm_managed_redis.redis[0].hostname : "N/A"
   description = "The hostname of the Redis cache."
 }
+
+output "postgres_server_name" {
+  value = azurerm_postgresql_flexible_server.postgres.name
+}
+
+output "app_possible_outbound_ips" {
+  value = var.enable_compute ? azurerm_linux_web_app.backend_api[0].possible_outbound_ip_address_list : []
+}
+
+output "staging_possible_outbound_ips" {
+  value = var.enable_compute ? azurerm_linux_web_app_slot.backend_api_staging[0].possible_outbound_ip_address_list : []
+}

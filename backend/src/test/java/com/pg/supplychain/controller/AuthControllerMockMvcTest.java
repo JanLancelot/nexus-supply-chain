@@ -20,6 +20,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,6 +77,26 @@ class AuthControllerMockMvcTest {
     }
 
     @Test
+    void disabledAccountCannotLogIn() throws Exception {
+        User user = User.builder().email("disabled@example.test").passwordHash("hashed").status("DISABLED").build();
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", "hashed")).thenReturn(true);
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new LoginRequest(user.getEmail(), "password123"))))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Invalid email or password"));
+        verifyNoInteractions(jwtService);
+    }
+
+    @Test
+    void rejectsPasswordsBeyondBcryptByteLimit() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new LoginRequest("test@example.test", "é".repeat(37)))))
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(userRepository, passwordEncoder, jwtService);
+    }
+
+    @Test
     void testLogin_Failure() throws Exception {
         when(userRepository.findByEmail("wrong@pg.com")).thenReturn(Optional.empty());
 
@@ -83,5 +107,6 @@ class AuthControllerMockMvcTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid email or password"));
+        verify(passwordEncoder).matches(eq("wrongpass"), anyString());
     }
 }

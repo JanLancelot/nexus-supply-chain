@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../context/auth-context';
 import { 
+  CheckSquare,
   Plus, 
   Search, 
   AlertTriangle, 
@@ -64,35 +65,32 @@ const Catalog: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Fetch data
-  const loadCatalogData = async (page = currentPage) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [productsPaged, categoriesData, warehousesData] = await Promise.all([
+  const loadCatalogData = useCallback((page: number) => {
+    return Promise.all([
         getProducts(page, 50),
         getCategories(),
         getWarehouses(),
-      ]);
+      ]).then(([productsPaged, categoriesData, warehousesData]) => {
       setProducts(productsPaged.content);
       setHasMore(productsPaged.hasNext);
       setCategories(categoriesData);
       setWarehouses(warehousesData);
-    } catch (err: any) {
-      console.error(err);
-      setError('Failed to retrieve product catalog data. Ensure the backend is online.');
-    } finally {
+      setError(null);
+    }).catch(() => {
+      setError('Unable to load products. Please try again.');
+    }).finally(() => {
       setLoading(false);
-    }
-  };
+    });
+  }, []);
 
   useEffect(() => {
-    loadCatalogData(currentPage);
-  }, [currentPage]);
+    void loadCatalogData(currentPage);
+  }, [currentPage, loadCatalogData]);
 
   // Form handle submit for Create Product
   const handleCreateProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProduct.sku || !newProduct.name || newProduct.unitPrice <= 0) {
+    if (!newProduct.sku.trim() || !newProduct.name.trim() || !Number.isFinite(newProduct.unitPrice) || newProduct.unitPrice <= 0 || !Number.isSafeInteger(newProduct.reorderLevel) || newProduct.reorderLevel < 0) {
       setError('Please fill in all required fields and provide a valid price');
       return;
     }
@@ -117,8 +115,7 @@ const Catalog: React.FC = () => {
         warehouseId: '',
         unitPrice: 0.00,
       });
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
       setError(typeof err === 'string' ? err : 'Failed to create product. Ensure the SKU is unique.');
     } finally {
       setSubmitting(false);
@@ -129,8 +126,8 @@ const Catalog: React.FC = () => {
   const handleAdjustSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProduct) return;
-    if (adjustment.quantityAdjustment === 0) {
-      setError('Quantity adjustment cannot be zero.');
+    if (!Number.isSafeInteger(adjustment.quantityAdjustment) || adjustment.quantityAdjustment === 0) {
+      setError('Enter a non-zero whole number for the adjustment.');
       return;
     }
 
@@ -153,9 +150,8 @@ const Catalog: React.FC = () => {
         reasonCode: 'CYCLIC_COUNT_DISCREPANCY',
       });
       setSelectedProduct(null);
-    } catch (err: any) {
-      console.error(err);
-      setError(typeof err === 'string' ? err : 'Failed to adjust inventory. Check backend logs.');
+    } catch (err: unknown) {
+      setError(typeof err === 'string' ? err : 'Unable to adjust inventory. Please refresh and try again.');
     } finally {
       setSubmitting(false);
     }
@@ -167,8 +163,6 @@ const Catalog: React.FC = () => {
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       product.sku.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // In our backend database categories, product has categoryId or categoryName.
-    // Let's filter by checking categoryName or categoryId if available
     const matchesCategory = 
       categoryFilter === 'ALL' || 
       product.categoryId === categoryFilter || 
@@ -197,7 +191,7 @@ const Catalog: React.FC = () => {
       {successMsg && (
         <div className="p-4 bg-emerald-950/40 border border-emerald-500/25 text-emerald-300 text-sm rounded-xl flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CheckSquareIcon className="h-5 w-5 text-emerald-400 shrink-0" />
+            <CheckSquare className="h-5 w-5 text-emerald-400 shrink-0" />
             <span>{successMsg}</span>
           </div>
           <button onClick={() => setSuccessMsg(null)} className="text-emerald-400 hover:text-white cursor-pointer"><X className="h-4 w-4" /></button>
@@ -213,7 +207,7 @@ const Catalog: React.FC = () => {
           </span>
           <input
             type="text"
-            placeholder="Search by SKU or Product Name..."
+            placeholder="Search this page by SKU or name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2 text-xs glass-input"
@@ -252,7 +246,7 @@ const Catalog: React.FC = () => {
 
           {/* Action Buttons */}
           <button
-            onClick={() => loadCatalogData()}
+            onClick={() => { setLoading(true); void loadCatalogData(currentPage); }}
             className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/40 rounded-lg border border-gray-800 hover:border-gray-700 transition cursor-pointer"
             title="Refresh Catalog Data"
           >
@@ -343,6 +337,9 @@ const Catalog: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+        </div>
+      )}
           {/* Pagination Controls */}
           {(products.length > 0 || currentPage > 0) && (
             <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800/60 bg-gray-900/10">
@@ -351,14 +348,14 @@ const Catalog: React.FC = () => {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                  onClick={() => { setLoading(true); setCurrentPage((prev) => Math.max(0, prev - 1)); }}
                   disabled={currentPage === 0 || loading}
                   className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 <button
-                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  onClick={() => { setLoading(true); setCurrentPage((prev) => prev + 1); }}
                   disabled={!hasMore || loading}
                   className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                 >
@@ -367,8 +364,6 @@ const Catalog: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
-      )}
 
       {/* CREATE PRODUCT MODAL */}
       {showCreateModal && (
@@ -490,7 +485,7 @@ const Catalog: React.FC = () => {
           <div className="w-full max-w-md glass-panel rounded-2xl overflow-hidden border border-gray-800 shadow-2xl animate-scale-up">
             <div className="p-5 border-b border-gray-800 flex items-center justify-between bg-gray-900/35">
               <div>
-                <span className="font-bold text-sm text-white">Override Stock Quantity</span>
+                <span className="font-bold text-sm text-white">Adjust Stock Quantity</span>
                 <p className="text-[10px] text-gray-400 mt-1 font-mono">SKU: {selectedProduct.sku}</p>
               </div>
               <button onClick={() => setShowAdjustModal(false)} className="text-gray-400 hover:text-white cursor-pointer">
@@ -523,7 +518,7 @@ const Catalog: React.FC = () => {
                 <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Reason Code *</label>
                 <select
                   value={adjustment.reasonCode}
-                  onChange={(e: any) => setAdjustment({ ...adjustment, reasonCode: e.target.value })}
+                  onChange={(e) => setAdjustment({ ...adjustment, reasonCode: e.target.value as typeof adjustment.reasonCode })}
                   className="w-full px-3 py-2 text-xs glass-input cursor-pointer"
                 >
                   <option value="CYCLIC_COUNT_DISCREPANCY">Cyclic Count Discrepancy (Correction)</option>
@@ -555,24 +550,5 @@ const Catalog: React.FC = () => {
     </div>
   );
 };
-
-// Helper subcomponent for check mark inside success alert
-const CheckSquareIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="9 11 12 14 22 4" />
-    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-  </svg>
-);
 
 export default Catalog;

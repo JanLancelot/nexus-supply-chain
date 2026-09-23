@@ -7,6 +7,7 @@ import com.pg.supplychain.dto.ProductResponse;
 import com.pg.supplychain.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import com.pg.supplychain.exception.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,9 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size
     ) {
+        if (page < 0 || size < 1) {
+            throw new BadRequestException("Page must be non-negative and size must be positive");
+        }
         int limitSize = Math.min(size, 50);
         return ResponseEntity.ok(productService.getAllProducts(page, limitSize));
     }

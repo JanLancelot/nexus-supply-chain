@@ -122,19 +122,23 @@ public class ProductService {
 
     @Transactional
     public ProductResponse adjustProductStock(UUID id, ProductAdjustRequest request) {
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 
+        if (request == null || request.getQuantityAdjustment() == null || request.getReasonCode() == null) {
+            throw new BadRequestException("Quantity adjustment and reason code are required");
+        }
         if (!ALLOWED_REASON_CODES.contains(request.getReasonCode())) {
             throw new BadRequestException("Invalid reason code: " + request.getReasonCode());
         }
 
         int oldStock = product.getStockQuantity();
-        int newStock = oldStock + request.getQuantityAdjustment();
+        long adjustedStock = (long) oldStock + request.getQuantityAdjustment();
 
-        if (newStock < 0) {
-            throw new BadRequestException("Adjustment would result in negative stock quantity: " + newStock);
+        if (adjustedStock < 0 || adjustedStock > Integer.MAX_VALUE) {
+            throw new BadRequestException("Adjustment would put stock quantity outside the supported range");
         }
+        int newStock = (int) adjustedStock;
 
         Map<String, Object> oldState = new HashMap<>();
         oldState.put("stockQuantity", oldStock);

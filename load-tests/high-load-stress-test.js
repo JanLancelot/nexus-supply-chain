@@ -1,5 +1,6 @@
 import {
   setupTestData,
+  scaledVus,
   runMixedUserIteration,
   buildEndpointThresholds,
   createSummaryHandler,
@@ -7,15 +8,15 @@ import {
 
 export const options = {
   stages: [
-    { duration: '30s', target: 500 },
-    { duration: '1m', target: 2000 },
-    { duration: '1m', target: 3000 },
-    { duration: '1m', target: 3000 },
+    { duration: '30s', target: scaledVus(500) },
+    { duration: '1m', target: scaledVus(2000) },
+    { duration: '1m', target: scaledVus(3000) },
+    { duration: '1m', target: scaledVus(3000) },
     { duration: '30s', target: 0 },
   ],
   thresholds: {
     ...buildEndpointThresholds(1500),
-    http_req_failed: ['rate<0.10'], // We expect <10% failure rates now after optimization!
+    http_req_failed: ['rate<0.10'],
   },
 };
 

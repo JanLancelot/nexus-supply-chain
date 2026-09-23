@@ -26,7 +26,7 @@ resource "azurerm_container_registry" "acr" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
-  admin_enabled       = true
+  admin_enabled       = false
 }
 
 # App Service Plan (Standard SKU or higher is required for deployment slots)
@@ -73,12 +73,13 @@ resource "azurerm_postgresql_flexible_server_database" "db" {
   charset   = "utf8"
 }
 
-# Allow Azure Services to access the PostgreSQL DB
-resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_services" {
-  name             = "allow-azure-services"
+# The default is deny-all; supply approved application egress/admin IPs.
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allowed_ips" {
+  for_each         = var.postgres_allowed_ips
+  name             = each.key
   server_id        = azurerm_postgresql_flexible_server.postgres.id
-  start_ip_address = "0.0.0.0"
-  end_ip_address   = "0.0.0.0"
+  start_ip_address = each.value
+  end_ip_address   = each.value
 }
 
 # Backend App Service (Production)
@@ -89,18 +90,32 @@ resource "azurerm_linux_web_app" "backend_api" {
   location            = azurerm_resource_group.rg.location
   service_plan_id     = azurerm_service_plan.asp[0].id
 
+  identity {
+    type = "SystemAssigned"
+  }
+
+  https_only                                     = true
+  ftp_publish_basic_authentication_enabled       = false
+  webdeploy_publish_basic_authentication_enabled = false
+
   site_config {
-    always_on = true
+    always_on                               = true
+    container_registry_use_managed_identity = true
+    minimum_tls_version                     = "1.2"
+    scm_minimum_tls_version                 = "1.2"
+    ftps_state                              = "Disabled"
     application_stack {
-      docker_image_name        = "backend:latest"
-      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
-      docker_registry_username = azurerm_container_registry.acr.admin_username
-      docker_registry_password = azurerm_container_registry.acr.admin_password
+      docker_image_name   = "backend:latest"
+      docker_registry_url = "https://${azurerm_container_registry.acr.login_server}"
     }
   }
 
   app_settings = {
-    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
+    "JWT_SECRET"                          = var.jwt_secret
+    "APP_BOOTSTRAP_ADMIN_EMAIL"           = var.bootstrap_admin_email
+    "APP_BOOTSTRAP_ADMIN_PASSWORD"        = var.bootstrap_admin_password
+    "APP_SEED_DEMO_DATA"                  = "false"
+    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
     "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis[0].hostname
@@ -119,18 +134,32 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
   name           = "staging"
   app_service_id = azurerm_linux_web_app.backend_api[0].id
 
+  identity {
+    type = "SystemAssigned"
+  }
+
+  https_only                                     = true
+  ftp_publish_basic_authentication_enabled       = false
+  webdeploy_publish_basic_authentication_enabled = false
+
   site_config {
-    always_on = true
+    always_on                               = true
+    container_registry_use_managed_identity = true
+    minimum_tls_version                     = "1.2"
+    scm_minimum_tls_version                 = "1.2"
+    ftps_state                              = "Disabled"
     application_stack {
-      docker_image_name        = "backend:latest"
-      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
-      docker_registry_username = azurerm_container_registry.acr.admin_username
-      docker_registry_password = azurerm_container_registry.acr.admin_password
+      docker_image_name   = "backend:latest"
+      docker_registry_url = "https://${azurerm_container_registry.acr.login_server}"
     }
   }
 
   app_settings = {
-    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
+    "JWT_SECRET"                          = var.jwt_secret
+    "APP_BOOTSTRAP_ADMIN_EMAIL"           = var.bootstrap_admin_email
+    "APP_BOOTSTRAP_ADMIN_PASSWORD"        = var.bootstrap_admin_password
+    "APP_SEED_DEMO_DATA"                  = "false"
+    "SPRING_DATASOURCE_URL"               = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory"
     "SPRING_DATASOURCE_USERNAME"          = var.postgres_admin_username
     "SPRING_DATASOURCE_PASSWORD"          = var.postgres_admin_password
     "SPRING_REDIS_HOST"                   = azurerm_managed_redis.redis[0].hostname
@@ -144,3 +173,17 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
 }
 
 
+
+resource "azurerm_role_assignment" "production_acr_pull" {
+  count                = var.enable_compute ? 1 : 0
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_linux_web_app.backend_api[0].identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "staging_acr_pull" {
+  count                = var.enable_compute ? 1 : 0
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_linux_web_app_slot.backend_api_staging[0].identity[0].principal_id
+}
