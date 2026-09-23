@@ -25,4 +25,3 @@ RUN groupadd --system app && useradd --system --gid app --no-create-home app
 USER app
 EXPOSE 8080
 ENTRYPOINT ["java", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=200", "-XX:+UseStringDeduplication", "-Xms512m", "-Xmx768m", "-jar", "app.jar"]
-

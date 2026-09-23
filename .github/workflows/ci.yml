@@ -10,33 +10,13 @@ permissions:
   contents: read
 
 jobs:
-  build-and-test:
+  backend:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: supply_db
-          POSTGRES_USER: enterprise_admin
-          POSTGRES_PASSWORD: secure_dev_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [backend, containers]
 
     steps:
       - name: Checkout code
@@ -50,13 +30,29 @@ jobs:
           cache: 'maven'
 
       - name: Build and run backend tests
-        working-directory: backend
-        run: ./mvnw clean verify
+        run: ./bin/verify.sh ${{ matrix.mode }}
+
+      - name: Save backend test and coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-${{ matrix.mode }}-reports
+          path: |
+            backend/target/surefire-reports/
+            backend/target/site/jacoco/
+          retention-days: 14
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
@@ -64,25 +60,24 @@ jobs:
         working-directory: frontend
         run: npm ci --ignore-scripts
 
-      - name: Lint frontend
-        working-directory: frontend
-        run: npm run lint
+      - name: Verify frontend
+        run: ./bin/verify.sh frontend
 
-      - name: Test frontend sessions
-        working-directory: frontend
-        run: npm test
-
-      - name: Build frontend
-        working-directory: frontend
-        run: npm run build
+      - name: Save frontend coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          retention-days: 14
 
   deploy-to-staging:
-    permissions:
-      contents: read
-      id-token: write
-    needs: build-and-test
+    needs: [backend, frontend]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required only for Azure deployment
     
     steps:
       - name: Checkout code

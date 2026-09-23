@@ -1,5 +1,7 @@
 target/
 *.class
+__pycache__/
+*.py[cod]
 .DS_Store
 .mvn/wrapper/maven-wrapper.jar
 
