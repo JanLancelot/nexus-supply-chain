@@ -2,6 +2,8 @@
 
 A supply-chain application with a React/TypeScript UI, a Spring Boot API, PostgreSQL, Redis caching, and Kafka events. The combined Docker image serves the UI and API on port 8080.
 
+For local checks, test modes, and coverage reports, see the [development harness guide](docs/development.md).
+
 ## Features
 
 - Staff can browse the catalog, create purchase orders, and submit drafts for approval.
