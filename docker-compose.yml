@@ -2,6 +2,7 @@ name: nexus-supply-chain
 
 services:
   db:
+    networks: [application_data, development_access]
     image: postgres:15-alpine
     container_name: nexus_postgres
     ports:
@@ -21,6 +22,7 @@ services:
     restart: unless-stopped
 
   redis:
+    networks: [application_data, development_access]
     image: redis:7-alpine
     container_name: redis_enterprise_supply
     ports:
@@ -33,6 +35,7 @@ services:
     restart: unless-stopped
 
   kafka:
+    networks: [application_data, development_access]
     image: apache/kafka:4.3.0
     container_name: kafka_enterprise_supply
     ports:
@@ -59,6 +62,7 @@ services:
     restart: unless-stopped
 
   backend:
+    networks: [application_ingress, application_data, metrics]
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -76,6 +80,8 @@ services:
       - APP_SEED_DEMO_DATA=${APP_SEED_DEMO_DATA:-false}
       - APP_BOOTSTRAP_STAFF_PASSWORD=${APP_BOOTSTRAP_STAFF_PASSWORD:-}
       - MANAGEMENT_SERVER_ADDRESS=0.0.0.0
+      - APP_MONITORING_ENVIRONMENT=${APP_MONITORING_ENVIRONMENT:-local}
+      - APP_MONITORING_GRAFANA_URL=${APP_MONITORING_GRAFANA_URL:-http://localhost:3000}
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
@@ -90,43 +96,150 @@ services:
     restart: unless-stopped
 
   prometheus:
-    image: prom/prometheus:v2.52.0
+    networks: [metrics, development_access]
+    cpus: ${PROMETHEUS_CPUS:-1.0}
+    mem_limit: ${PROMETHEUS_MEMORY_LIMIT:-1024m}
+    memswap_limit: ${PROMETHEUS_MEMORY_LIMIT:-1024m}
+    pids_limit: 128
+    image: prom/prometheus:v3.13.3
     container_name: prometheus_supply
     volumes:
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus:/etc/prometheus:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--storage.tsdb.retention.size=2GB'
+      - '--query.max-concurrency=10'
+      - '--query.max-samples=5000000'
     ports:
       - "127.0.0.1:9090:9090"
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
     restart: unless-stopped
 
   grafana:
-    image: grafana/grafana:11.0.0
+    networks: [grafana_ingress, grafana_database, metrics]
+    cpus: ${GRAFANA_CPUS:-1.0}
+    mem_limit: ${GRAFANA_MEMORY_LIMIT:-768m}
+    memswap_limit: ${GRAFANA_MEMORY_LIMIT:-768m}
+    pids_limit: 256
+    image: grafana/grafana:13.2.2
+    entrypoint: ["/bin/sh", "/etc/grafana/start.sh"]
     container_name: grafana_supply
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
+      - ./docker/grafana/start.sh:/etc/grafana/start.sh:ro
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD}
+      - GF_SECURITY_SECRET_KEY=${GRAFANA_SECRET_KEY:?Set a persistent random GRAFANA_SECRET_KEY}
+      - GRAFANA_SQLITE_MIGRATION_ACKNOWLEDGED=${GRAFANA_SQLITE_MIGRATION_ACKNOWLEDGED:-false}
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=grafana-db:5432
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=grafana
+      - GF_DATABASE_PASSWORD=${GRAFANA_DB_PASSWORD:?}
+      - GF_DATABASE_SSL_MODE=disable
+      - GF_DATABASE_MAX_OPEN_CONN=10
+      - GF_DATABASE_MAX_IDLE_CONN=2
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_SECURITY_ALLOW_EMBEDDING=false
+      - GF_SECURITY_COOKIE_SAMESITE=lax
+      - GF_SECURITY_COOKIE_SECURE=${GRAFANA_COOKIE_SECURE:-false}
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000/}
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
+      - GF_PLUGINS_PREINSTALL_DISABLED=true
+      - GF_PLUGINS_PREINSTALL_AUTO_UPDATE=false
+      - GF_PLUGINS_PLUGIN_ADMIN_ENABLED=false
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/overview.json
     depends_on:
-      - prometheus
+      grafana-db:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     restart: unless-stopped
 
-  node-exporter:
-    image: prom/node-exporter:v1.8.1
-    container_name: node_exporter_supply
-    ports:
-      - "127.0.0.1:9100:9100"
+  grafana-db:
+    image: postgres:15-alpine
+    networks: [grafana_database]
+    cpus: ${GRAFANA_DB_CPUS:-0.5}
+    mem_limit: ${GRAFANA_DB_MEMORY_LIMIT:-512m}
+    memswap_limit: ${GRAFANA_DB_MEMORY_LIMIT:-512m}
+    pids_limit: 128
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${GRAFANA_DB_ADMIN_PASSWORD:?}
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:?}
+    command: ["postgres", "-c", "max_connections=30", "-c", "shared_buffers=64MB"]
+    volumes:
+      - grafana_db_data:/var/lib/postgresql/data
+      - ./docker/grafana/init-db.sql:/docker-entrypoint-initdb.d/10-grafana.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d grafana"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:v0.34.1
+    networks: [metrics, notification_egress]
+    cpus: ${ALERTMANAGER_CPUS:-0.25}
+    mem_limit: ${ALERTMANAGER_MEMORY_LIMIT:-128m}
+    memswap_limit: ${ALERTMANAGER_MEMORY_LIMIT:-128m}
+    pids_limit: 128
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--cluster.listen-address='
+    volumes:
+      - ./docker/alertmanager/local:/etc/alertmanager:ro
+      - alertmanager_data:/alertmanager
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9093/-/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
     restart: unless-stopped
 
 volumes:
   pg_data:
   prometheus_data:
   grafana_data:
+  grafana_db_data:
+  alertmanager_data:
+
+networks:
+  # Docker needs a non-internal bridge for localhost-published development ports.
+  # The production overlay removes membership in this network from every service.
+  development_access:
+  application_ingress:
+  grafana_ingress:
+  application_data:
+    internal: true
+  grafana_database:
+    internal: true
+  metrics:
+    internal: true
+  notification_egress:

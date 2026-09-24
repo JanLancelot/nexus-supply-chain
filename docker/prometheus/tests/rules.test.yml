@@ -1,0 +1,429 @@
+# Run with: promtool test rules /etc/prometheus/tests/rules.test.yml
+rule_files:
+- ../rules/nexus.yml
+evaluation_interval: 1m
+group_eval_order:
+- nexus-recording
+- nexus-alerts
+tests:
+- name: unreachable backend waits two minutes then recovers
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="backend:9091"}
+    values: 0 0 0 1 1
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: NexusBackendDown
+    exp_alerts: []
+  - eval_time: 2m
+    alertname: NexusBackendDown
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        severity: critical
+      exp_annotations:
+        summary: Backend metrics endpoint is unreachable
+        description: Inspect backend health, management port 9091, and the Prometheus target error. Scrape failure
+          does not by itself prove the public website is down.
+  - eval_time: 3m
+    alertname: NexusBackendDown
+    exp_alerts: []
+- name: sustained server errors at meaningful traffic fire
+  interval: 1m
+  input_series:
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200"}
+    values: 0+54x20
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="500"}
+    values: 0+6x20
+  alert_rule_test:
+  - eval_time: 4m
+    alertname: NexusHighErrorRate
+    exp_alerts: []
+  - eval_time: 10m
+    alertname: NexusHighErrorRate
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        application: nexus-supply-chain
+        environment: test
+        severity: critical
+      exp_annotations:
+        summary: More than 5% of API requests return server errors
+        description: At least 30 requests per five minutes are required. Inspect failing routes and backend logs;
+          health checks are excluded.
+- name: low request volume suppresses error and latency alerts
+  interval: 1m
+  input_series:
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="500"}
+    values: 0+1x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.1"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.5"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="1.0"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="2.5"}
+    values: 0+1x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="+Inf"}
+    values: 0+1x20
+  alert_rule_test:
+  - eval_time: 15m
+    alertname: NexusHighErrorRate
+    exp_alerts: []
+  - eval_time: 15m
+    alertname: NexusHighLatency
+    exp_alerts: []
+- name: zero traffic is not an outage
+  interval: 1m
+  input_series:
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="500"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.1"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.5"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="1.0"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="2.5"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="+Inf"}
+    values: 0+0x20
+  alert_rule_test:
+  - eval_time: 15m
+    alertname: NexusHighErrorRate
+    exp_alerts: []
+  - eval_time: 15m
+    alertname: NexusHighLatency
+    exp_alerts: []
+- name: missing HTTP series do not create error or latency alerts
+  interval: 1m
+  input_series: []
+  alert_rule_test:
+  - eval_time: 15m
+    alertname: NexusHighErrorRate
+    exp_alerts: []
+  - eval_time: 15m
+    alertname: NexusHighLatency
+    exp_alerts: []
+- name: healthy success-only traffic records zero error ratio
+  interval: 1m
+  input_series:
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200"}
+    values: 0+60x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.1"}
+    values: 0+57x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.5"}
+    values: 0+59x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="1.0"}
+    values: 0+60x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="2.5"}
+    values: 0+60x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="+Inf"}
+    values: 0+60x20
+  alert_rule_test:
+  - eval_time: 15m
+    alertname: NexusHighErrorRate
+    exp_alerts: []
+  - eval_time: 15m
+    alertname: NexusHighLatency
+    exp_alerts: []
+  promql_expr_test:
+  - expr: nexus:http_5xx:ratio5m
+    eval_time: 10m
+    exp_samples:
+    - labels: '{__name__="nexus:http_5xx:ratio5m",application="nexus-supply-chain",environment="test",instance="backend:9091",job="spring-backend"}'
+      value: 0
+- name: sustained slow requests fire after ten minutes
+  interval: 1m
+  input_series:
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200"}
+    values: 0+60x20
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="500"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.1"}
+    values: 0+6x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="0.5"}
+    values: 0+30x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="1.0"}
+    values: 0+42x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="2.5"}
+    values: 0+60x20
+  - series: http_server_requests_seconds_bucket{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200",le="+Inf"}
+    values: 0+60x20
+  alert_rule_test:
+  - eval_time: 9m
+    alertname: NexusHighLatency
+    exp_alerts: []
+  - eval_time: 15m
+    alertname: NexusHighLatency
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        application: nexus-supply-chain
+        environment: test
+        severity: warning
+      exp_annotations:
+        summary: API p95 latency exceeds one second
+        description: At least 30 requests per five minutes are required. Inspect slow routes, database saturation,
+          and JVM pauses.
+- name: health probes do not satisfy the API traffic guard
+  interval: 1m
+  input_series:
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="200"}
+    values: 0+0x20
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/v1/orders",status="500"}
+    values: 0+1x20
+  - series: http_server_requests_seconds_count{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",uri="/api/health",status="200"}
+    values: 0+600x20
+  alert_rule_test:
+  - eval_time: 15m
+    alertname: NexusHighErrorRate
+    exp_alerts: []
+- name: pool exhaustion requires waiters as well as utilization
+  interval: 1m
+  input_series:
+  - series: hikaricp_connections_active{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",pool="HikariPool-1"}
+    values: 10+0x12
+  - series: hikaricp_connections_max{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",pool="HikariPool-1"}
+    values: 10+0x12
+  - series: hikaricp_connections_pending{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",pool="HikariPool-1"}
+    values: 0 0 0 1 1 1 1 1 1 0 0 0
+  alert_rule_test:
+  - eval_time: 2m
+    alertname: NexusDatabasePoolSaturated
+    exp_alerts: []
+  - eval_time: 7m
+    alertname: NexusDatabasePoolSaturated
+    exp_alerts: []
+  - eval_time: 8m
+    alertname: NexusDatabasePoolSaturated
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        application: nexus-supply-chain
+        environment: test
+        pool: HikariPool-1
+        severity: warning
+      exp_annotations:
+        summary: Database connections are exhausted
+        description: More than 90% of the connection pool is busy and callers are waiting. Inspect slow queries,
+          transactions, and connection leaks before increasing pool size.
+  - eval_time: 9m
+    alertname: NexusDatabasePoolSaturated
+    exp_alerts: []
+- name: dependency fallback fires and healthy connection resolves
+  interval: 1m
+  input_series:
+  - series: nexus_dependency_up{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",dependency="events"}
+    values: 0 0 0 1 1
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: NexusDependencyDegraded
+    exp_alerts: []
+  - eval_time: 2m
+    alertname: NexusDependencyDegraded
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        application: nexus-supply-chain
+        environment: test
+        dependency: events
+        severity: warning
+      exp_annotations:
+        summary: An application dependency is degraded or using fallback
+        description: Inspect the dependency label and backend health. A fallback event broker or cache may keep
+          requests working while durability or performance is reduced.
+  - eval_time: 3m
+    alertname: NexusDependencyDegraded
+    exp_alerts: []
+- name: snapshot failure fires and successful refresh resolves
+  interval: 1m
+  input_series:
+  - series: nexus_observability_refresh_success{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",component="business"}
+    values: 0 0 0 1 1
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: NexusSnapshotFailed
+    exp_alerts: []
+  - eval_time: 2m
+    alertname: NexusSnapshotFailed
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        application: nexus-supply-chain
+        environment: test
+        component: business
+        severity: warning
+      exp_annotations:
+        summary: A monitoring snapshot cannot refresh
+        description: Inspect the component label and backend logs. Business gauges retain their last successful
+          values until collection recovers.
+  - eval_time: 3m
+    alertname: NexusSnapshotFailed
+    exp_alerts: []
+- name: stalled snapshot ages out even if last refresh succeeded
+  interval: 1m
+  input_series:
+  - series: nexus_observability_last_success_timestamp_seconds{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",component="business"}
+    values: 1+0x10
+  alert_rule_test:
+  - eval_time: 4m
+    alertname: NexusSnapshotStale
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: NexusSnapshotStale
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        application: nexus-supply-chain
+        environment: test
+        component: business
+        severity: warning
+      exp_annotations:
+        summary: Monitoring snapshot is more than two minutes old
+        description: Inspect the monitoring scheduler and dependency timeouts. Treat business counts and dependency
+          state as stale until snapshots resume.
+- name: fresh snapshots never fire stale warning
+  interval: 1m
+  input_series:
+  - series: nexus_observability_last_success_timestamp_seconds{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",component="business"}
+    values: 0+60x20
+  alert_rule_test:
+  - eval_time: 15m
+    alertname: NexusSnapshotStale
+    exp_alerts: []
+- name: missing business registry is distinct from backend downtime
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="backend:9091"}
+    values: 1+0x10
+  alert_rule_test:
+  - eval_time: 4m
+    alertname: NexusTelemetryMissing
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: NexusTelemetryMissing
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        instance: backend:9091
+        severity: warning
+      exp_annotations:
+        summary: Backend is reachable but business instrumentation is missing
+        description: Check that the deployed backend includes monitoring and exposes the custom metrics registry.
+          Do not interpret missing business series as zero.
+- name: present business registry clears telemetry warning
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="backend:9091"}
+    values: 1+0x10
+  - series: nexus_observability_refresh_success{job="spring-backend",instance="backend:9091",application="nexus-supply-chain",environment="test",component="business"}
+    values: 1+0x10
+  alert_rule_test:
+  - eval_time: 5m
+    alertname: NexusTelemetryMissing
+    exp_alerts: []
+- name: business panels deduplicate replicas and exclude other environments
+  interval: 1m
+  input_series:
+  - series: nexus_inventory_products{job="spring-backend",instance="prod-a:9091",environment="production"}
+    values: 10+0x5
+  - series: nexus_inventory_products{job="spring-backend",instance="prod-b:9091",environment="production"}
+    values: 10+0x5
+  - series: nexus_inventory_products{job="spring-backend",instance="prod-c:9091",environment="production"}
+    values: NaN NaN NaN NaN NaN NaN
+  - series: nexus_inventory_products{job="spring-backend",instance="stage:9091",environment="staging"}
+    values: 100+0x5
+  - series: nexus_observability_refresh_success{job="spring-backend",instance="prod-a:9091",environment="production",component="business"}
+    values: 1+0x5
+  - series: nexus_observability_refresh_success{job="spring-backend",instance="prod-b:9091",environment="production",component="business"}
+    values: 0+0x5
+  - series: nexus_observability_last_success_timestamp_seconds{job="spring-backend",instance="prod-a:9091",environment="production",component="business"}
+    values: 290+0x5
+  - series: nexus_observability_last_success_timestamp_seconds{job="spring-backend",instance="prod-b:9091",environment="production",component="business"}
+    values: 1+0x5
+  - series: nexus_observability_last_success_timestamp_seconds{job="spring-backend",instance="stage:9091",environment="staging",component="business"}
+    values: 0+0x5
+  promql_expr_test:
+  - expr: max(nexus_inventory_products{job="spring-backend",instance=~".*",environment=~"production"})
+    eval_time: 5m
+    exp_samples:
+    - labels: '{}'
+      value: 10
+  - expr: min(nexus_observability_refresh_success{job="spring-backend",instance=~".*",environment=~"production",component="business"})
+    eval_time: 5m
+    exp_samples:
+    - labels: '{}'
+      value: 0
+  - expr: max(time() - nexus_observability_last_success_timestamp_seconds{job="spring-backend",instance=~".*",environment=~"production",component="business"})
+    eval_time: 5m
+    exp_samples:
+    - labels: '{}'
+      value: 299
+- name: uninitialized business values stay unknown instead of zero
+  interval: 1m
+  input_series:
+  - series: nexus_inventory_products{job="spring-backend",instance="prod-a:9091",environment="production"}
+    values: NaN NaN NaN NaN NaN NaN
+  - series: nexus_inventory_products{job="spring-backend",instance="prod-b:9091",environment="production"}
+    values: NaN NaN NaN NaN NaN NaN
+  promql_expr_test:
+  - expr: count((max(nexus_inventory_products{job="spring-backend",instance=~".*",environment=~"production"})) !=
+      (max(nexus_inventory_products{job="spring-backend",instance=~".*",environment=~"production"})))
+    eval_time: 5m
+    exp_samples:
+    - labels: '{}'
+      value: 1
+- name: watchdog always fires without application metrics
+  interval: 1m
+  promql_expr_test:
+  - expr: ALERTS{alertname="NexusWatchdog",alertstate="firing"}
+    eval_time: 0m
+    exp_samples:
+    - labels: ALERTS{alertname="NexusWatchdog",alertstate="firing",severity="none"}
+      value: 1
+- name: delivery and evaluation failures wait and recover
+  interval: 1m
+  input_series:
+  - series: up{job="alertmanager",instance="alertmanager:9093"}
+    values: 0 0 0 1 1 1 1 1 1 1 1
+  - series: alertmanager_notifications_failed_total{integration="webhook"}
+    values: 0 1 2 3 3 3 3 3 3 3 3
+  - series: prometheus_rule_evaluation_failures_total{job="prometheus"}
+    values: 0 1 2 3 3 3 3 3 3 3 3
+  promql_expr_test:
+  - expr: ALERTS{alertname="NexusAlertmanagerDown",alertstate="firing"}
+    eval_time: 1m
+    exp_samples: []
+  - expr: ALERTS{alertname="NexusAlertmanagerDown",alertstate="firing"}
+    eval_time: 2m
+    exp_samples:
+    - labels: ALERTS{alertname="NexusAlertmanagerDown",alertstate="firing",job="alertmanager",instance="alertmanager:9093",severity="critical"}
+      value: 1
+  - expr: ALERTS{alertname="NexusNotificationFailures",alertstate="firing"}
+    eval_time: 2m
+    exp_samples: []
+  - expr: ALERTS{alertname="NexusNotificationFailures",alertstate="firing"}
+    eval_time: 3m
+    exp_samples:
+    - labels: ALERTS{alertname="NexusNotificationFailures",alertstate="firing",integration="webhook",severity="warning"}
+      value: 1
+  - expr: ALERTS{alertname="NexusRuleEvaluationFailures",alertstate="firing"}
+    eval_time: 3m
+    exp_samples:
+    - labels: ALERTS{alertname="NexusRuleEvaluationFailures",alertstate="firing",job="prometheus",severity="warning"}
+      value: 1
+  - expr: ALERTS{alertname=~"NexusNotificationFailures|NexusRuleEvaluationFailures|NexusAlertmanagerDown",alertstate="firing"}
+    eval_time: 10m
+    exp_samples: []

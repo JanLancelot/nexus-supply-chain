@@ -10,3 +10,5 @@
 terraform/.terraform
 *-logs*
 load-tests/results
+.secrets
+.backups

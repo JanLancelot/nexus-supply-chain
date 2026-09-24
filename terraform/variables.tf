@@ -159,3 +159,23 @@ variable "staging_image_tag" {
     error_message = "staging_image_tag must be a published Git commit SHA."
   }
 }
+
+variable "monitoring_grafana_url" {
+  type        = string
+  default     = ""
+  description = "Optional HTTPS Grafana URL shown to production administrators. Does not provision Grafana or a metrics collector."
+  validation {
+    condition     = var.monitoring_grafana_url == "" || can(regex("^https://[A-Za-z0-9.-]+(:[0-9]+)?(/[^?#]*)?$", var.monitoring_grafana_url))
+    error_message = "Use an HTTPS Grafana URL without credentials, query parameters, or fragment, or leave empty."
+  }
+}
+
+variable "staging_monitoring_grafana_url" {
+  type        = string
+  default     = ""
+  description = "Optional HTTPS Grafana URL shown to staging administrators, independently configured from production."
+  validation {
+    condition     = var.staging_monitoring_grafana_url == "" || can(regex("^https://[A-Za-z0-9.-]+(:[0-9]+)?(/[^?#]*)?$", var.staging_monitoring_grafana_url))
+    error_message = "Use an HTTPS Grafana URL without credentials, query parameters, or fragment, or leave empty."
+  }
+}

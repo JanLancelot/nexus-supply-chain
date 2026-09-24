@@ -47,6 +47,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT COALESCE(SUM(p.unitPrice * p.stockQuantity), 0) FROM Product p WHERE p.isActive = true")
     BigDecimal calculateTotalInventoryValue();
 
+    @Query("SELECT COALESCE(SUM(p.stockQuantity), 0) FROM Product p WHERE p.isActive = true")
+    long countActiveInventoryUnits();
+
     @Query("SELECT w.id, w.name, w.location, COALESCE(SUM(p.stockQuantity), 0) FROM Product p JOIN p.warehouse w GROUP BY w.id, w.name, w.location ORDER BY w.name, w.id")
     List<Object[]> countStockByWarehouse();
 }

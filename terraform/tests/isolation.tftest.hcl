@@ -69,3 +69,29 @@ run "reused_staging_secret_is_rejected" {
   }
   expect_failures = [azurerm_linux_web_app_slot.backend_api_staging]
 }
+
+run "monitoring_destinations_remain_slot_specific" {
+  command = plan
+  variables {
+    monitoring_grafana_url         = "https://metrics.example.test/production"
+    staging_monitoring_grafana_url = "https://metrics.example.test/staging"
+  }
+  assert {
+    condition = (
+      azurerm_linux_web_app.backend_api[0].app_settings["APP_MONITORING_GRAFANA_URL"] == "https://metrics.example.test/production" &&
+      azurerm_linux_web_app_slot.backend_api_staging[0].app_settings["APP_MONITORING_GRAFANA_URL"] == "https://metrics.example.test/staging" &&
+      azurerm_linux_web_app.backend_api[0].app_settings["APP_MONITORING_ENVIRONMENT"] != azurerm_linux_web_app_slot.backend_api_staging[0].app_settings["APP_MONITORING_ENVIRONMENT"] &&
+      contains(azurerm_linux_web_app.backend_api[0].sticky_settings[0].app_setting_names, "APP_MONITORING_GRAFANA_URL") &&
+      contains(azurerm_linux_web_app.backend_api[0].sticky_settings[0].app_setting_names, "APP_MONITORING_ENVIRONMENT")
+    )
+    error_message = "Monitoring links and metric environments must stay attached to their deployment slot."
+  }
+}
+
+run "insecure_grafana_destination_is_rejected" {
+  command = plan
+  variables {
+    monitoring_grafana_url = "http://metrics.example.test"
+  }
+  expect_failures = [var.monitoring_grafana_url]
+}

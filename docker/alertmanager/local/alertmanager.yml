@@ -1,0 +1,6 @@
+# Development only. The self-hosted overlay requires an explicit private configuration.
+route:
+  receiver: local-no-notifications
+  group_by: [alertname, job, instance, environment]
+receivers:
+  - name: local-no-notifications

@@ -46,14 +46,14 @@ test('an authenticated browser returns to login when its real token expires', as
 
 test('staff navigation and API enforce administrative permissions', async ({ page }) => {
   const token = await login(page, 'staff');
-  for (const name of ['Dashboard', 'User Management', 'Audit Logs', 'Reference Data']) {
+  for (const name of ['Dashboard', 'User Management', 'Audit Logs', 'Reference Data', 'Monitoring']) {
     await expect(page.getByRole('link', { name, exact: true })).toHaveCount(0);
   }
   await expect(page.getByRole('button', { name: 'New Product' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Adjust', exact: true })).toHaveCount(0);
   await expect(page.getByRole('row').filter({ hasText: 'SKU-ELEC-001' })).toBeVisible();
 
-  for (const path of ['/users', '/audit-logs', '/analytics/dashboard']) {
+  for (const path of ['/users', '/audit-logs', '/analytics/dashboard', '/monitoring']) {
     const response = await page.request.get(`${apiURL}${path}`, { headers: bearer(token) });
     expect(response.status()).toBe(403);
   }
@@ -74,4 +74,14 @@ test('staff navigation and API enforce administrative permissions', async ({ pag
   expect((await products(page, token)).find(item => item.id === product.id)?.stockQuantity).toBe(product.stockQuantity);
   await navigate(page, 'Purchase Orders');
   await expect(page.getByRole('button', { name: 'Create Purchase Order' })).toBeVisible();
+});
+
+test('administrators can inspect monitoring setup without a configured Grafana deployment', async ({ page }) => {
+  const token = await login(page);
+  await navigate(page, 'Monitoring');
+  await expect(page.getByRole('heading', { name: 'Monitoring is not configured yet' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Open Grafana/ })).toHaveCount(0);
+  const configuration = await page.request.get(`${apiURL}/monitoring`, { headers: bearer(token) });
+  expect(configuration.status()).toBe(200);
+  expect(await configuration.json()).toEqual({ enabled: false, grafanaUrl: null });
 });

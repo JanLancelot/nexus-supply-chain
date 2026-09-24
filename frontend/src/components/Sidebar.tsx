@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Users,
   Settings,
+  Activity,
   Menu,
   X
 } from 'lucide-react';
@@ -51,6 +52,7 @@ const Sidebar: React.FC = () => {
       icon: History,
       show: isAdmin,
     },
+    { name: 'Monitoring', path: '/monitoring', icon: Activity, show: isAdmin },
   ];
 
   return (

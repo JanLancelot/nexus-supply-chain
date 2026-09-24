@@ -172,10 +172,21 @@ jobs:
           terraform -chdir=terraform validate
           terraform -chdir=terraform test
       - name: Check harness shell syntax
-        run: bash -n bin/verify.sh bin/start-e2e-backend.sh bin/prepare-maven.sh bin/visual-tests.sh bin/resume.sh bin/suspend.sh
+        run: bash -n bin/backup-grafana.sh docker/grafana/start.sh bin/verify.sh bin/verify-monitoring.sh bin/start-e2e-backend.sh bin/prepare-maven.sh bin/visual-tests.sh bin/resume.sh bin/suspend.sh
+
+  monitoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify monitoring rules and real application telemetry
+        run: ./bin/verify.sh monitoring
 
   deploy-to-staging:
-    needs: [backend, frontend, e2e, visual, tooling]
+    needs: [backend, frontend, e2e, visual, tooling, monitoring]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:

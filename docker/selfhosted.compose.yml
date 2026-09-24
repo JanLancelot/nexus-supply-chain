@@ -1,0 +1,69 @@
+# Requires Docker Compose 2.24.4+ for !reset.
+# docker compose -f docker-compose.yml -f docker/selfhosted.compose.yml up -d --build
+# Set APP_DOMAIN and GRAFANA_DOMAIN to distinct DNS names pointing at this host.
+services:
+  db:
+    networks: !override [application_data]
+    ports: !reset []
+  redis:
+    networks: !override [application_data]
+    ports: !reset []
+  kafka:
+    networks: !override [application_data]
+    ports: !reset []
+  backend:
+    ports: !reset []
+    environment:
+      APP_MONITORING_GRAFANA_URL: https://${GRAFANA_DOMAIN:?Set GRAFANA_DOMAIN to the Grafana DNS name}
+      APP_MONITORING_ENVIRONMENT: ${APP_MONITORING_ENVIRONMENT:-production}
+      APP_CORS_ALLOWED_ORIGINS: https://${APP_DOMAIN:?Set APP_DOMAIN to the application DNS name}
+  prometheus:
+    networks: !override [metrics]
+    ports: !reset []
+  grafana:
+    ports: !reset []
+    environment:
+      GF_SERVER_ROOT_URL: https://${GRAFANA_DOMAIN:?Set GRAFANA_DOMAIN to the Grafana DNS name}/
+      GF_SECURITY_COOKIE_SECURE: "true"
+  alertmanager:
+    volumes:
+      # An absent path fails instead of starting a production receiver that drops alerts.
+      - type: bind
+        source: ${ALERTMANAGER_CONFIG_DIR:?Set ALERTMANAGER_CONFIG_DIR to a private configured receiver directory}
+        target: /etc/alertmanager
+        read_only: true
+        bind:
+          create_host_path: false
+  caddy:
+    networks: [edge, application_ingress, grafana_ingress]
+    cpus: ${CADDY_CPUS:-0.5}
+    mem_limit: ${CADDY_MEMORY_LIMIT:-128m}
+    memswap_limit: ${CADDY_MEMORY_LIMIT:-128m}
+    pids_limit: 128
+    image: caddy:2.11.4-alpine
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN to the application DNS name}
+      GRAFANA_DOMAIN: ${GRAFANA_DOMAIN:?Set GRAFANA_DOMAIN to the Grafana DNS name}
+      CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL:-}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      # Compose resolves these paths from the root docker-compose.yml.
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    # Start independently: a monitoring outage must not prevent website ingress.
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  edge:
+  application_ingress:
+    internal: true
+  grafana_ingress:
+    internal: true

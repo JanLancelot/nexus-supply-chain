@@ -28,6 +28,18 @@ App Service and its staging slot require HTTPS and TLS 1.2 or newer. FTP and bas
 
 The management listener defaults to `127.0.0.1:9091`. It exposes health and Prometheus metrics without publishing them through the application listener. Compose sets its address to `0.0.0.0` for internal Prometheus scraping but does not publish that port. Keep this listener on a trusted network if overriding the bind address. No HSTS policy was added.
 
+See [Grafana and monitoring](observability.md) for provisioned dashboards, alert rules,
+private access, retention, upgrades, and receiver setup. Terraform's optional
+`monitoring_grafana_url` and `staging_monitoring_grafana_url` only configure each slot's
+admin website link; they do not create a collector or Grafana. Collection from the
+existing single-container App Service still needs a private collector deployment.
+Monitoring URLs and metric environment labels remain attached to their slots.
+
+For self-hosting the entire application alongside Grafana, the
+[HTTPS Compose overlay](observability.md#production-and-azure) adds Caddy, derives
+the browser URLs/CORS settings from separate domains, and publishes only ingress
+ports. It is independent of Terraform and requires no Azure resources.
+
 Login is limited to 30 attempts per minute per socket-peer IP, per application instance (`APP_LOGIN_MAX_ATTEMPTS_PER_MINUTE`). The counter table is bounded at 10,000 peers (`APP_LOGIN_MAX_TRACKED_CLIENTS`). Forwarding headers are not trusted. Users behind a proxy share that peer limit; configure trusted gateway rate limiting and capacity deliberately before rollout. Diagnostic authentication stress tests need a higher limit only in a disposable environment.
 
 ## CI and deployment

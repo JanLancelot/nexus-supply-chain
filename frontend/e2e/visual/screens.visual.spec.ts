@@ -202,7 +202,7 @@ test('mobile menu exposes every destination and closes after navigation', async 
   await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeHidden();
   await menu.click();
   await expect(menu).toHaveAttribute('aria-expanded', 'true');
-  for (const name of ['Dashboard', 'User Management', 'Product Catalog', 'Purchase Orders', 'Audit Logs']) {
+  for (const name of ['Dashboard', 'User Management', 'Product Catalog', 'Purchase Orders', 'Reference Data', 'Audit Logs', 'Monitoring']) {
     await expect(page.getByRole('link', { name, exact: true })).toBeInViewport({ ratio: 1 });
   }
   await expect(page.getByRole('button', { name: 'Sign Out' })).toBeInViewport({ ratio: 1 });
@@ -211,6 +211,44 @@ test('mobile menu exposes every destination and closes after navigation', async 
   await expect(page.getByRole('heading', { name: 'Product Catalog', exact: true })).toBeVisible();
   await expect(menu).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeHidden();
+});
+
+test('monitoring dashboard entry and separate operator login', async ({ page }) => {
+  await signIn(page);
+  await navigate(page, 'Monitoring', 'Understand your operations over time');
+  const grafana = page.getByRole('link', { name: /Open Grafana/ });
+  await expect(grafana).toHaveAttribute('href', 'https://monitoring.example.test/');
+  await expect(grafana).toHaveAttribute('target', '_blank');
+  await expect(grafana).toHaveAttribute('rel', 'noopener noreferrer');
+  await capture(page, 'monitoring.png');
+});
+
+test('monitoring fits a small phone viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await signIn(page);
+  await navigate(page, 'Monitoring', 'Understand your operations over time');
+  await expect(page.getByRole('link', { name: /Open Grafana/ })).toBeInViewport({ ratio: 1 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  await capture(page, 'monitoring-narrow.png');
+});
+
+test.describe('monitoring setup', () => {
+  test.use({ visualState: 'monitoring-disabled' });
+  test('explains when dashboards have not been connected', async ({ page }) => {
+    await signIn(page);
+    await navigate(page, 'Monitoring', 'Monitoring is not configured yet');
+    await capture(page, 'monitoring-disabled.png');
+  });
+});
+
+test.describe('monitoring failure', () => {
+  test.use({ visualState: 'monitoring-error' });
+  test('shows an error with a retry action', async ({ page }) => {
+    await signIn(page);
+    await navigate(page, 'Monitoring', 'Unable to load monitoring. Please try again.');
+    await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+    await capture(page, 'monitoring-error.png');
+  });
 });
 
 

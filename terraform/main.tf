@@ -113,10 +113,13 @@ resource "azurerm_linux_web_app" "backend_api" {
   sticky_settings {
     app_setting_names = ["JWT_SECRET", "APP_BOOTSTRAP_ADMIN_EMAIL", "APP_BOOTSTRAP_ADMIN_PASSWORD",
       "SPRING_DATASOURCE_URL", "SPRING_DATASOURCE_USERNAME", "SPRING_DATASOURCE_PASSWORD",
-    "SPRING_REDIS_HOST", "SPRING_REDIS_PORT", "SPRING_REDIS_PASSWORD", "SPRING_REDIS_SSL_ENABLED"]
+      "SPRING_REDIS_HOST", "SPRING_REDIS_PORT", "SPRING_REDIS_PASSWORD", "SPRING_REDIS_SSL_ENABLED",
+    "APP_MONITORING_GRAFANA_URL", "APP_MONITORING_ENVIRONMENT"]
   }
 
   app_settings = {
+    "APP_MONITORING_GRAFANA_URL"          = var.monitoring_grafana_url
+    "APP_MONITORING_ENVIRONMENT"          = var.environment
     "JWT_SECRET"                          = var.jwt_secret
     "APP_BOOTSTRAP_ADMIN_EMAIL"           = var.bootstrap_admin_email
     "APP_BOOTSTRAP_ADMIN_PASSWORD"        = var.bootstrap_admin_password
@@ -170,6 +173,8 @@ resource "azurerm_linux_web_app_slot" "backend_api_staging" {
   }
 
   app_settings = {
+    "APP_MONITORING_GRAFANA_URL"          = var.staging_monitoring_grafana_url
+    "APP_MONITORING_ENVIRONMENT"          = "${var.environment}-staging"
     "JWT_SECRET"                          = var.staging_jwt_secret
     "APP_BOOTSTRAP_ADMIN_EMAIL"           = var.staging_bootstrap_admin_email
     "APP_BOOTSTRAP_ADMIN_PASSWORD"        = var.staging_bootstrap_admin_password

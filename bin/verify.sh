@@ -5,7 +5,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 mode="${1:-all}"
 if [[ $# -gt 1 ]]; then
-  echo "Usage: $0 [all|frontend|backend|containers|e2e|visual|full]" >&2
+  echo "Usage: $0 [all|frontend|backend|containers|monitoring|e2e|visual|full]" >&2
   exit 2
 fi
 
@@ -42,11 +42,13 @@ case "$mode" in
     ;;
   e2e) cd "$repo_root/frontend"; npm run test:e2e:all ;;
   visual) "$repo_root/bin/visual-tests.sh" ;;
+  monitoring) "$repo_root/bin/verify-monitoring.sh" ;;
   full)
     "$repo_root/bin/verify.sh" all
     "$repo_root/bin/verify.sh" containers
+    "$repo_root/bin/verify.sh" monitoring
     "$repo_root/bin/verify.sh" e2e
     "$repo_root/bin/verify.sh" visual
     ;;
-  *) echo "Usage: $0 [all|frontend|backend|containers|e2e|visual|full]" >&2; exit 2 ;;
+  *) echo "Usage: $0 [all|frontend|backend|containers|monitoring|e2e|visual|full]" >&2; exit 2 ;;
 esac
