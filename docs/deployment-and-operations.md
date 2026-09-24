@@ -4,7 +4,7 @@
 
 [Terraform](../terraform/main.tf) defines a resource group, Basic container registry, PostgreSQL Flexible Server, Managed Redis, an S1 Linux App Service plan, one Web App, and a staging slot. The app and slot serve the combined frontend/backend image. They share PostgreSQL and Redis, so staging writes affect the same data as production.
 
-The configuration does not provision Key Vault, a Log Analytics workspace, database zone redundancy, private endpoints, or automated slot swaps. Application logs use the configured Spring console output, not the JSON format previously claimed in this guide.
+The configuration does not provision Key Vault, a Log Analytics workspace, database zone redundancy, private endpoints, or automated slot swaps. Application logs use the configured Spring console output.
 
 ## Secrets and bootstrap accounts
 
@@ -36,7 +36,7 @@ Login is limited to 30 attempts per minute per socket-peer IP, per application i
 
 GitHub's Azure identity needs `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_SUBSCRIPTION_ID`, configured for OIDC federation. It also needs permission to push to the registry and deploy the Web App. Registry login uses `az acr login`; the workflow no longer requires `ACR_USERNAME`/`ACR_PASSWORD`. OIDC token permission is restricted to the deployment job. App Service and staging use system-assigned identities with `AcrPull`; registry admin authentication is disabled in Terraform. The Terraform caller needs permission to create those role assignments. Verify identity propagation before removing existing registry credentials from a live deployment.
 
-Review role assignments and secrets in the actual Azure/GitHub environment before using the workflow. They were not inspected or changed by this local review.
+Verify role assignments and secrets in Azure and GitHub before using the workflow.
 
 ## Events and releases
 
@@ -51,5 +51,3 @@ After deployment, verify login, staff/admin permissions, a stock adjustment, the
 `bin/resume.sh` starts PostgreSQL and recreates compute resources. Both scripts read names from Terraform outputs and stop on failure instead of reporting false success. Older state may need its outputs refreshed before the new `postgres_server_name` output exists.
 
 Stopping PostgreSQL does not eliminate storage costs, and Azure can automatically restart it after its allowed stop interval. See [Microsoft's stop/start documentation](https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/how-to-stop-server). Recheck the database firewall after recreating App Service.
-
-No Terraform apply, Azure mutation, deployment, credential rotation, or destructive load test was performed during this review.

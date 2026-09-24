@@ -129,6 +129,5 @@ Load scenarios create or update application data. The benchmark runner does not 
 - [OpenAPI contract](docs/api-specification.yaml)
 - [Deployment and operations](docs/deployment-and-operations.md)
 - [Cost considerations](docs/cost-optimization-results.md)
-- [Code and security review](security_best_practices_report.md)
 
 Terraform describes Azure App Service, PostgreSQL, Managed Redis, and a container registry. GitHub Actions verifies builds and deploys pushes to `main` to the staging slot. Review required secrets, database firewall allowlists, and shared staging data in the operations guide before deployment.
