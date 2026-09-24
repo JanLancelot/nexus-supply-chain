@@ -11,6 +11,7 @@ For local checks, test modes, and coverage reports, see the [development harness
 - Orders move through `DRAFT → PENDING_APPROVAL → APPROVED → SHIPPED → DELIVERED`. Every ordered product must belong to the destination warehouse. Delivery increments stock and saves its audit evidence in the order transaction. Cancellation rules depend on the current state and role.
 - Low-stock events can create draft replenishment orders. An open-order check prevents repeated drafts for the same product. Sourcing must be explicitly assigned in Reference Data; the system never chooses an unrelated supplier.
 - Administrators can view aggregate purchasing/inventory metrics and audit records. Notifications belong to individual users.
+- Administrators can open Grafana from **Monitoring** for application health, latency, resource usage, inventory/order history, and alert state. See the [monitoring guide](docs/observability.md) for setup, metric semantics, alerts, and production limitations.
 
 Audit records are ordinary database rows; they are not a tamper-proof ledger. Event delivery uses Kafka when available, with Redis-list and process-memory fallbacks. Those fallbacks do not provide Kafka's persistence or recovery semantics. See [architecture](docs/architecture.md) for limitations.
 
@@ -24,6 +25,9 @@ cat > .env <<EOF_ENV
 SPRING_DATASOURCE_PASSWORD=$(openssl rand -hex 24)
 JWT_SECRET=$(openssl rand -hex 32)
 GRAFANA_ADMIN_PASSWORD=$(openssl rand -hex 24)
+GRAFANA_SECRET_KEY=$(openssl rand -hex 32)
+GRAFANA_DB_PASSWORD=$(openssl rand -hex 24)
+GRAFANA_DB_ADMIN_PASSWORD=$(openssl rand -hex 24)
 APP_BOOTSTRAP_ADMIN_EMAIL=admin@example.test
 APP_BOOTSTRAP_ADMIN_PASSWORD=$(openssl rand -hex 24)
 EOF_ENV
@@ -44,7 +48,19 @@ All published Compose ports bind to `127.0.0.1`:
 
 Metrics are scraped on the internal management port 9091, which Compose does not publish. Stop with `docker compose down`. Adding `-v` deletes the database and monitoring volumes.
 
+Grafana provisions two Nexus dashboards automatically. Its initial username is `admin`
+and its password is `GRAFANA_ADMIN_PASSWORD`; website and Grafana accounts are separate.
+The [monitoring guide](docs/observability.md) explains persistent-password behavior,
+upgrades from existing monitoring volumes, and connecting alert recipients. The free
+alerting path uses `python3 bin/configure-alerting.py --email` for direct SMTP delivery
+and a Better Stack heartbeat; its native Prometheus integration requires a paid plan.
+
 Existing database volumes retain their original database password; changing `.env` alone does not rotate it.
+
+For a self-hosted website and Grafana on HTTPS, use the
+[production overlay instructions](docs/observability.md#production-and-azure).
+The overlay adds Caddy with automatic certificates on separate domains and keeps
+database, broker, and metrics ports internal.
 
 ## Run the application locally
 
@@ -93,6 +109,8 @@ Runtime settings live in [application.properties](backend/src/main/resources/app
 | `APP_LOGIN_MAX_TRACKED_CLIENTS` | Maximum active login counters; default `10000` |
 | `APP_CORS_ALLOWED_ORIGINS` | Comma-separated browser origins; defaults to localhost and localhost:5173 |
 | `MANAGEMENT_SERVER_ADDRESS`, `MANAGEMENT_SERVER_PORT` | Defaults to loopback on port 9091 |
+| `APP_MONITORING_GRAFANA_URL` | Optional admin-only Grafana destination; Compose defaults to `http://localhost:3000` |
+| `APP_MONITORING_ENVIRONMENT` | Deployment label on metrics; default `local` |
 
 Browser tokens are held in memory. Reloading the page requires signing in again. Signing out clears the browser token; it does not revoke copies of an already issued token.
 
@@ -107,6 +125,7 @@ cd frontend
 npx playwright install --with-deps chromium firefox webkit
 cd ..
 ./bin/verify.sh        # Lint, component/session tests, coverage, builds, backend, tooling
+./bin/verify.sh monitoring # Disposable full-stack metrics, Grafana and alert-rule checks
 ./bin/verify.sh full   # Also real infrastructure, three-browser E2E, and visual tests
 ```
 
@@ -131,6 +150,7 @@ Load scenarios create or update application data. The benchmark runner does not 
 - [Database schema](docs/database-schema.md)
 - [OpenAPI contract](docs/api-specification.yaml)
 - [Deployment and operations](docs/deployment-and-operations.md)
+- [Grafana and monitoring](docs/observability.md)
 - [Cost considerations](docs/cost-optimization-results.md)
 
 Terraform describes Azure App Service, PostgreSQL, Managed Redis, and a container registry. GitHub Actions verifies builds and deploys pushes to `main` to the staging slot. Production and staging use separate PostgreSQL servers, Redis instances, and signing keys. Review the new staging credentials, firewall allowlists, and first-deployment steps in the operations guide.

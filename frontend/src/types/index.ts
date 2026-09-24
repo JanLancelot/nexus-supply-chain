@@ -95,3 +95,6 @@ export interface PagedResponse<T> {
   hasNext: boolean;
 }
 
+export type MonitoringConfiguration =
+  | { enabled: false; grafanaUrl: null }
+  | { enabled: true; grafanaUrl: string };

@@ -14,7 +14,8 @@ public class FrontendController {
         "/orders",
         "/audit-logs",
         "/users",
-        "/reference-data"
+        "/reference-data",
+        "/monitoring"
     })
     public String index() {
         return "forward:/index.html";

@@ -11,10 +11,11 @@ const authenticatedResponses = {
   ...catalogResponses,
   'GET /notifications': { data: { notifications: [], totalCount: 0, unreadCount: 0 } },
   'GET /analytics/dashboard': { data: metrics },
+  'GET /monitoring': { data: { enabled: true, grafanaUrl: 'https://monitoring.example.test/' } },
 };
 
 describe('application routing and navigation', () => {
-  it.each(['/dashboard', '/catalog', '/orders', '/users', '/audit-logs', '/reference-data'])('requires a session before rendering %s', async (path) => {
+  it.each(['/dashboard', '/catalog', '/orders', '/users', '/audit-logs', '/reference-data', '/monitoring'])('requires a session before rendering %s', async (path) => {
     const requests = serveApi({});
     window.history.replaceState({}, '', path);
     render(<App />);
@@ -24,8 +25,8 @@ describe('application routing and navigation', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it.each(['/dashboard', '/users', '/audit-logs', '/reference-data'])('redirects staff away from %s and hides administrator navigation', async (path) => {
-    serveApi(authenticatedResponses);
+  it.each(['/dashboard', '/users', '/audit-logs', '/reference-data', '/monitoring'])('redirects staff away from %s and hides administrator navigation', async (path) => {
+    const requests = serveApi(authenticatedResponses);
     setSession(parseSession(sessionToken({ role: 'ROLE_STAFF' })));
     window.history.replaceState({}, '', path);
     render(<App />);
@@ -35,6 +36,8 @@ describe('application routing and navigation', () => {
     expect(screen.queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'User Management' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Audit Logs' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Monitoring' })).not.toBeInTheDocument();
+    expect(requests.some(request => request.url === '/monitoring')).toBe(false);
   });
 
   it.each(['/', '/login', '/unknown'])('lands an authenticated administrator on the dashboard from %s', async (path) => {
@@ -46,6 +49,21 @@ describe('application routing and navigation', () => {
     expect(window.location.pathname).toBe('/dashboard');
     expect(screen.getByRole('heading', { name: 'Operations Dashboard' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'User Management' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Monitoring' })).toBeInTheDocument();
+  });
+
+  it('lets administrators reach Grafana through the monitoring navigation', async () => {
+    const requests = serveApi(authenticatedResponses);
+    setSession(parseSession(sessionToken()));
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByText('75 units');
+    await user.click(screen.getByRole('link', { name: 'Monitoring' }));
+    expect(await screen.findByRole('link', { name: /Open Grafana/ })).toHaveAttribute('href', 'https://monitoring.example.test/');
+    expect(window.location.pathname).toBe('/monitoring');
+    expect(screen.getByRole('heading', { name: 'Monitoring' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Monitoring' })).toHaveAttribute('aria-current', 'page');
+    expect(requests.some(request => request.url === '/monitoring')).toBe(true);
   });
 
   it('navigates through the sidebar and removes protected content when signing out', async () => {

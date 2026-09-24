@@ -35,6 +35,9 @@ class RepositoryTests {
     @Autowired
     private WarehouseRepository warehouseRepository;
 
+    @Autowired
+    private com.nexus.supplychain.service.MonitoringSnapshotReader monitoringSnapshots;
+
     @BeforeEach
     void setUp() {
         productRepository.deleteAll();
@@ -105,5 +108,16 @@ class RepositoryTests {
         assertEquals("WH Repos", stockByWh.get(0)[1]);
         assertEquals("Loc", stockByWh.get(0)[2]);
         assertEquals(12L, ((Number) stockByWh.get(0)[3]).longValue());
+
+        // Inactive inventory remains in the catalog count but contributes no active stock or value.
+        productRepository.save(Product.builder().sku("SKU-REP-INACTIVE").name("Inactive product")
+                .category(category).warehouse(warehouse).unitPrice(BigDecimal.valueOf(999))
+                .stockQuantity(100).reorderLevel(500).isActive(false).build());
+        var snapshot = monitoringSnapshots.read();
+        assertEquals(3, snapshot.products());
+        assertEquals(1, snapshot.lowStockProducts());
+        assertEquals(12, snapshot.units());
+        assertEquals(220, snapshot.inventoryValue());
+        assertEquals(OrderStatus.values().length, snapshot.orders().size());
     }
 }

@@ -9,6 +9,7 @@ import Orders from './pages/Orders';
 import AuditLogs from './pages/AuditLogs';
 import UserManagement from './pages/UserManagement';
 import ReferenceData from './pages/ReferenceData';
+import Monitoring from './pages/Monitoring';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 
@@ -120,6 +121,10 @@ const AppRoutes: React.FC = () => {
 
       <Route path="/reference-data" element={
         <ProtectedRoute adminOnly><LayoutWrapper title="Reference Data"><ReferenceData /></LayoutWrapper></ProtectedRoute>
+      } />
+
+      <Route path="/monitoring" element={
+        <ProtectedRoute adminOnly><LayoutWrapper title="Monitoring"><Monitoring /></LayoutWrapper></ProtectedRoute>
       } />
 
       {/* Root Path Redirection */}

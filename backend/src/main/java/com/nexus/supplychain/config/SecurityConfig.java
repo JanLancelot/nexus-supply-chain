@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,6 +30,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final LoginRateLimitFilter loginRateLimitFilter;
+    private final Environment environment;
 
     @Value("${management.server.port:9091}")
     private int managementPort;
@@ -56,13 +58,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD, jakarta.servlet.DispatcherType.ERROR).permitAll()
                 // Public endpoints
-                .requestMatchers("/", "/index.html", "/favicon.ico", "/favicon.svg", "/assets/**", "/login", "/dashboard", "/catalog", "/orders", "/audit-logs", "/users", "/reference-data").permitAll()
+                .requestMatchers("/", "/index.html", "/favicon.ico", "/favicon.svg", "/assets/**", "/login", "/dashboard", "/catalog", "/orders", "/audit-logs", "/users", "/reference-data", "/monitoring").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/v1/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/prometheus").access((authentication, context) ->
-                    new AuthorizationDecision(managementPort != applicationPort
-                        && context.getRequest().getLocalPort() == managementPort))
+                    new AuthorizationDecision(isManagementPort(context.getRequest().getLocalPort())))
                 .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -89,6 +90,7 @@ public class SecurityConfig {
 
                 // Analytics rules
                 .requestMatchers("/api/v1/analytics/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/monitoring").hasAuthority("ROLE_ADMIN")
 
                 // Forensic Audit Log rules
                 .requestMatchers(HttpMethod.GET, "/api/v1/audit-logs").hasAuthority("ROLE_ADMIN")
@@ -102,6 +104,14 @@ public class SecurityConfig {
             .addFilterBefore(loginRateLimitFilter, JwtAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    private boolean isManagementPort(int localPort) {
+        // Resolve actual listener ports too, including random ports in integration tests.
+        int actualManagementPort = environment.getProperty("local.management.port", Integer.class, managementPort);
+        int actualApplicationPort = environment.getProperty("local.server.port", Integer.class, applicationPort);
+        return actualManagementPort > 0 && actualManagementPort != actualApplicationPort
+                && localPort == actualManagementPort;
     }
 
     @Bean

@@ -1,0 +1,122 @@
+groups:
+  - name: nexus-recording
+    rules:
+      # Application API traffic only: management scrapes and health checks must
+      # not hide a quiet, broken API. Keep dimensions bounded across replicas.
+      - record: nexus:http_requests:rate5m
+        expr: sum by (job, instance, application, environment) (rate(http_server_requests_seconds_count{job="spring-backend",uri=~"/api/v1/.*"}[5m]))
+      - record: nexus:http_5xx:rate5m
+        expr: sum by (job, instance, application, environment) (rate(http_server_requests_seconds_count{job="spring-backend",uri=~"/api/v1/.*",status=~"5.."}[5m])) or (0 * nexus:http_requests:rate5m)
+      - record: nexus:http_5xx:ratio5m
+        expr: nexus:http_5xx:rate5m / clamp_min(nexus:http_requests:rate5m, 0.000001)
+      - record: nexus:http_latency:p95_5m
+        expr: histogram_quantile(0.95, sum by (job, instance, application, environment, le) (rate(http_server_requests_seconds_bucket{job="spring-backend",uri=~"/api/v1/.*"}[5m])))
+
+  - name: nexus-alerts
+    rules:
+      - alert: NexusWatchdog
+        expr: vector(1)
+        labels:
+          severity: none
+        annotations:
+          summary: Continuous monitoring heartbeat
+          description: The external watchdog must notify operators when this heartbeat stops. Never page on its presence.
+
+      - alert: NexusAlertmanagerDown
+        expr: up{job="alertmanager"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Alertmanager cannot be scraped
+          description: Check Alertmanager health and notification delivery. The external watchdog covers complete delivery-path failure.
+
+      - alert: NexusNotificationFailures
+        expr: sum by (integration) (increase(alertmanager_notifications_failed_total[5m])) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Alert notifications are failing
+          description: Check receiver connectivity, credentials, rate limits and Alertmanager logs. The external watchdog must use an independent notification channel.
+
+      - alert: NexusRuleEvaluationFailures
+        expr: increase(prometheus_rule_evaluation_failures_total[5m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus cannot evaluate monitoring rules
+          description: Inspect rule health and Prometheus resource usage before relying on alert coverage.
+
+      - alert: NexusBackendDown
+        expr: up{job="spring-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Backend metrics endpoint is unreachable
+          description: Inspect backend health, management port 9091, and the Prometheus target error. Scrape failure does not by itself prove the public website is down.
+
+      - alert: NexusHighErrorRate
+        expr: (nexus:http_5xx:ratio5m > 0.05) and (nexus:http_requests:rate5m >= 0.1)
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: More than 5% of API requests return server errors
+          description: At least 30 requests per five minutes are required. Inspect failing routes and backend logs; health checks are excluded.
+
+      - alert: NexusHighLatency
+        expr: (nexus:http_latency:p95_5m > 1) and (nexus:http_requests:rate5m >= 0.1)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: API p95 latency exceeds one second
+          description: At least 30 requests per five minutes are required. Inspect slow routes, database saturation, and JVM pauses.
+
+      - alert: NexusDatabasePoolSaturated
+        expr: (hikaricp_connections_active{job="spring-backend"} / hikaricp_connections_max{job="spring-backend"} > 0.9) and (hikaricp_connections_pending{job="spring-backend"} > 0)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Database connections are exhausted
+          description: More than 90% of the connection pool is busy and callers are waiting. Inspect slow queries, transactions, and connection leaks before increasing pool size.
+
+      - alert: NexusDependencyDegraded
+        expr: nexus_dependency_up{job="spring-backend"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: An application dependency is degraded or using fallback
+          description: Inspect the dependency label and backend health. A fallback event broker or cache may keep requests working while durability or performance is reduced.
+
+      - alert: NexusSnapshotFailed
+        expr: nexus_observability_refresh_success{job="spring-backend"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: A monitoring snapshot cannot refresh
+          description: Inspect the component label and backend logs. Business gauges retain their last successful values until collection recovers.
+
+      - alert: NexusSnapshotStale
+        expr: time() - nexus_observability_last_success_timestamp_seconds{job="spring-backend"} > 120
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Monitoring snapshot is more than two minutes old
+          description: Inspect the monitoring scheduler and dependency timeouts. Treat business counts and dependency state as stale until snapshots resume.
+
+      - alert: NexusTelemetryMissing
+        expr: (up{job="spring-backend"} == 1) unless on (job, instance) nexus_observability_refresh_success{job="spring-backend",component="business"}
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Backend is reachable but business instrumentation is missing
+          description: Check that the deployed backend includes monitoring and exposes the custom metrics registry. Do not interpret missing business series as zero.

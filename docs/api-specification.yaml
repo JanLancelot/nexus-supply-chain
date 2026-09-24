@@ -11,6 +11,24 @@ servers:
 security:
 - BearerAuth: []
 paths:
+  /monitoring:
+    get:
+      summary: Read administrator monitoring configuration
+      description: Administrators only. Returns the runtime Grafana link, with separate Grafana authentication.
+        Missing or invalid configuration returns enabled false and a null URL. Metrics are available only
+        on the private management listener, never through this API.
+      operationId: getMonitoring
+      responses:
+        '200':
+          description: Monitoring configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringResponse'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
   /auth/login:
     post:
       summary: Sign in
@@ -742,6 +760,20 @@ components:
         minimum: 1
       description: Requested page size. Values above 50 are capped at 50.
   schemas:
+    MonitoringResponse:
+      type: object
+      required:
+      - grafanaUrl
+      - enabled
+      properties:
+        grafanaUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: Absolute HTTP or HTTPS Grafana URL without embedded credentials; null when disabled.
+        enabled:
+          type: boolean
+          description: Whether a valid Grafana URL is configured.
     LoginRequest:
       type: object
       required:

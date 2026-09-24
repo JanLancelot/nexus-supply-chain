@@ -14,7 +14,13 @@ flowchart LR
 
 ## Deployment shapes
 
-The root Compose file builds the React bundle into the Spring Boot JAR and includes PostgreSQL, Redis, Kafka, Prometheus, Grafana, and node-exporter. The optional frontend Dockerfile provides a separate Nginx deployment. During development, Vite proxies API requests to port 8080.
+The root Compose file builds the React bundle into the Spring Boot JAR and includes PostgreSQL, Redis, Kafka, Prometheus, and Grafana. The optional frontend Dockerfile provides a separate Nginx deployment. During development, Vite proxies API requests to port 8080.
+
+Prometheus scrapes the private management listener. Grafana provisions application and
+supply-chain dashboards; administrators reach it through the website's Monitoring page
+and sign in separately. Business aggregates and dependency probes refresh in background
+threads, so a metrics scrape cannot trigger database queries. See [observability](observability.md)
+for metric semantics, alerts, access, and the Azure collection boundary.
 
 Terraform creates one App Service and a staging slot, with a separate PostgreSQL server/database, Redis instance, bootstrap account, and JWT key for each environment. Both apps still share the App Service plan. Datastore and signing settings stay attached to their slots. Terraform does not provision Kafka, Key Vault, Log Analytics, private networking, database high availability, or deployment-slot swaps.
 

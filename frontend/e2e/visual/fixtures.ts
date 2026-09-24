@@ -55,7 +55,7 @@ const users = [
 const fixedTime = new Date('2026-01-15T12:00:00Z');
 const fontPath = new URL('../../node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2', import.meta.url);
 
-type VisualState = 'loaded' | 'login-error' | 'dashboard-error';
+type VisualState = 'loaded' | 'login-error' | 'dashboard-error' | 'monitoring-disabled' | 'monitoring-error';
 type Fixtures = { visualState: VisualState; visualRole: 'ROLE_ADMIN' | 'ROLE_STAFF'; visualApi: void };
 
 function paged<T>(content: T[]) {
@@ -104,11 +104,18 @@ export const test = base.extend<Fixtures>({
         await route.fulfill({ status: 503, json: { message: 'Metrics unavailable' } });
         return;
       }
+      if (key === 'GET /monitoring' && visualState === 'monitoring-error') {
+        await route.fulfill({ status: 503, json: { message: 'Monitoring unavailable' } });
+        return;
+      }
       if (key === 'POST /inventory/products') {
         await route.fulfill({ status: 400, json: { message: 'SKU already exists: OFF-PAPER-A4' } });
         return;
       }
       const responses: Record<string, unknown> = {
+        'GET /monitoring': visualState === 'monitoring-disabled'
+          ? { enabled: false, grafanaUrl: null }
+          : { enabled: true, grafanaUrl: 'https://monitoring.example.test/' },
         'GET /analytics/dashboard': {
           totalRevenue: 128450.75, totalInventoryValue: 245630.5, lowStockCount: 2,
           orderStatusCounts: { DRAFT: 3, PENDING_APPROVAL: 5, APPROVED: 4, SHIPPED: 6, DELIVERED: 21, CANCELLED: 2 },

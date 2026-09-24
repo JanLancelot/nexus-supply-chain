@@ -33,9 +33,10 @@ command can prepare Maven before starting the test harness.
 | `./bin/verify.sh frontend` | Lint, frontend tests/coverage, typecheck, production build |
 | `./bin/verify.sh backend` | All backend tests using H2 and the broker fallback paths |
 | `./bin/verify.sh containers` | Backend suite with PostgreSQL, Redis, and Kafka for the API/workflow integration tests |
+| `./bin/verify.sh monitoring` | Prometheus/Alertmanager fixtures, isolated live metrics and dashboards, permissions, network isolation, DB restore, watchdog and firing/resolved delivery |
 | `./bin/verify.sh e2e` | Real browser-to-API workflows in Chromium, Firefox, and WebKit |
 | `./bin/verify.sh visual` | Compare screenshots in the canonical Linux/amd64 Docker image |
-| `./bin/verify.sh full` | Default checks, container integration, all browsers, then visual comparisons |
+| `./bin/verify.sh full` | Default checks, container integration, monitoring, all browsers, then visual comparisons |
 | `npm --prefix frontend run test:watch` | Interactive frontend test loop |
 | `npm --prefix frontend test -- src/context/AuthContext.test.tsx` | Focused frontend regression tests |
 | `cd backend && ./mvnw -Dtest=OrderServiceTest test` | Focused backend regression tests |
@@ -170,6 +171,12 @@ host installation intact. Docker must be running; no desktop screenshot tooling
 or external API credentials are needed.
 
 ## Reports and CI
+
+Monitoring verification uses an isolated Compose project with random credentials, ports,
+networks, and volumes. It does not source `.env` or reuse a running application. It builds
+the combined image and tests the real private metrics path and Grafana provisioning;
+see [observability](observability.md#verification-and-troubleshooting). Docker failures
+fail the check. CI runs this as a separate deployment-gating job.
 
 - Frontend: `frontend/coverage/index.html` and `frontend/coverage/lcov.info`.
 - Backend: `backend/target/site/jacoco/index.html` and `backend/target/surefire-reports/`.

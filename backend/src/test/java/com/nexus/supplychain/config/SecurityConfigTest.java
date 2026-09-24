@@ -70,6 +70,21 @@ class SecurityConfigTest {
     }
 
     @Test
+    void monitoringDeepLinkForwardsToTheApplicationShell() throws Exception {
+        mvc.perform(get("/monitoring")).andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl("/index.html"));
+    }
+
+    @Test
+    void monitoringConfigurationRequiresAdministrator() throws Exception {
+        mvc.perform(get("/api/v1/monitoring")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/v1/monitoring").with(user("staff").roles("STAFF")))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/api/v1/monitoring").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void anonymousUsersCannotReadPrivateData() throws Exception {
         mvc.perform(get("/api/v1/categories")).andExpect(status().isUnauthorized());
     }
@@ -107,7 +122,7 @@ class SecurityConfigTest {
 
     @RestController
     static class TestEndpoints {
-        @RequestMapping({"/api/v1/categories", "/api/v1/warehouses", "/api/v1/unconfigured", "/actuator/prometheus", "/favicon.svg"})
+        @RequestMapping({"/api/v1/categories", "/api/v1/warehouses", "/api/v1/unconfigured", "/api/v1/monitoring", "/actuator/prometheus", "/favicon.svg"})
         String endpoint() { return "ok"; }
     }
 }
