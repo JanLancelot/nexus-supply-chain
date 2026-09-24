@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <!-- Hibernate previously widened these columns at startup. Refuse values
+         outside the public contract rather than silently rounding/truncating. -->
+    <changeSet id="1.6-money-schema-ownership" author="nexus-supply-chain">
+        <preConditions onFail="HALT" onError="HALT">
+            <sqlCheck expectedResult="0"><![CDATA[
+                SELECT (SELECT COUNT(*) FROM products WHERE ABS(unit_price) > 9999999999.99 OR unit_price <> ROUND(unit_price, 2))
+                     + (SELECT COUNT(*) FROM orders WHERE ABS(total_amount) > 9999999999.99 OR total_amount <> ROUND(total_amount, 2))
+                     + (SELECT COUNT(*) FROM order_items WHERE ABS(unit_price) > 9999999999.99 OR ABS(subtotal) > 9999999999.99
+                          OR unit_price <> ROUND(unit_price, 2) OR subtotal <> ROUND(subtotal, 2))
+            ]]></sqlCheck>
+        </preConditions>
+        <modifyDataType tableName="products" columnName="unit_price" newDataType="DECIMAL(12,2)"/>
+        <modifyDataType tableName="orders" columnName="total_amount" newDataType="DECIMAL(12,2)"/>
+        <modifyDataType tableName="order_items" columnName="unit_price" newDataType="DECIMAL(12,2)"/>
+        <modifyDataType tableName="order_items" columnName="subtotal" newDataType="DECIMAL(12,2)"/>
+    </changeSet>
+    <changeSet id="1.6-notification-event-deduplication" author="nexus-supply-chain">
+        <addColumn tableName="notifications">
+            <column name="source_event_id" type="UUID"/>
+        </addColumn>
+        <addUniqueConstraint tableName="notifications" columnNames="user_id,source_event_id"
+            constraintName="uk_notifications_user_event"/>
+    </changeSet>
+</databaseChangeLog>

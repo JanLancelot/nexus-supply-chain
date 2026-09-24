@@ -16,7 +16,7 @@ export function bearer(token: string) {
 export async function login(
   page: Page,
   role: 'admin' | 'staff' = 'admin',
-  credentials = { email: `${role}@pg.com`, password: passwordFor(role) },
+  credentials = { email: `${role}@example.test`, password: passwordFor(role) },
 ): Promise<string> {
   await page.goto('/login');
   await page.getByLabel('Email Address').fill(credentials.email);

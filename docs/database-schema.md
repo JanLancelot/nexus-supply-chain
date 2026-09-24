@@ -1,6 +1,6 @@
 # Database schema
 
-Liquibase applies the [changelog master](../backend/src/main/resources/db/changelog/db.changelog-master.xml) at application startup. The migration files are authoritative; the summaries below are not replacement DDL.
+Liquibase applies the [changelog master](../backend/src/main/resources/db/changelog/db.changelog-master.xml) at application startup. Hibernate uses `validate`, so the migration files are authoritative; the summaries below are not replacement DDL.
 
 ## Application tables
 
@@ -16,7 +16,7 @@ Liquibase applies the [changelog master](../backend/src/main/resources/db/change
 | `orders` | UUID; unique order number, supplier/warehouse FKs, status, total, optional creator FK, timestamps and delivery dates |
 | `order_items` | UUID; order/product FKs, positive quantity, unit price, subtotal |
 | `audit_logs` | UUID; optional user FK, entity type/UUID, action, JSONB before/after values, creation time |
-| `notifications` | UUID; user FK, type, message, read flag, creation time |
+| `notifications` | UUID; user FK, type, message, read flag, creation time, optional source-event UUID; unique user/source-event pair |
 
 The baseline also creates `inventory_transactions`, `shipments`, and `refresh_tokens`. These tables do not imply implemented API workflows: there are no corresponding shipment, refresh-token, or stock-transfer endpoints.
 
@@ -46,3 +46,5 @@ erDiagram
 - No database trigger prevents direct updates/deletes to audit rows. The absence of HTTP mutation endpoints is an application permission boundary only.
 
 `docker/scale_data.sql` is a destructive benchmark fixture script. It requires explicit opt-in, runs in a transaction, and must only target a disposable database. It is not a migration.
+
+Migration 1.6 restores money columns widened by the former Hibernate `update` policy to `DECIMAL(12,2)`. It stops if legacy values exceed the precision or contain fractional cents. Inspect and correct such data through an approved migration before retrying; the migration never truncates those values. It also adds notification event deduplication without discarding existing notifications.

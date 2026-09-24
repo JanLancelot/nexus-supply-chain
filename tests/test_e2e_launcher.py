@@ -118,7 +118,7 @@ class E2ELauncherTests(unittest.TestCase):
             "-B",
             "-ntp",
             "spring-boot:test-run",
-            "-Dspring-boot.run.main-class=com.pg.supplychain.DemoApplication",
+            "-Dspring-boot.run.main-class=com.nexus.supplychain.DemoApplication",
             "-Dspring-boot.run.profiles=e2e",
         ])
         for variable, value in {**preserved, **self.environment}.items():

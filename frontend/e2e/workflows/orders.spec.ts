@@ -13,7 +13,7 @@ async function startOrder(page: Page, product: Product, quantity: number) {
   await expect(page.getByText('Loading purchase orders...', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Create Purchase Order' }).click();
   await selectWithOption(page, 'Choose Supplier').selectOption({ label: 'Apex Logistics & Supplies' });
-  await selectWithOption(page, 'Choose Warehouse').selectOption({ label: 'Main Distribution Center' });
+  await selectWithOption(page, 'Choose Warehouse').selectOption(product.warehouseId!);
   await selectWithOption(page, 'Select SKU Product').selectOption(product.id);
   await page.getByPlaceholder('Qty', { exact: true }).fill(String(quantity));
 }
@@ -152,4 +152,18 @@ test('duplicate line validation is recoverable and cancelling a draft leaves sto
   await expect(page.getByRole('row').filter({ hasText: order.orderNumber })).toContainText('CANCELLED');
   await selectWithOption(page, 'All Statuses').selectOption('DRAFT');
   await expect(page.getByRole('heading', { name: 'No Purchase Orders Found' })).toBeVisible();
+});
+
+
+test('staff can cancel an order pending approval without changing inventory', async ({ page }) => {
+  const token = await login(page, 'staff');
+  const product = (await products(page, token)).find(item => item.sku === 'SKU-ELEC-002')!;
+  await startOrder(page, product, 1);
+  const order = await saveOrder(page);
+  await inspectOrder(page, order);
+  await transition(page, order, 'Submit for Approval', 'PENDING_APPROVAL');
+  await expect(page.getByRole('button', { name: 'Approve Order' })).toHaveCount(0);
+  await transition(page, order, 'Cancel Order', 'CANCELLED');
+  expect(await getJSON<Order>(page, token, `/orders/${order.id}`)).toMatchObject({ status: 'CANCELLED' });
+  expect((await products(page, token)).find(item => item.id === product.id)?.stockQuantity).toBe(product.stockQuantity);
 });

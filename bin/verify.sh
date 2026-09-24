@@ -29,6 +29,7 @@ case "$mode" in
     backend
     python3 -m unittest discover -s "$repo_root/load-tests" -p 'test_*.py'
     python3 -m unittest discover -s "$repo_root/tests" -p 'test_*.py'
+    node --test "$repo_root/load-tests/lib/order-fixtures.test.mjs"
     ;;
   frontend) frontend ;;
   backend) backend ;;

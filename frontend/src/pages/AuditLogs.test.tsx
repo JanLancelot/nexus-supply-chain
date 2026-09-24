@@ -19,6 +19,19 @@ const orderLog: AuditLog = {
 };
 
 describe('audit history', () => {
+  it('distinguishes receipts from adjustments and shows the originating order', async () => {
+    serveApi({ 'GET /audit-logs?page=0&size=50': { data: [productLog, { ...productLog,
+      id: 'receipt-1', action: 'ACTION_ORDER_RECEIPT', newValue: '{"stockQuantity":35,"orderNumber":"PO-1001"}',
+    }] } });
+    const user = userEvent.setup();
+    render(<AuditLogs />);
+    await screen.findByText('ORDER RECEIPT');
+    await user.selectOptions(selectWithOption('All Actions'), 'ACTION_ORDER_RECEIPT');
+    expect(screen.queryByText('MANUAL ADJUSTMENT')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('row', { name: /ORDER RECEIPT/ }));
+    expect(screen.getByRole('row', { name: /orderNumber/ })).toHaveTextContent('PO-1001');
+  });
+
   it('sorts newest first and combines actor, entity and action filters', async () => {
     serveApi({ 'GET /audit-logs?page=0&size=50': { data: [productLog, orderLog] } });
     const user = userEvent.setup();

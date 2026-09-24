@@ -3,7 +3,7 @@ name: nexus-supply-chain
 services:
   db:
     image: postgres:15-alpine
-    container_name: pg_enterprise_supply
+    container_name: nexus_postgres
     ports:
       - "127.0.0.1:5432:5432"
     environment:

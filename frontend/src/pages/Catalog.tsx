@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../services/errors';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
 import { 
@@ -54,7 +55,7 @@ const Catalog: React.FC = () => {
     reorderLevel: 10,
     categoryId: '',
     warehouseId: '',
-    unitPrice: 0.00,
+    unitPrice: Number.NaN,
   });
 
   const [adjustment, setAdjustment] = useState({
@@ -72,6 +73,7 @@ const Catalog: React.FC = () => {
         getWarehouses(),
       ]).then(([productsPaged, categoriesData, warehousesData]) => {
       setProducts(productsPaged.content);
+      setCurrentPage(page);
       setHasMore(productsPaged.hasNext);
       setCategories(categoriesData);
       setWarehouses(warehousesData);
@@ -84,13 +86,13 @@ const Catalog: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    void loadCatalogData(currentPage);
-  }, [currentPage, loadCatalogData]);
+    void loadCatalogData(0);
+  }, [loadCatalogData]);
 
   // Form handle submit for Create Product
   const handleCreateProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProduct.sku.trim() || !newProduct.name.trim() || !Number.isFinite(newProduct.unitPrice) || newProduct.unitPrice <= 0 || !Number.isSafeInteger(newProduct.reorderLevel) || newProduct.reorderLevel < 0) {
+    if (!newProduct.warehouseId || !newProduct.sku.trim() || !newProduct.name.trim() || !Number.isFinite(newProduct.unitPrice) || newProduct.unitPrice < 0 || !Number.isSafeInteger(newProduct.reorderLevel) || newProduct.reorderLevel < 0) {
       setError('Please fill in all required fields and provide a valid price');
       return;
     }
@@ -101,9 +103,8 @@ const Catalog: React.FC = () => {
       const created = await createProduct({
         ...newProduct,
         categoryId: newProduct.categoryId || undefined,
-        warehouseId: newProduct.warehouseId || undefined,
+        warehouseId: newProduct.warehouseId,
       });
-      setProducts((prev) => [...prev, created]);
       setSuccessMsg(`Successfully cataloged product: ${created.sku}`);
       setShowCreateModal(false);
       // Reset form
@@ -113,10 +114,12 @@ const Catalog: React.FC = () => {
         reorderLevel: 10,
         categoryId: '',
         warehouseId: '',
-        unitPrice: 0.00,
+        unitPrice: Number.NaN,
       });
+      setLoading(true);
+      await loadCatalogData(currentPage);
     } catch (err: unknown) {
-      setError(typeof err === 'string' ? err : 'Failed to create product. Ensure the SKU is unique.');
+      setError(getErrorMessage(err, 'Failed to create product. Ensure the SKU is unique.'));
     } finally {
       setSubmitting(false);
     }
@@ -151,7 +154,7 @@ const Catalog: React.FC = () => {
       });
       setSelectedProduct(null);
     } catch (err: unknown) {
-      setError(typeof err === 'string' ? err : 'Unable to adjust inventory. Please refresh and try again.');
+      setError(getErrorMessage(err, 'Unable to adjust inventory. Please refresh and try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -178,7 +181,7 @@ const Catalog: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Messages */}
-      {error && (
+      {error && !showCreateModal && !showAdjustModal && (
         <div className="p-4 bg-red-950/40 border border-red-500/25 text-red-300 text-sm rounded-xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
@@ -300,7 +303,7 @@ const Catalog: React.FC = () => {
                       <div className="font-semibold text-white">{product.name}</div>
                       <div className="text-[10px] text-gray-500 mt-0.5">{product.categoryName || 'No Category'}</div>
                     </td>
-                    <td className="py-4 px-6 text-gray-300">{product.warehouseName || 'Global Facility'}</td>
+                    <td className="py-4 px-6 text-gray-300">{product.warehouseName || 'Unassigned'}</td>
                     <td className="py-4 px-6 text-gray-300 font-medium">${product.unitPrice.toFixed(2)}</td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
@@ -348,14 +351,14 @@ const Catalog: React.FC = () => {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => { setLoading(true); setCurrentPage((prev) => Math.max(0, prev - 1)); }}
+                  onClick={() => { setLoading(true); void loadCatalogData(currentPage - 1); }}
                   disabled={currentPage === 0 || loading}
                   className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 <button
-                  onClick={() => { setLoading(true); setCurrentPage((prev) => prev + 1); }}
+                  onClick={() => { setLoading(true); void loadCatalogData(currentPage + 1); }}
                   disabled={!hasMore || loading}
                   className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                 >
@@ -367,7 +370,7 @@ const Catalog: React.FC = () => {
 
       {/* CREATE PRODUCT MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div role="dialog" aria-modal="true" aria-label="Add New Catalog Product" className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="w-full max-w-lg glass-panel rounded-2xl overflow-hidden border border-gray-800 shadow-2xl animate-scale-up">
             <div className="p-5 border-b border-gray-800 flex items-center justify-between bg-gray-900/35">
               <span className="font-bold text-sm text-white">Add New Catalog Product</span>
@@ -377,13 +380,14 @@ const Catalog: React.FC = () => {
             </div>
             
             <form onSubmit={handleCreateProductSubmit} className="p-6 space-y-4">
+              {error && <div role="alert" className="rounded-lg border border-red-500/25 bg-red-950/40 p-3 text-sm text-red-300">{error}</div>}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">SKU Code *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. PG-TIDE-002"
+                    placeholder="e.g. SKU-OFFICE-002"
                     value={newProduct.sku}
                     onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
                     className="w-full px-3 py-2 text-xs glass-input"
@@ -394,10 +398,10 @@ const Catalog: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    min="0.01"
+                    min="0"
                     required
                     placeholder="e.g. 12.99"
-                    value={newProduct.unitPrice || ''}
+                    value={Number.isNaN(newProduct.unitPrice) ? '' : newProduct.unitPrice}
                     onChange={(e) => setNewProduct({ ...newProduct, unitPrice: parseFloat(e.target.value) })}
                     className="w-full px-3 py-2 text-xs glass-input"
                   />
@@ -409,7 +413,7 @@ const Catalog: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Tide Pods Clean Breeze 38ct"
+                  placeholder="e.g. Copy Paper A4 500 Sheets"
                   value={newProduct.name}
                   onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                   className="w-full px-3 py-2 text-xs glass-input"
@@ -431,15 +435,16 @@ const Catalog: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Warehouse</label>
+                  <label className="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Warehouse *</label>
                   <select
+                    required
                     value={newProduct.warehouseId}
                     onChange={(e) => setNewProduct({ ...newProduct, warehouseId: e.target.value })}
                     className="w-full px-3 py-2 text-xs glass-input cursor-pointer"
                   >
                     <option value="">Select Warehouse</option>
                     {warehouses.map((w) => (
-                      <option key={w.id} value={w.id}>{w.name}</option>
+                      <option key={w.id} value={w.id}>{w.name}{w.location ? ` — ${w.location}` : ''}</option>
                     ))}
                   </select>
                 </div>
@@ -481,7 +486,7 @@ const Catalog: React.FC = () => {
 
       {/* ADJUST STOCK MODAL */}
       {showAdjustModal && selectedProduct && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div role="dialog" aria-modal="true" aria-label="Adjust Stock Quantity" className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="w-full max-w-md glass-panel rounded-2xl overflow-hidden border border-gray-800 shadow-2xl animate-scale-up">
             <div className="p-5 border-b border-gray-800 flex items-center justify-between bg-gray-900/35">
               <div>
@@ -494,6 +499,7 @@ const Catalog: React.FC = () => {
             </div>
 
             <form onSubmit={handleAdjustSubmit} className="p-6 space-y-4">
+              {error && <div role="alert" className="rounded-lg border border-red-500/25 bg-red-950/40 p-3 text-sm text-red-300">{error}</div>}
               <div className="p-3 bg-indigo-600/5 border border-indigo-500/10 rounded-lg flex items-start gap-3">
                 <Info className="h-4.5 w-4.5 text-indigo-400 shrink-0 mt-0.5" />
                 <div className="text-[11px] text-gray-300 leading-normal">

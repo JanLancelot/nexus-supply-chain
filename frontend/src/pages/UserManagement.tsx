@@ -248,8 +248,8 @@ const UserManagement: React.FC = () => {
                         </td>
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-1.5">
-                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                            <span className="text-gray-300 font-medium">Active</span>
+                            <div className={`h-1.5 w-1.5 rounded-full ${userItem.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-gray-500'}`} />
+                            <span className="text-gray-300 font-medium">{userItem.status === 'ACTIVE' ? 'Active' : userItem.status === 'DISABLED' ? 'Disabled' : userItem.status}</span>
                           </div>
                         </td>
                       </tr>

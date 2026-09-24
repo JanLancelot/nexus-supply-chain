@@ -10,7 +10,7 @@ Set `SPRING_DATASOURCE_PASSWORD` and a randomly generated `JWT_SECRET` of at lea
 
 On an empty database, set `APP_BOOTSTRAP_ADMIN_EMAIL` and `APP_BOOTSTRAP_ADMIN_PASSWORD` to create the first administrator. The password must be at least 12 characters and at most 72 UTF-8 bytes. Bootstrap credentials do not overwrite existing accounts. Remove the bootstrap password from the runtime environment after creating the account.
 
-Demo inventory is disabled by default. To load sample categories, warehouses, suppliers, products, and a `staff@pg.com` demo user, set `APP_SEED_DEMO_DATA=true` and provide `APP_BOOTSTRAP_STAFF_PASSWORD` with the same password limits. Demo seeding belongs in local development environments.
+Demo inventory is disabled by default. To load sample categories, warehouses, suppliers, products, and a `staff@example.test` demo user, set `APP_SEED_DEMO_DATA=true` and provide `APP_BOOTSTRAP_STAFF_PASSWORD` with the same password limits. Demo seeding belongs in local development environments.
 
 The application listens on port 8080. Health is available at `/api/health`; it returns no exception details. Management health and Prometheus metrics use a separate listener at `127.0.0.1:9091`. Docker overrides the management address on its internal network without publishing that port. Keep that listener private: Prometheus scrapes it without a bearer token.
 

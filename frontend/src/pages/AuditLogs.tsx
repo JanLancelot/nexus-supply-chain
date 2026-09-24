@@ -54,6 +54,8 @@ const AuditLogs: React.FC = () => {
   // Action tag color resolver
   const getActionBadgeStyle = (action: string) => {
     switch (action) {
+      case 'ACTION_ORDER_RECEIPT':
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
       case 'ACTION_MANUAL_ADJUSTMENT':
         return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
       case 'ACTION_CREATE_ORDER':
@@ -194,6 +196,7 @@ const AuditLogs: React.FC = () => {
                 <option value="ALL">All Entities</option>
                 <option value="Product">Products</option>
                 <option value="Order">Orders</option>
+                <option value="Supplier">Suppliers</option>
               </select>
 
               <select
@@ -203,6 +206,9 @@ const AuditLogs: React.FC = () => {
               >
                 <option value="ALL">All Actions</option>
                 <option value="ACTION_MANUAL_ADJUSTMENT">Stock Adjustments</option>
+                <option value="ACTION_ORDER_RECEIPT">Order Receipts</option>
+                <option value="ACTION_CREATE_SUPPLIER">Create Supplier</option>
+                <option value="ACTION_UPDATE_SUPPLIER_PRODUCTS">Supplier Products</option>
                 <option value="ACTION_CREATE_ORDER">Create Order</option>
                 <option value="ACTION_UPDATE_ORDER_STATUS">Update Status</option>
               </select>

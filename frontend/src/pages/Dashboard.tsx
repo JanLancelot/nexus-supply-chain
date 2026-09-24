@@ -240,19 +240,19 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(metrics.warehouseStockCounts).length === 0 ? (
+          {metrics.warehouseStockCounts.length === 0 ? (
             <div className="col-span-full py-6 text-center text-xs text-gray-500">No warehouse data available.</div>
           ) : (
-            Object.entries(metrics.warehouseStockCounts).map(([whName, whQty]) => {
-              const maxWhStock = Math.max(...Object.values(metrics.warehouseStockCounts), 1);
+            metrics.warehouseStockCounts.map(({ warehouseId, warehouseName: whName, warehouseLocation, totalStock: whQty }) => {
+              const maxWhStock = Math.max(...metrics.warehouseStockCounts.map(warehouse => warehouse.totalStock), 1);
               const pct = (whQty / maxWhStock) * 100;
               
               return (
-                <div key={whName} className="p-4 bg-gray-950/20 border border-gray-850 rounded-xl space-y-3">
+                <div key={warehouseId} className="p-4 bg-gray-950/20 border border-gray-850 rounded-xl space-y-3">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-3">
                     <div>
                       <span className="font-semibold text-white text-xs block break-words sm:truncate sm:max-w-[180px]" title={whName}>{whName}</span>
-                      <span className="text-[9px] text-gray-500 font-mono">Units in stock</span>
+                      <span className="text-[9px] text-gray-500 font-mono">{warehouseLocation || 'Units in stock'}</span>
                     </div>
                     <span className="font-mono text-indigo-400 text-xs font-bold shrink-0">{whQty.toLocaleString()} units</span>
                   </div>

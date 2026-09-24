@@ -1,3 +1,4 @@
+import ProductPicker from '../components/ProductPicker';
 import { getErrorMessage } from '../services/errors';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
@@ -26,7 +27,7 @@ import {
   type CreateOrderData 
 } from '../services/orders';
 import { getSuppliers, type Supplier } from '../services/suppliers';
-import { getWarehouses, getProducts, type Warehouse } from '../services/products';
+import { getWarehouses, type Warehouse } from '../services/products';
 import { type Order, type Product } from '../types';
 
 const Orders: React.FC = () => {
@@ -66,14 +67,13 @@ const Orders: React.FC = () => {
     return Promise.all([
         getOrders(page, 50),
         getSuppliers(),
-        getWarehouses(),
-        getProducts(0, 50)
-      ]).then(([ordersPaged, suppliersData, warehousesData, productsPaged]) => {
+        getWarehouses()
+      ]).then(([ordersPaged, suppliersData, warehousesData]) => {
       setOrders(ordersPaged.content);
+      setCurrentPage(page);
       setHasMore(ordersPaged.hasNext);
       setSuppliers(suppliersData.filter(supplier => supplier.active));
       setWarehouses(warehousesData);
-      setProducts(productsPaged.content);
       setError(null);
     }).catch(() => {
       setError('Unable to load purchase orders. Please try again.');
@@ -83,8 +83,8 @@ const Orders: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    void loadOrdersData(currentPage);
-  }, [currentPage, loadOrdersData]);
+    void loadOrdersData(0);
+  }, [loadOrdersData]);
 
   // Status badge style resolver
   const getStatusBadgeStyle = (status: string) => {
@@ -185,7 +185,6 @@ const Orders: React.FC = () => {
     setSubmitting(true);
     try {
       const created = await createOrder(wizardOrder);
-      setOrders(prev => [created, ...prev]);
       setSuccessMsg(`Purchase Order ${created.orderNumber} created successfully as DRAFT.`);
       setViewMode('list');
       setWizardOrder({
@@ -193,8 +192,10 @@ const Orders: React.FC = () => {
         warehouseId: '',
         items: [{ productId: '', quantity: 1 }]
       });
+      setLoading(true);
+      await loadOrdersData(0);
     } catch (err: unknown) {
-      setError(typeof err === 'string' ? err : 'Failed to create purchase order. Check fields.');
+      setError(getErrorMessage(err, 'Failed to create purchase order. Check fields.'));
     } finally {
       setSubmitting(false);
     }
@@ -357,14 +358,14 @@ const Orders: React.FC = () => {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => { setLoading(true); setCurrentPage((prev) => Math.max(0, prev - 1)); }}
+                      onClick={() => { setLoading(true); void loadOrdersData(currentPage - 1); }}
                       disabled={currentPage === 0 || loading}
                       className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                     >
                       Previous
                     </button>
                     <button
-                      onClick={() => { setLoading(true); setCurrentPage((prev) => prev + 1); }}
+                      onClick={() => { setLoading(true); void loadOrdersData(currentPage + 1); }}
                       disabled={!hasMore || loading}
                       className="px-3 py-1.5 rounded bg-gray-850 text-gray-300 hover:text-white border border-gray-750 text-xs font-medium transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
                     >
@@ -415,12 +416,12 @@ const Orders: React.FC = () => {
                 <select
                   required
                   value={wizardOrder.warehouseId}
-                  onChange={(e) => setWizardOrder({ ...wizardOrder, warehouseId: e.target.value })}
+                  onChange={(e) => { setProducts([]); setWizardOrder({ ...wizardOrder, warehouseId: e.target.value, items: [{ productId: '', quantity: 1 }] }); }}
                   className="w-full px-3 py-2.5 text-xs glass-input cursor-pointer"
                 >
                   <option value="">Choose Warehouse</option>
                   {warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>{w.name}</option>
+                    <option key={w.id} value={w.id}>{w.name}{w.location ? ` — ${w.location}` : ''}</option>
                   ))}
                 </select>
               </div>
@@ -450,19 +451,13 @@ const Orders: React.FC = () => {
                     <div key={idx} className="flex flex-col md:flex-row items-stretch md:items-center gap-4 p-3 bg-gray-950/20 border border-gray-850 rounded-lg">
                       {/* Product select */}
                       <div className="flex-1">
-                        <select
-                          required
-                          value={item.productId}
-                          onChange={(e) => handleWizardItemChange(idx, 'productId', e.target.value)}
-                          className="w-full px-3 py-2 text-xs glass-input cursor-pointer"
-                        >
-                          <option value="">Select SKU Product</option>
-                          {products.map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.sku} - {p.name} (${p.unitPrice.toFixed(2)})
-                            </option>
-                          ))}
-                        </select>
+                        <ProductPicker key={`${wizardOrder.warehouseId}-${idx}`} required
+                          value={selectedProd} warehouseId={wizardOrder.warehouseId}
+                          disabled={!wizardOrder.warehouseId}
+                          onChange={product => {
+                            if (product) setProducts(previous => [...previous.filter(existing => existing.id !== product.id), product]);
+                            handleWizardItemChange(idx, 'productId', product?.id ?? '');
+                          }} />
                       </div>
 
                       {/* Quantity select */}
@@ -697,13 +692,19 @@ const Orders: React.FC = () => {
                           </button>
                         </>
                       ) : (
-                        <div className="p-3.5 bg-gray-950/20 border border-gray-850 rounded-xl flex items-start gap-2.5 text-[11px] text-gray-400 leading-normal">
-                          <Info className="h-4.5 w-4.5 text-amber-400 shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-semibold text-white block">Awaiting Review</span>
-                            An administrator must approve this order.
+                        <>
+                          <div className="p-3.5 bg-gray-950/20 border border-gray-850 rounded-xl flex items-start gap-2.5 text-[11px] text-gray-400 leading-normal">
+                            <Info className="h-4.5 w-4.5 text-amber-400 shrink-0 mt-0.5" />
+                            <div>
+                              <span className="font-semibold text-white block">Awaiting Review</span>
+                              An administrator must approve this order.
+                            </div>
                           </div>
-                        </div>
+                          <button onClick={() => handleTransition('CANCELLED')} disabled={submitting}
+                            className="w-full py-2.5 text-red-400 border border-gray-700 rounded-lg text-xs font-semibold hover:bg-red-500/10">
+                            Cancel Order
+                          </button>
+                        </>
                       )}
                     </div>
                   )}
@@ -807,12 +808,11 @@ const Orders: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-850">
                       {selectedOrder.items.map((item, idx) => {
-                        const productDetail = products.find(p => p.id === item.productId);
                         return (
                           <tr key={idx} className="hover:bg-gray-900/5 transition">
                             <td className="py-4 px-6">
-                              <div className="font-semibold text-white">{item.productName || productDetail?.name || 'Unknown Product'}</div>
-                              <div className="text-[10px] text-indigo-400 font-mono mt-0.5">{item.productSku || productDetail?.sku || 'N/A'}</div>
+                              <div className="font-semibold text-white">{item.productName}</div>
+                              <div className="text-[10px] text-indigo-400 font-mono mt-0.5">{item.productSku}</div>
                             </td>
                             <td className="py-4 px-6 text-center font-mono text-gray-200 font-semibold">{item.quantity}</td>
                             <td className="py-4 px-6 text-right font-mono text-gray-400">${item.unitPrice.toFixed(2)}</td>

@@ -14,13 +14,12 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / 'load-tests/results'
-PROMETHEUS_URL = 'http://localhost:9090'
 
 
-def query_prometheus(query, start, end):
+def query_prometheus(query, start, end, prometheus_url):
     params = urllib.parse.urlencode({'query': query, 'start': start, 'end': end, 'step': '15s'})
     try:
-        with urllib.request.urlopen(f'{PROMETHEUS_URL}/api/v1/query_range?{params}', timeout=5) as response:
+        with urllib.request.urlopen(f'{prometheus_url}/api/v1/query_range?{params}', timeout=5) as response:
             data = json.load(response)
         if data.get('status') != 'success':
             raise ValueError('Prometheus returned an unsuccessful response')
@@ -56,7 +55,7 @@ def seed_disposable_database():
     # This is only called after the operator supplies the explicit destructive flag.
     with (ROOT / 'docker/scale_data.sql').open('rb') as source:
         subprocess.run([
-            'docker', 'exec', '-i', 'pg_enterprise_supply', 'psql',
+            'docker', 'exec', '-i', 'nexus_postgres', 'psql',
             '-U', 'enterprise_admin', '-d', 'supply_db',
             '-v', 'ON_ERROR_STOP=1', '-v', 'ALLOW_DESTRUCTIVE_SEED=true',
         ], stdin=source, check=True)
@@ -67,7 +66,20 @@ def main(argv=None):
     parser.add_argument('profile', nargs='?', default='smoke', choices=['smoke', 'stress', 'extreme', 'diagnostic'])
     parser.add_argument('--reset-disposable-db', action='store_true',
                         help='DESTRUCTIVE: erase orders, audit logs and notifications; load benchmark fixtures')
+    parser.add_argument('--prometheus-url', default=os.environ.get('PROMETHEUS_URL'),
+                        help='Monitoring server for this load target; remote targets have no implicit monitoring source')
     args = parser.parse_args(argv)
+    target = os.environ.get('BASE_URL')
+    prometheus_url = args.prometheus_url
+    if not prometheus_url and (not target or urllib.parse.urlparse(target).hostname in ('localhost', '127.0.0.1', '::1', 'backend')):
+        prometheus_url = 'http://localhost:9090'
+    for label, url in [('BASE_URL', target), ('Prometheus URL', prometheus_url)]:
+        if url:
+            parsed = urllib.parse.urlparse(url)
+            if parsed.scheme not in ('http', 'https') or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
+                parser.error(f'{label} must be an HTTP(S) base URL without embedded credentials, query, or fragment')
+    if prometheus_url:
+        prometheus_url = prometheus_url.rstrip('/')
     if args.reset_disposable_db:
         seed_disposable_database()
 
@@ -97,6 +109,8 @@ def main(argv=None):
         ('p95 latency (ms)', measurement('http_req_duration', 'p(95)'), formatted),
     ]
     lines = ['# Benchmark report', '', f'Profile: `{args.profile}`', f'Start: {start}', f'End: {end}',
+             f'Load target: {target or "runner default: local API or Docker backend"}',
+             f'Monitoring source: {prometheus_url or "not selected; pass --prometheus-url for this target"}',
              f'k6 exit status: {completed.returncode} (0 means thresholds passed)', '',
              '| Measurement | Value |', '|---|---|']
     lines += [f'| {label} | {formatter(value)} |' for label, value, formatter in rows]
@@ -112,7 +126,7 @@ def main(argv=None):
         ('Pending database connections', 'hikaricp_connections_pending', 1),
     ]
     for label, query, scale in queries:
-        mean, peak = stats(query_prometheus(query, start, end))
+        mean, peak = stats(query_prometheus(query, start, end, prometheus_url) if prometheus_url else [])
         lines.append(f'| {label} | {formatted(mean, scale)} | {formatted(peak, scale)} |')
     report = '\n'.join(lines) + '\n'
     filename = RESULTS / f'benchmark_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.md'

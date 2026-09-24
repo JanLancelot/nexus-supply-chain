@@ -1,14 +1,15 @@
 import { readFile } from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
+import type { DashboardMetrics, Order, Product } from '../../src/types';
 import { test as base, expect, type Page } from '@playwright/test';
 
 // These are presentation fixtures, deliberately separate from the live API tests.
 // Stable records include long names, low stock, every order state, and audit diffs.
-const products = [
-  { id: 'product-001', sku: 'OFF-PAPER-A4', name: 'Recycled A4 Office Paper', unitPrice: 6.75, stockQuantity: 240, reorderLevel: 50, lowStockIndicator: false, categoryId: 'category-office', categoryName: 'Office Supplies', warehouseId: 'warehouse-manila', warehouseName: 'Manila Central' },
-  { id: 'product-002', sku: 'SAF-GLOVE-M', name: 'Protective Work Gloves — Medium', unitPrice: 12.5, stockQuantity: 8, reorderLevel: 25, lowStockIndicator: true, categoryId: 'category-safety', categoryName: 'Safety Equipment', warehouseId: 'warehouse-cebu', warehouseName: 'Cebu Distribution' },
-  { id: 'product-003', sku: 'PKG-BOX-L', name: 'Heavy Duty Shipping Carton', unitPrice: 3.2, stockQuantity: 1250, reorderLevel: 100, lowStockIndicator: false, categoryId: 'category-packaging', categoryName: 'Packaging', warehouseId: 'warehouse-manila', warehouseName: 'Manila Central' },
-  { id: 'product-004', sku: 'SAF-HELMET-W', name: 'White Safety Helmet', unitPrice: 24.99, stockQuantity: 0, reorderLevel: 15, lowStockIndicator: true, categoryId: 'category-safety', categoryName: 'Safety Equipment', warehouseId: 'warehouse-cebu', warehouseName: 'Cebu Distribution' },
+const products: Product[] = [
+  { id: 'product-001', sku: 'OFF-PAPER-A4', name: 'Recycled A4 Office Paper', unitPrice: 6.75, stockQuantity: 240, reorderLevel: 50, lowStockIndicator: false, isActive: true, categoryId: 'category-office', categoryName: 'Office Supplies', warehouseId: 'warehouse-manila', warehouseName: 'Manila Central' },
+  { id: 'product-002', sku: 'SAF-GLOVE-M', name: 'Protective Work Gloves — Medium', unitPrice: 12.5, stockQuantity: 8, reorderLevel: 25, lowStockIndicator: true, isActive: true, categoryId: 'category-safety', categoryName: 'Safety Equipment', warehouseId: 'warehouse-cebu', warehouseName: 'Cebu Distribution' },
+  { id: 'product-003', sku: 'PKG-BOX-L', name: 'Heavy Duty Shipping Carton', unitPrice: 3.2, stockQuantity: 1250, reorderLevel: 100, lowStockIndicator: false, isActive: true, categoryId: 'category-packaging', categoryName: 'Packaging', warehouseId: 'warehouse-manila', warehouseName: 'Manila Central' },
+  { id: 'product-004', sku: 'SAF-HELMET-W', name: 'White Safety Helmet', unitPrice: 24.99, stockQuantity: 0, reorderLevel: 15, lowStockIndicator: true, isActive: true, categoryId: 'category-safety', categoryName: 'Safety Equipment', warehouseId: 'warehouse-cebu', warehouseName: 'Cebu Distribution' },
 ];
 
 const categories = [
@@ -21,10 +22,10 @@ const warehouses = [
   { id: 'warehouse-cebu', name: 'Cebu Distribution', location: 'Cebu' },
 ];
 const suppliers = [
-  { id: 'supplier-001', name: 'Pacific Trade Supplies', active: true },
-  { id: 'supplier-002', name: 'Northstar Industrial', active: true },
+  { id: 'supplier-001', name: 'Pacific Trade Supplies', active: true, leadTimeDays: 3, productIds: [] },
+  { id: 'supplier-002', name: 'Northstar Industrial', active: true, leadTimeDays: 3, productIds: [] },
 ];
-const orders = ['DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED'].map((status, index) => ({
+const orders: Order[] = (['DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'SHIPPED', 'DELIVERED', 'CANCELLED'] as const).map((status, index) => ({
   id: `order-00${index + 1}`,
   orderNumber: `PO-2026-00${index + 1}`,
   supplierId: 'supplier-001',
@@ -32,18 +33,18 @@ const orders = ['DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'SHIPPED', 'DELIVERED',
   warehouseId: 'warehouse-manila',
   warehouseName: 'Manila Central',
   status,
-  totalAmount: 567.5,
+  totalAmount: 195.5,
   createdBy: 'ada@example.test',
   createdAt: '2026-01-14T10:30:00Z',
   items: [
     { productId: 'product-001', productName: 'Recycled A4 Office Paper', productSku: 'OFF-PAPER-A4', quantity: 10, unitPrice: 6.75, subtotal: 67.5 },
-    { productId: 'product-002', productName: 'Protective Work Gloves — Medium', productSku: 'SAF-GLOVE-M', quantity: 40, unitPrice: 12.5, subtotal: 500 },
+    { productId: 'product-003', productName: 'Heavy Duty Shipping Carton', productSku: 'PKG-BOX-L', quantity: 40, unitPrice: 3.2, subtotal: 128 },
   ],
 }));
 const logs = [
   { id: 'audit-001', userId: 'ada@example.test', entityType: 'Product', entityId: 'product-002', action: 'ACTION_MANUAL_ADJUSTMENT', oldValue: '{"stockQuantity":12,"reorderLevel":25}', newValue: '{"stockQuantity":8,"reorderLevel":25,"reasonCode":"DAMAGED_GOODS_SCRAP"}', createdAt: '2026-01-15T11:45:00Z' },
   { id: 'audit-002', userId: 'sam@example.test', entityType: 'Order', entityId: 'order-004', action: 'ACTION_UPDATE_ORDER_STATUS', oldValue: '{"status":"APPROVED"}', newValue: '{"status":"SHIPPED"}', createdAt: '2026-01-15T10:30:00Z' },
-  { id: 'audit-003', userId: 'sam@example.test', entityType: 'Order', entityId: 'order-001', action: 'ACTION_CREATE_ORDER', oldValue: '{}', newValue: '{"status":"DRAFT","totalAmount":567.5}', createdAt: '2026-01-14T09:00:00Z' },
+  { id: 'audit-003', userId: 'sam@example.test', entityType: 'Order', entityId: 'order-001', action: 'ACTION_CREATE_ORDER', oldValue: '{}', newValue: '{"status":"DRAFT","totalAmount":195.5}', createdAt: '2026-01-14T09:00:00Z' },
 ];
 const users = [
   { id: 'user-admin', fullName: 'Ada Rivera', email: 'ada@example.test', role: 'ROLE_ADMIN', status: 'ACTIVE' },
@@ -103,18 +104,32 @@ export const test = base.extend<Fixtures>({
         await route.fulfill({ status: 503, json: { message: 'Metrics unavailable' } });
         return;
       }
+      if (key === 'POST /inventory/products') {
+        await route.fulfill({ status: 400, json: { message: 'SKU already exists: OFF-PAPER-A4' } });
+        return;
+      }
       const responses: Record<string, unknown> = {
         'GET /analytics/dashboard': {
           totalRevenue: 128450.75, totalInventoryValue: 245630.5, lowStockCount: 2,
           orderStatusCounts: { DRAFT: 3, PENDING_APPROVAL: 5, APPROVED: 4, SHIPPED: 6, DELIVERED: 21, CANCELLED: 2 },
-          warehouseStockCounts: { 'Manila Central': 4250, 'Cebu Distribution': 1875, 'Davao Hub': 940 },
+          warehouseStockCounts: [
+            { warehouseId: 'warehouse-manila', warehouseName: 'Manila Central', warehouseLocation: 'Manila', totalStock: 4250 },
+            { warehouseId: 'warehouse-cebu', warehouseName: 'Cebu Distribution', warehouseLocation: 'Cebu', totalStock: 1875 },
+            { warehouseId: 'warehouse-davao', warehouseName: 'Davao Hub', warehouseLocation: 'Davao', totalStock: 940 },
+          ],
           topProducts: [
             { name: 'Recycled A4 Office Paper', totalQuantityOrdered: 850 },
             { name: 'Heavy Duty Shipping Carton', totalQuantityOrdered: 620 },
             { name: 'Protective Work Gloves — Medium', totalQuantityOrdered: 410 },
           ],
-        },
-        'GET /inventory/products': paged(products),
+        } satisfies DashboardMetrics,
+        'GET /inventory/products': paged(products.filter(product => {
+          const url = new URL(route.request().url());
+          const search = url.searchParams.get('search')?.toLowerCase();
+          return (!url.searchParams.has('warehouseId') || product.warehouseId === url.searchParams.get('warehouseId'))
+            && (!url.searchParams.has('active') || product.isActive === (url.searchParams.get('active') === 'true'))
+            && (!search || product.name.toLowerCase().includes(search) || product.sku.toLowerCase().includes(search));
+        })),
         'GET /categories': categories,
         'GET /warehouses': warehouses,
         'GET /suppliers': suppliers,

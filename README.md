@@ -7,9 +7,9 @@ For local checks, test modes, and coverage reports, see the [development harness
 ## Features
 
 - Staff can browse the catalog, create purchase orders, and submit drafts for approval.
-- Administrators can create products, adjust stock with a reason code, manage categories and warehouses, approve orders, and provision users.
-- Orders move through `DRAFT → PENDING_APPROVAL → APPROVED → SHIPPED → DELIVERED`. Delivery increments stock in the order transaction. Cancellation rules depend on the current state and role.
-- Low-stock events can create draft replenishment orders. An open-order check prevents repeated drafts for the same product.
+- Administrators can create products, adjust stock with a reason code, create categories, warehouses and suppliers, configure product sourcing, approve orders, and provision users.
+- Orders move through `DRAFT → PENDING_APPROVAL → APPROVED → SHIPPED → DELIVERED`. Every ordered product must belong to the destination warehouse. Delivery increments stock and saves its audit evidence in the order transaction. Cancellation rules depend on the current state and role.
+- Low-stock events can create draft replenishment orders. An open-order check prevents repeated drafts for the same product. Sourcing must be explicitly assigned in Reference Data; the system never chooses an unrelated supplier.
 - Administrators can view aggregate purchasing/inventory metrics and audit records. Notifications belong to individual users.
 
 Audit records are ordinary database rows; they are not a tamper-proof ledger. Event delivery uses Kafka when available, with Redis-list and process-memory fallbacks. Those fallbacks do not provide Kafka's persistence or recovery semantics. See [architecture](docs/architecture.md) for limitations.
@@ -31,7 +31,7 @@ EOF_ENV
 docker compose up --build
 ```
 
-Read the bootstrap password from your local `.env` and sign in as `admin@example.test`. Keep the file private. Bootstrap configuration creates an account only when appropriate; it does not reset an existing account's password. Remove the bootstrap credentials after provisioning. To load sample catalog data and a staff account in a disposable environment, also set `APP_SEED_DEMO_DATA=true` and `APP_BOOTSTRAP_STAFF_PASSWORD` to a generated password before startup.
+Read the bootstrap password from your local `.env` and sign in as `admin@example.test`. Open **Reference Data** to create a warehouse, category, and supplier, then create products in **Catalog**. Assign those products to their supplier in **Reference Data** to enable replenishment. This setup works without demo data or direct database writes. Keep the file private. Bootstrap configuration creates an account only when appropriate; it does not reset an existing account's password. Remove the bootstrap credentials after provisioning. To load sample catalog data and a staff account in a disposable environment, also set `APP_SEED_DEMO_DATA=true` and `APP_BOOTSTRAP_STAFF_PASSWORD` to a generated password before startup.
 
 All published Compose ports bind to `127.0.0.1`:
 
@@ -68,7 +68,7 @@ npm ci
 npm run dev
 ```
 
-Vite serves the UI on port 5173 and proxies `/api` to the backend. If Kafka is absent, the application selects its fallback broker at startup. PostgreSQL is still required.
+Vite serves the UI on port 5173 and proxies `/api` to the backend. Compose waits for PostgreSQL, Redis, and Kafka health and requires Kafka at backend startup. In the local development setup, if Kafka is absent, the application selects its fallback broker at startup. PostgreSQL is still required.
 
 ## Configuration
 
@@ -83,6 +83,9 @@ Runtime settings live in [application.properties](backend/src/main/resources/app
 | `SPRING_REDIS_HOST`, `SPRING_REDIS_PORT` | Default `localhost`, `6379` |
 | `SPRING_REDIS_PASSWORD`, `SPRING_REDIS_SSL_ENABLED` | Managed Redis credentials and TLS setting |
 | `SPRING_KAFKA_BOOTSTRAP_SERVERS` | Defaults to `localhost:9092` |
+| `APP_EVENTS_KAFKA_REQUIRED` | Fail startup/readiness when Kafka is required but unavailable; Compose sets `true`, default `false` |
+| `APP_EVENTS_KAFKA_STARTUP_TIMEOUT_MS` | Required-Kafka startup probe deadline; default `10000` |
+| `APP_NOTIFICATIONS_READ_RETENTION_DAYS` | Prune read notifications older than this many days; default `30`, `0` disables pruning; unread messages are retained |
 | `APP_BOOTSTRAP_ADMIN_EMAIL`, `APP_BOOTSTRAP_ADMIN_PASSWORD` | Initial administrator provisioning |
 | `APP_SEED_DEMO_DATA` | Opt-in sample data; default `false` |
 | `APP_BOOTSTRAP_STAFF_PASSWORD` | Required when creating the demo staff account |
@@ -112,7 +115,7 @@ For load tests, use a disposable stack with sample catalog data and both adminis
 ```bash
 export LOAD_TEST_ADMIN_EMAIL=admin@example.test
 export LOAD_TEST_ADMIN_PASSWORD="$APP_BOOTSTRAP_ADMIN_PASSWORD"
-export LOAD_TEST_STAFF_EMAIL=staff@pg.com
+export LOAD_TEST_STAFF_EMAIL=staff@example.test
 export LOAD_TEST_STAFF_PASSWORD="$APP_BOOTSTRAP_STAFF_PASSWORD"
 ./load-tests/run.sh smoke
 python3 load-tests/run-benchmark.py smoke
@@ -130,4 +133,6 @@ Load scenarios create or update application data. The benchmark runner does not 
 - [Deployment and operations](docs/deployment-and-operations.md)
 - [Cost considerations](docs/cost-optimization-results.md)
 
-Terraform describes Azure App Service, PostgreSQL, Managed Redis, and a container registry. GitHub Actions verifies builds and deploys pushes to `main` to the staging slot. Review required secrets, database firewall allowlists, and shared staging data in the operations guide before deployment.
+Terraform describes Azure App Service, PostgreSQL, Managed Redis, and a container registry. GitHub Actions verifies builds and deploys pushes to `main` to the staging slot. Production and staging use separate PostgreSQL servers, Redis instances, and signing keys. Review the new staging credentials, firewall allowlists, and first-deployment steps in the operations guide.
+
+Benchmark reports record the load target and monitoring source. For a remote `BASE_URL`, pass `--prometheus-url https://your-monitoring-server` (or `PROMETHEUS_URL`) to collect matching metrics; otherwise monitoring values are explicitly unavailable. Local defaults use `http://localhost:9090`.

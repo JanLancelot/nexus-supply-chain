@@ -8,7 +8,7 @@ test('protected pages require login and a rejected login can recover', async ({ 
   const anonymous = await page.request.get(`${apiURL}/inventory/products`);
   expect(anonymous.status()).toBe(401);
 
-  await page.getByLabel('Email Address').fill('admin@pg.com');
+  await page.getByLabel('Email Address').fill('admin@example.test');
   await page.getByLabel('Password', { exact: true }).fill(randomUUID());
   await page.getByRole('button', { name: 'Sign In', exact: true }).click();
   await expect(page.getByText('Invalid email or password', { exact: true })).toBeVisible();
@@ -46,7 +46,7 @@ test('an authenticated browser returns to login when its real token expires', as
 
 test('staff navigation and API enforce administrative permissions', async ({ page }) => {
   const token = await login(page, 'staff');
-  for (const name of ['Dashboard', 'User Management', 'Audit Logs']) {
+  for (const name of ['Dashboard', 'User Management', 'Audit Logs', 'Reference Data']) {
     await expect(page.getByRole('link', { name, exact: true })).toHaveCount(0);
   }
   await expect(page.getByRole('button', { name: 'New Product' })).toHaveCount(0);
@@ -57,6 +57,10 @@ test('staff navigation and API enforce administrative permissions', async ({ pag
     const response = await page.request.get(`${apiURL}${path}`, { headers: bearer(token) });
     expect(response.status()).toBe(403);
   }
+  const supplierDenied = await page.request.post(`${apiURL}/suppliers`, {
+    headers: bearer(token), data: { name: 'Forbidden supplier' },
+  });
+  expect(supplierDenied.status()).toBe(403);
   const response = await page.request.post(`${apiURL}/inventory/products`, {
     headers: bearer(token),
     data: { sku: `DENIED-${randomUUID().slice(0, 8)}`, name: 'Forbidden product', unitPrice: 10, reorderLevel: 0 },

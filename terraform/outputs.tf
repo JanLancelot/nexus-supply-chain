@@ -39,3 +39,21 @@ output "app_possible_outbound_ips" {
 output "staging_possible_outbound_ips" {
   value = var.enable_compute ? azurerm_linux_web_app_slot.backend_api_staging[0].possible_outbound_ip_address_list : []
 }
+
+output "staging_postgres_server_name" {
+  value = azurerm_postgresql_flexible_server.staging_postgres.name
+}
+
+output "staging_postgres_host" {
+  value = azurerm_postgresql_flexible_server.staging_postgres.fqdn
+}
+
+output "github_azure_client_id" {
+  value       = azurerm_user_assigned_identity.github_deploy.client_id
+  description = "Set GitHub repository variable AZURE_CLIENT_ID to this value."
+}
+
+output "github_azure_tenant_id" {
+  value       = azurerm_user_assigned_identity.github_deploy.tenant_id
+  description = "Set GitHub repository variable AZURE_TENANT_ID to this value."
+}

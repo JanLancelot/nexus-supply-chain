@@ -9,6 +9,7 @@ import {
   LogOut, 
   ShieldCheck,
   Users,
+  Settings,
   Menu,
   X
 } from 'lucide-react';
@@ -43,6 +44,7 @@ const Sidebar: React.FC = () => {
       icon: FileSpreadsheet,
       show: true,
     },
+    { name: 'Reference Data', path: '/reference-data', icon: Settings, show: isAdmin },
     {
       name: 'Audit Logs',
       path: '/audit-logs',
