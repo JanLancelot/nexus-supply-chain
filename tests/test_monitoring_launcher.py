@@ -3,6 +3,7 @@
 import importlib.util
 import json
 from pathlib import Path
+import secrets
 import tempfile
 import unittest
 
@@ -15,13 +16,16 @@ SPEC.loader.exec_module(LAUNCHER)
 
 class MonitoringLauncherTests(unittest.TestCase):
     def test_ambient_live_configuration_cannot_select_resources_or_accounts(self):
+        ambient_password = secrets.token_urlsafe(24)
+        ambient_grafana_password = secrets.token_urlsafe(24)
+        ambient_jwt_secret = secrets.token_urlsafe(32)
         environment = LAUNCHER.isolated_environment({
             "PATH": "/test/bin", "DOCKER_HOST": "unix:///test/docker.sock",
             "COMPOSE_FILE": "/live/compose.yml", "COMPOSE_PROJECT_NAME": "production",
             "SPRING_DATASOURCE_URL": "jdbc:postgresql://live/database",
-            "APP_BOOTSTRAP_ADMIN_PASSWORD": "live-password",
+            "APP_BOOTSTRAP_ADMIN_PASSWORD": ambient_password,
             "APP_MONITORING_GRAFANA_URL": "https://live.example.test",
-            "GF_SECURITY_ADMIN_PASSWORD": "live-grafana", "JWT_SECRET": "live-key",
+            "GF_SECURITY_ADMIN_PASSWORD": ambient_grafana_password, "JWT_SECRET": ambient_jwt_secret,
             "MANAGEMENT_SERVER_PORT": "8080", "PROMETHEUS_URL": "https://live.example.test",
             "ALERTMANAGER_CONFIG_DIR": "/live/receivers",
         })
@@ -30,7 +34,9 @@ class MonitoringLauncherTests(unittest.TestCase):
             self.assertNotIn(key, environment)
         self.assertEqual(environment["PATH"], "/test/bin")
         self.assertEqual(environment["DOCKER_HOST"], "unix:///test/docker.sock")
-        self.assertNotEqual(environment["APP_BOOTSTRAP_ADMIN_PASSWORD"], "live-password")
+        self.assertNotEqual(environment["APP_BOOTSTRAP_ADMIN_PASSWORD"], ambient_password)
+        self.assertNotEqual(environment["GRAFANA_ADMIN_PASSWORD"], ambient_grafana_password)
+        self.assertNotEqual(environment["JWT_SECRET"], ambient_jwt_secret)
         self.assertEqual(environment["APP_MONITORING_GRAFANA_URL"], "http://localhost:3000")
         self.assertGreaterEqual(len(environment["JWT_SECRET"]), 32)
         self.assertNotEqual(environment["JWT_SECRET"], LAUNCHER.isolated_environment({})["JWT_SECRET"])
