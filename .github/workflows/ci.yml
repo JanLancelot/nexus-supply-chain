@@ -29,6 +29,16 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Cache Maven distribution
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/wrapper/dists
+          key: ${{ runner.os }}-${{ runner.arch }}-maven-wrapper-${{ hashFiles('backend/.mvn/wrapper/maven-wrapper.properties') }}
+
+      - name: Prepare Maven wrapper
+        timeout-minutes: 3
+        run: ./bin/prepare-maven.sh
+
       - name: Build and run backend tests
         run: ./bin/verify.sh ${{ matrix.mode }}
 
@@ -85,6 +95,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
+      - name: Cache Maven distribution
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/wrapper/dists
+          key: ${{ runner.os }}-${{ runner.arch }}-maven-wrapper-${{ hashFiles('backend/.mvn/wrapper/maven-wrapper.properties') }}
+      - name: Prepare Maven wrapper
+        timeout-minutes: 3
+        run: ./bin/prepare-maven.sh
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
@@ -154,7 +172,7 @@ jobs:
           terraform -chdir=terraform validate
           terraform -chdir=terraform test
       - name: Check harness shell syntax
-        run: bash -n bin/verify.sh bin/start-e2e-backend.sh bin/visual-tests.sh bin/resume.sh bin/suspend.sh
+        run: bash -n bin/verify.sh bin/start-e2e-backend.sh bin/prepare-maven.sh bin/visual-tests.sh bin/resume.sh bin/suspend.sh
 
   deploy-to-staging:
     needs: [backend, frontend, e2e, visual, tooling]

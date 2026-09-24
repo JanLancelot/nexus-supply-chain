@@ -20,6 +20,14 @@ and Node tests for compatible load-test order references.
 It stops at the first failed check and works from any working directory. Install
 dependencies again with `npm ci --ignore-scripts` after pulling a changed frontend lockfile.
 
+CI caches the pinned Maven distribution separately from Maven dependencies and
+runs `./bin/prepare-maven.sh` before backend builds or Playwright startup. This
+bootstrap invokes only `mvnw --version`, with download diagnostics and at most
+three attempts, waiting five then ten seconds between failures. Its CI step has
+a three-minute deadline. A persistent setup failure stops the job; application
+tests are never rerun by this helper. For a cold local environment, the same
+command can prepare Maven before starting the test harness.
+
 | Command | Purpose |
 | --- | --- |
 | `./bin/verify.sh frontend` | Lint, frontend tests/coverage, typecheck, production build |
