@@ -15,7 +15,8 @@ npm --prefix frontend ci --ignore-scripts
 
 The default command runs frontend lint, tests with coverage, TypeScript checking,
 the production frontend build, a clean backend build with tests and JaCoCo, and
-the Python benchmark-tooling and test-launcher isolation tests.
+the Python benchmark-tooling, SQL-fixture, launcher and lifecycle-script tests,
+and Node tests for compatible load-test order references.
 It stops at the first failed check and works from any working directory. Install
 dependencies again with `npm ci --ignore-scripts` after pulling a changed frontend lockfile.
 
@@ -48,15 +49,14 @@ run instead of silently switching to H2. Testcontainers cleans up its containers
 when the test JVM exits. No running development database is required.
 
 The direct equivalent is `cd backend && ./mvnw clean verify -Pintegration`.
-Both modes currently use Hibernate-created test schemas with Liquibase disabled;
-they do not validate production migrations.
+Most application tests use Hibernate-created test schemas. Container mode also runs `MigrationIntegrationTest` on an independent PostgreSQL container: fresh production migrations with Hibernate validation, upgrade from the pre-audit schema with widened money columns, and safe rejection of out-of-range legacy values. The migration tests are explicitly skipped in the default mode; a container startup failure still fails container mode. Required Kafka is enabled for the integration context so a failed broker cannot silently fall back.
 
 ## Frontend tests
 
 The upstream session suite runs with Node's test runner before Vitest.
 Vitest runs React tests in jsdom with Testing Library. Tests exercise the public
 session hook, login form, routed application, catalog, purchase orders, user
-management, notifications, dashboard, audit logs, and Axios request/response boundary.
+management, reference-data setup/sourcing, notifications, dashboard, audit logs, and Axios request/response boundary.
 Shared setup resets
 the DOM, in-memory sessions, local storage, history, and mocks between tests. Session fixtures contain
 unsigned tokens for client tests only. No live API or user credentials are needed.
@@ -95,13 +95,13 @@ The `e2e` Spring profile lives only in test resources and runs through
 demo reference data and in-memory event delivery when Kafka/Redis are unavailable.
 These tests exercise real authentication, HTTP validation, authorization,
 services, persistence, and event consumers; the separate container suite proves
-the PostgreSQL/Redis/Kafka paths. Neither mode currently verifies Liquibase migrations.
+the PostgreSQL/Redis/Kafka paths. The separate container migration tests validate Liquibase; browser workflows retain their disposable H2 profile.
 
 Workflows cover failed login and recovery, logout, reload/expiry, staff/admin
 permissions, product creation and duplicate SKU rejection, stock changes and
 negative-stock rejection, multi-line orders through submission/approval/shipping/
 delivery, cancellation, duplicate lines, notifications, audit trails, dashboards,
-and user creation with a subsequent login. Records have unique names; tests do
+user creation with a subsequent login, staff cancellation of pending orders, and reference-data/sourcing setup. Records have unique names; tests do
 not depend on another test's output. API assertions also check forbidden writes
 and inventory totals so a successful-looking UI cannot conceal a rejected request.
 
@@ -145,7 +145,8 @@ Visual fixtures stub HTTP responses and fail on unhandled API calls or uncaught
 browser errors. They complement the real-API browser suite.
 
 Screenshots cover login/errors, dashboard/error, notifications, catalog/empty
-results, stock and creation dialogs, order lists/wizard/details, audit history
+results, stock and creation dialogs (including API errors), reference-data setup,
+staff pending-order cancellation, order lists/wizard/details, audit history
 and changes, user forms/validation, staff permissions, and phone-width screens.
 Narrow catalog checks also require contained horizontal overflow, visible primary
 controls, and a usable creation dialog.
@@ -171,7 +172,7 @@ or external API credentials are needed.
 - Failure artifacts: `frontend/test-results/e2e/` and `frontend/test-results/visual/`.
 
 GitHub Actions runs frontend checks, both backend modes, a three-browser matrix,
-canonical visual comparisons, and benchmark tooling as separate jobs. Reports
+canonical visual comparisons, benchmark tooling, and mocked Terraform validation as separate jobs. Reports
 are uploaded even after a failing step (7 days for browser artifacts; 14 days
 for coverage and visual artifacts). Browser traces may include disposable test
 credentials and request data; never run these suites with real account credentials. Staging
@@ -179,3 +180,9 @@ deployment requires every verification job to pass and still runs only on pushes
 to `main`. Local verification never deploys the application.
 
 Lint fails on warnings as well as errors. Do not weaken rules to hide them.
+
+## Audit regression boundaries
+
+HTTP/database regressions cover stable product pagination across stock updates, literal search/warehouse/active filters, wrong-warehouse order rejection (including legacy receipts), receipt/reason audit provenance, distinct same-name warehouse totals, and empty non-demo supplier provisioning. Broker retry integration runs through `BaseIntegrationTest`, so container mode actually exercises Kafka; lightweight mode exercises memory fallback. Separate tests verify failed dead-letter publication keeps the source retryable, transactional audit rollback, delayed transition notifications, deduplication, unread retention, and cache recovery.
+
+Infrastructure changes have mocked Terraform isolation tests (`terraform -chdir=terraform test`, Terraform 1.7+). Operational-script tests replace both `az` and `terraform` with disposable fakes and cannot change cloud resources. No verification mode runs lifecycle scripts against real infrastructure.

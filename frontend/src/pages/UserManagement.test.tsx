@@ -8,6 +8,13 @@ import { selectWithOption } from '../test/render';
 import UserManagement from './UserManagement';
 
 describe('user management', () => {
+  it('shows disabled accounts with the status returned by the API', async () => {
+    serveApi({ 'GET /users': { data: [{ ...users[0], status: 'DISABLED' }] } });
+    render(<UserManagement />);
+    expect(await screen.findByRole('row', { name: /Zoe Staff/ })).toHaveTextContent('Disabled');
+    expect(screen.queryByText('Active')).not.toBeInTheDocument();
+  });
+
   it('sorts the directory and combines role and email filters', async () => {
     serveApi({ 'GET /users': { data: users } });
     const user = userEvent.setup();

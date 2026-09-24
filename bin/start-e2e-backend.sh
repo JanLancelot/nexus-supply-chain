@@ -18,5 +18,5 @@ while IFS= read -r variable; do
 done < <(compgen -e)
 cd "$repo_root/backend"
 exec ./mvnw -B -ntp spring-boot:test-run \
-  -Dspring-boot.run.main-class=com.pg.supplychain.DemoApplication \
+  -Dspring-boot.run.main-class=com.nexus.supplychain.DemoApplication \
   -Dspring-boot.run.profiles=e2e

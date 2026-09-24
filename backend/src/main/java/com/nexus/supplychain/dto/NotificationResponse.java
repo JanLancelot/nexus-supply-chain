@@ -1,0 +1,33 @@
+package com.nexus.supplychain.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class NotificationResponse {
+    private UUID id;
+    private UUID userId;
+    private String type;
+    private String message;
+    private boolean isRead;
+    private OffsetDateTime createdAt;
+
+    @JsonProperty("isRead")
+    public boolean isRead() {
+        return isRead;
+    }
+
+    @JsonProperty("isRead")
+    public void setRead(boolean read) {
+        this.isRead = read;
+    }
+}

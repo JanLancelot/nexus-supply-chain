@@ -88,13 +88,13 @@ test('purchase order wizard with line items', async ({ page }) => {
   await expect(page.getByText('New Purchase Order', { exact: true })).toBeVisible();
   const form = page.locator('form');
   await form.getByRole('combobox').nth(0).selectOption({ label: 'Pacific Trade Supplies' });
-  await form.getByRole('combobox').nth(1).selectOption({ label: 'Manila Central' });
+  await form.getByRole('combobox').nth(1).selectOption('warehouse-manila');
   await form.getByRole('combobox').nth(2).selectOption('product-001');
   await page.getByPlaceholder('Qty').fill('10');
   await page.getByRole('button', { name: 'Add Line', exact: true }).click();
-  await form.getByRole('combobox').nth(3).selectOption('product-002');
+  await form.getByRole('combobox').nth(3).selectOption('product-003');
   await page.getByPlaceholder('Qty').nth(1).fill('40');
-  await expect(page.getByText('$567.50', { exact: true })).toBeVisible();
+  await expect(page.getByText('$195.50', { exact: true })).toBeVisible();
   await capture(page, 'order-wizard.png');
 });
 
@@ -211,4 +211,38 @@ test('mobile menu exposes every destination and closes after navigation', async 
   await expect(page.getByRole('heading', { name: 'Product Catalog', exact: true })).toBeVisible();
   await expect(menu).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeHidden();
+});
+
+
+test('reference data setup and supplier sourcing', async ({ page }) => {
+  await signIn(page);
+  await navigate(page, 'Reference Data', 'Set up your supply chain');
+  await expect(page.getByRole('button', { name: 'Create supplier', exact: true })).toBeVisible();
+  await capture(page, 'reference-data.png');
+});
+
+
+test('catalog errors remain readable inside the product dialog', async ({ page }) => {
+  await signIn(page);
+  await navigate(page, 'Product Catalog', 'OFF-PAPER-A4');
+  await page.getByRole('button', { name: 'New Product', exact: true }).click();
+  await page.getByPlaceholder('e.g. SKU-OFFICE-002').fill('OFF-PAPER-A4');
+  await page.getByPlaceholder('e.g. 12.99').fill('0');
+  await page.getByPlaceholder('e.g. Copy Paper A4 500 Sheets').fill('Sample paper');
+  await page.getByRole('dialog').getByRole('combobox').nth(1).selectOption('warehouse-manila');
+  await page.getByRole('button', { name: 'Create Product', exact: true }).click();
+  await expect(page.getByRole('dialog').getByRole('alert')).toHaveText('SKU already exists: OFF-PAPER-A4');
+  await capture(page, 'catalog-create-error.png');
+});
+
+test.describe('staff pending order', () => {
+  test.use({ visualRole: 'ROLE_STAFF' });
+  test('staff can cancel while awaiting approval', async ({ page }) => {
+    await signIn(page, 'staff');
+    await navigate(page, 'Purchase Orders', 'PO-2026-001');
+    await page.getByRole('row').filter({ hasText: 'PO-2026-002' }).getByRole('button', { name: 'Inspect', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Cancel Order', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Approve Order', exact: true })).toHaveCount(0);
+    await capture(page, 'staff-pending-order.png');
+  });
 });

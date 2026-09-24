@@ -66,17 +66,105 @@ describe('catalog', () => {
       .toEqual(['/inventory/products?page=0&size=50', '/inventory/products?page=1&size=50', '/inventory/products?page=0&size=50']);
   });
 
+  it('keeps the page number and rows together when a page request fails', async () => {
+    let fail = true;
+    const requests = serveApi({ ...catalogResponses,
+      'GET /inventory/products?page=0&size=50': { data: pageOf([products[0]], 0, true) },
+      'GET /inventory/products?page=1&size=50': () => fail ? { status: 503, data: {} }
+        : { data: pageOf([products[1]], 1) },
+    });
+    const user = userEvent.setup();
+    renderAuthenticated(<Catalog />);
+    await screen.findByText('Hand Soap');
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByText('Unable to load products. Please try again.');
+    expect(screen.getByText('Showing page', { exact: false })).toHaveTextContent('Showing page 1');
+    expect(screen.getByText('Hand Soap')).toBeInTheDocument();
+    fail = false;
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByText('Paper Towels');
+    expect(requests.filter(request => request.url.startsWith('/inventory/products')).map(request => request.url))
+      .toEqual(['/inventory/products?page=0&size=50', '/inventory/products?page=1&size=50', '/inventory/products?page=1&size=50']);
+  });
+
+  it('accepts a zero price and renders a server rejection inside the active product dialog', async () => {
+    const requests = serveApi({ ...catalogResponses,
+      'POST /inventory/products': { status: 409, data: { message: 'SKU already exists' } },
+    });
+    const user = userEvent.setup();
+    renderAuthenticated(<Catalog />);
+    await screen.findByText('Hand Soap');
+    await user.click(screen.getByRole('button', { name: 'New Product' }));
+    await user.type(screen.getByPlaceholderText('e.g. SKU-OFFICE-002'), 'SOAP-01');
+    await user.type(screen.getByPlaceholderText('e.g. Copy Paper A4 500 Sheets'), 'Sample');
+    await user.type(screen.getByPlaceholderText('e.g. 12.99'), '0');
+    await user.selectOptions(selectWithOption('Select Warehouse'), 'warehouse-1');
+    await user.click(screen.getByRole('button', { name: 'Create Product' }));
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('SKU already exists');
+    expect(requests.find(request => request.method === 'POST')?.body).toMatchObject({ unitPrice: 0 });
+  });
+
+  it('requires a warehouse for new products and distinguishes duplicate warehouse names by location', async () => {
+    const requests = serveApi({ ...catalogResponses,
+      'GET /warehouses': { data: [{ id: 'east', name: 'Depot', location: 'East' }, { id: 'west', name: 'Depot', location: 'West' }] },
+    });
+    const user = userEvent.setup();
+    renderAuthenticated(<Catalog />);
+    await screen.findByText('Hand Soap');
+    await user.click(screen.getByRole('button', { name: 'New Product' }));
+    expect(selectWithOption('Select Warehouse')).toBeRequired();
+    expect(screen.getByRole('option', { name: 'Depot — East' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Depot — West' })).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText('e.g. SKU-OFFICE-002'), 'SAMPLE');
+    await user.type(screen.getByPlaceholderText('e.g. Copy Paper A4 500 Sheets'), 'Sample');
+    await user.type(screen.getByPlaceholderText('e.g. 12.99'), '1');
+    await user.click(screen.getByRole('button', { name: 'Create Product' }));
+    expect(requests.filter(request => request.method === 'POST')).toHaveLength(0);
+  });
+
+  it.each([false, true])('reloads the authoritative page after creation and keeps creation success when reload fails: %s', async (reloadFails) => {
+    let created = false;
+    const requests = serveApi({ ...catalogResponses,
+      'GET /inventory/products?page=0&size=50': { data: pageOf([products[0]], 0, true) },
+      'GET /inventory/products?page=1&size=50': () => created && reloadFails
+        ? { status: 503, data: {} } : { data: pageOf([products[1]], 1, created) },
+      'POST /inventory/products': () => { created = true; return { data: { ...products[0], id: 'new-id', sku: 'NEW-SKU' } }; },
+    });
+    const user = userEvent.setup();
+    renderAuthenticated(<Catalog />);
+    await screen.findByText('Hand Soap');
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByText('Paper Towels');
+    await user.click(screen.getByRole('button', { name: 'New Product' }));
+    await user.type(screen.getByPlaceholderText('e.g. SKU-OFFICE-002'), 'NEW-SKU');
+    await user.type(screen.getByPlaceholderText('e.g. Copy Paper A4 500 Sheets'), 'New Product');
+    await user.type(screen.getByPlaceholderText('e.g. 12.99'), '1');
+    await user.selectOptions(selectWithOption('Select Warehouse'), 'warehouse-1');
+    await user.click(screen.getByRole('button', { name: 'Create Product' }));
+    await screen.findByText('Successfully cataloged product: NEW-SKU');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(await screen.findByText('Paper Towels')).toBeInTheDocument();
+    expect(screen.queryByRole('row', { name: /NEW-SKU/ })).not.toBeInTheDocument();
+    expect(screen.getByText('Showing page', { exact: false })).toHaveTextContent('Showing page 2');
+    if (reloadFails) expect(await screen.findByText('Unable to load products. Please try again.')).toBeInTheDocument();
+    else expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled();
+    expect(requests.filter(request => request.method === 'POST')).toHaveLength(1);
+    expect(requests.filter(request => request.url === '/inventory/products?page=1&size=50')).toHaveLength(2);
+  });
+
   it('creates a product and prevents another submission while the request is pending', async () => {
     const pending = deferredReply();
+    let rows = products;
     const requests = serveApi({ ...catalogResponses,
+      'GET /inventory/products?page=0&size=50': () => ({ data: pageOf(rows) }),
       'POST /inventory/products': () => pending.promise,
     });
     const user = userEvent.setup();
     renderAuthenticated(<Catalog />);
     await screen.findByText('Hand Soap');
     await user.click(screen.getByRole('button', { name: 'New Product' }));
-    await user.type(screen.getByPlaceholderText('e.g. PG-TIDE-002'), 'BAG-03');
-    await user.type(screen.getByPlaceholderText('e.g. Tide Pods Clean Breeze 38ct'), 'Reusable Bag');
+    await user.type(screen.getByPlaceholderText('e.g. SKU-OFFICE-002'), 'BAG-03');
+    await user.type(screen.getByPlaceholderText('e.g. Copy Paper A4 500 Sheets'), 'Reusable Bag');
     await user.type(screen.getByPlaceholderText('e.g. 12.99'), '4.50');
     await user.selectOptions(selectWithOption('Select Category'), 'home');
     await user.selectOptions(selectWithOption('Select Warehouse'), 'warehouse-1');
@@ -86,9 +174,11 @@ describe('catalog', () => {
       sku: 'BAG-03', name: 'Reusable Bag', unitPrice: 4.5, reorderLevel: 10,
       categoryId: 'home', warehouseId: 'warehouse-1',
     });
-    pending.resolve({ data: { ...products[0], id: 'product-3', sku: 'BAG-03', name: 'Reusable Bag', unitPrice: 4.5 } });
+    const created = { ...products[0], id: 'product-3', sku: 'BAG-03', name: 'Reusable Bag', unitPrice: 4.5 };
+    rows = [...products, created];
+    pending.resolve({ data: created });
     expect(await screen.findByText('Successfully cataloged product: BAG-03')).toBeInTheDocument();
-    expect(screen.getByRole('row', { name: /BAG-03/ })).toHaveTextContent('Reusable Bag');
+    expect(await screen.findByRole('row', { name: /BAG-03/ })).toHaveTextContent('Reusable Bag');
     expect(screen.queryByText('Add New Catalog Product')).not.toBeInTheDocument();
   });
 
@@ -103,7 +193,7 @@ describe('catalog', () => {
     const quantity = screen.getByPlaceholderText('e.g. -12 or 50');
     await user.type(quantity, '-4');
     await user.click(screen.getByRole('button', { name: 'Apply Adjustment' }));
-    expect(screen.getByText('Invalid adjustment. Cannot reduce stock below 0 (current: 3, adjustment: -4).')).toBeInTheDocument();
+    expect(within(screen.getByRole('dialog')).getByRole('alert')).toHaveTextContent('Invalid adjustment. Cannot reduce stock below 0 (current: 3, adjustment: -4).');
     expect(requests.filter(request => request.method === 'POST')).toHaveLength(0);
     await user.clear(quantity);
     await user.type(quantity, '5');

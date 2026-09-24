@@ -15,6 +15,7 @@ export interface Product {
   stockQuantity: number;
   reorderLevel: number;
   lowStockIndicator: boolean;
+  isActive: boolean;
   categoryId?: string;
   categoryName?: string;
   warehouseId?: string;
@@ -23,8 +24,8 @@ export interface Product {
 
 export interface OrderItem {
   productId: string;
-  productName?: string;
-  productSku?: string;
+  productName: string;
+  productSku: string;
   quantity: number;
   unitPrice: number;
   subtotal: number;
@@ -69,12 +70,19 @@ export interface TopProduct {
   totalQuantityOrdered: number;
 }
 
+export interface WarehouseStock {
+  warehouseId: string;
+  warehouseName: string;
+  warehouseLocation?: string;
+  totalStock: number;
+}
+
 export interface DashboardMetrics {
   totalRevenue: number;
   orderStatusCounts: Record<string, number>;
   lowStockCount: number;
   totalInventoryValue: number;
-  warehouseStockCounts: Record<string, number>;
+  warehouseStockCounts: WarehouseStock[];
   topProducts: TopProduct[];
 }
 

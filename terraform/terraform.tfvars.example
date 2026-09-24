@@ -6,12 +6,20 @@ azure_tenant_id       = "your-azure-tenant-id-here"
 location     = "East US"
 project_name = "nexus-supply"
 environment  = "prod"
-acr_name     = "pgsupplyregistry"
+acr_name     = "nexussupplyregistry"
+web_app_name = "nexus-supply-api"
 
 # Supply secrets through TF_VAR_postgres_admin_password and TF_VAR_jwt_secret.
+# Also supply independent TF_VAR_staging_postgres_admin_password and TF_VAR_staging_jwt_secret.
 # For first startup only: TF_VAR_bootstrap_admin_email / TF_VAR_bootstrap_admin_password.
+# Staging uses TF_VAR_staging_bootstrap_admin_email / TF_VAR_staging_bootstrap_admin_password.
 postgres_admin_username = "enterprise_admin"
 
 # Get production and staging outboundIpAddresses/possibleOutboundIpAddresses
 # from Azure. The empty default blocks PostgreSQL network access.
-postgres_allowed_ips = {}
+postgres_allowed_ips         = {}
+staging_postgres_allowed_ips = {}
+github_repository            = "JanLancelot/nexus-supply-chain"
+
+# Set an existing commit tag already published in ACR before starting production.
+production_image_tag = "replace-with-published-commit-sha"

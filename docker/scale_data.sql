@@ -47,7 +47,7 @@ DELETE FROM products WHERE sku LIKE 'SKU-GEN-%';
 CREATE TEMP TABLE lookup_users AS SELECT u.id, r.name AS role FROM users u JOIN roles r ON r.id = u.role_id WHERE u.status = 'ACTIVE';
 CREATE TEMP TABLE lookup_categories AS SELECT id, name FROM product_categories;
 CREATE TEMP TABLE lookup_warehouses AS SELECT id, name FROM warehouses;
-CREATE TEMP TABLE lookup_suppliers AS SELECT id, name FROM suppliers;
+CREATE TEMP TABLE lookup_suppliers AS SELECT id, name FROM suppliers WHERE is_active = TRUE;
 
 -- 1. Seed 100,000 Products
 INSERT INTO products (id, sku, name, description, category_id, unit_price, stock_quantity, reorder_level, warehouse_id, is_active, created_at, updated_at)
@@ -90,30 +90,38 @@ SELECT
 FROM generate_series(1, 500000) i;
 
 -- 3. Seed 1,000,000 Order Items (2 items per generated order)
-CREATE TEMP TABLE temp_prod AS 
-SELECT row_number() OVER() as rn, id, unit_price FROM products;
+-- Each product has one warehouse balance; every line must match its order destination.
+CREATE TEMP TABLE temp_prod AS
+SELECT row_number() OVER (PARTITION BY warehouse_id ORDER BY id) AS rn,
+       id, unit_price, warehouse_id
+FROM products
+WHERE is_active = TRUE AND warehouse_id IS NOT NULL;
 
-CREATE INDEX idx_temp_prod_rn ON temp_prod(rn);
+CREATE INDEX idx_temp_prod_warehouse_rn ON temp_prod(warehouse_id, rn);
+CREATE TEMP TABLE temp_prod_counts AS
+SELECT warehouse_id, COUNT(*) AS product_count
+FROM temp_prod
+GROUP BY warehouse_id;
 
 INSERT INTO order_items (id, order_id, product_id, quantity, unit_price, subtotal)
-SELECT 
+SELECT
     gen_random_uuid(),
     o.id,
     p.id,
-    qty,
+    CASE WHEN item_spec.item_num = 1 THEN 5 + (o.rn % 20) ELSE 1 + (o.rn % 10) END,
     p.unit_price,
-    qty * p.unit_price
+    (CASE WHEN item_spec.item_num = 1 THEN 5 + (o.rn % 20) ELSE 1 + (o.rn % 10) END) * p.unit_price
 FROM (
-    SELECT id, row_number() OVER() as rn
+    SELECT id, warehouse_id,
+           row_number() OVER (PARTITION BY warehouse_id ORDER BY id) AS rn
     FROM orders
     WHERE order_number LIKE 'ORD-GEN-%'
 ) o
-CROSS JOIN LATERAL (
-    SELECT 1 as item_num, (o.rn % 100000) + 1 as prod_rn, (5 + (o.rn % 20))::integer as qty
-    UNION ALL
-    SELECT 2 as item_num, ((o.rn + 50000) % 100000) + 1 as prod_rn, (1 + (o.rn % 10))::integer as qty
-) item_spec
-JOIN temp_prod p ON p.rn = item_spec.prod_rn;
+JOIN temp_prod_counts counts ON counts.warehouse_id = o.warehouse_id AND counts.product_count >= 2
+CROSS JOIN (SELECT 1 AS item_num UNION ALL SELECT 2 AS item_num) item_spec
+JOIN temp_prod p ON p.warehouse_id = o.warehouse_id
+    AND p.rn = ((o.rn + CASE WHEN item_spec.item_num = 1 THEN 0 ELSE counts.product_count / 2 END)
+                % counts.product_count) + 1;
 
 -- Bulk update order totals based on order items
 UPDATE orders o

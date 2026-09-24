@@ -53,8 +53,8 @@ paths:
   /inventory/products:
     get:
       summary: List products
-      description: Staff and administrators. Returns one slice of at most 50 products; no total count
-        is calculated.
+      description: Staff and administrators. Returns a slice of at most 50 products, ordered by stable
+        product UUID. Filters apply before pagination; no total count is calculated.
       operationId: getInventoryProducts
       responses:
         '200':
@@ -72,6 +72,23 @@ paths:
       parameters:
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/Size'
+      - name: search
+        in: query
+        description: Literal case-insensitive substring of SKU or name.
+        schema:
+          type: string
+          maxLength: 255
+      - name: warehouseId
+        in: query
+        description: Only products assigned to this warehouse.
+        schema:
+          type: string
+          format: uuid
+      - name: active
+        in: query
+        description: Filter by product active state; omitted includes both.
+        schema:
+          type: boolean
     post:
       summary: Create a product
       description: Administrators only. Initial stock is zero.
@@ -100,8 +117,8 @@ paths:
   /inventory/products/{id}/adjust:
     post:
       summary: Adjust product stock
-      description: Administrators only. Applies a signed change, records an audit event, and rejects stock
-        underflow or overflow.
+      description: Administrators only. Applies a signed change and stores the before/after counts and
+        reasonCode in the same transaction. Rejects stock underflow or overflow.
       operationId: postInventoryProductsIdAdjust
       responses:
         '200':
@@ -150,7 +167,8 @@ paths:
       - $ref: '#/components/parameters/Size'
     post:
       summary: Create a purchase order
-      description: Staff and administrators. Creates a DRAFT using product prices from the database.
+      description: Staff and administrators. Creates a DRAFT using product prices from the database. Every
+        product must be active and assigned to the destination warehouse.
       operationId: postOrders
       responses:
         '201':
@@ -463,6 +481,32 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+    post:
+      summary: Create a supplier
+      description: Administrators only. Creates a named supplier and optionally assigns existing products.
+        No external supplier connection is made.
+      operationId: postSuppliers
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierCreateRequest'
   /users:
     get:
       summary: List users
@@ -595,7 +639,8 @@ paths:
   /api/health:
     get:
       summary: Check application and database health
-      description: Public endpoint. Checks a simple database query without returning connection details.
+      description: Public bounded dependency check. HTTP 503 means database failure or required Kafka
+        unavailable. Optional event fallback/cache bypass is reported as DEGRADED with HTTP 200.
       operationId: getApiHealth
       responses:
         '200':
@@ -605,7 +650,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
         '503':
-          description: Database check failed
+          description: Database or required event dependency check failed
           content:
             application/json:
               schema:
@@ -614,6 +659,56 @@ paths:
     servers:
     - url: http://localhost:8080
       description: Health endpoint is outside /api/v1.
+  /suppliers/{id}/products:
+    get:
+      summary: List supplier product assignments
+      description: Staff and administrators.
+      operationId: getSupplierProducts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierProducts'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      summary: Replace supplier product assignments
+      description: Administrators only. Replaces the whole assignment set atomically, records an audit
+        entry, and evaluates low stock for affected products. Duplicate or unknown product IDs are rejected.
+      operationId: putSupplierProducts
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierProducts'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierProducts'
+      parameters:
+      - $ref: '#/components/parameters/Id'
 components:
   securitySchemes:
     BearerAuth:
@@ -680,6 +775,7 @@ components:
       - name
       - unitPrice
       - reorderLevel
+      - warehouseId
       properties:
         sku:
           type: string
@@ -698,7 +794,7 @@ components:
         warehouseId:
           type: string
           format: uuid
-          nullable: true
+          description: Existing warehouse that owns this product's stock balance. Required for new products.
         unitPrice:
           type: number
           minimum: 0
@@ -786,8 +882,8 @@ components:
             $ref: '#/components/schemas/OrderItemRequest'
           minItems: 1
           maxItems: 500
-          description: Each product may appear only once and must be active. Prices come from the server.
-            The order total cannot exceed 9999999999.99.
+          description: Each product may appear only once, must be active, and must be assigned to the
+            order warehouse. Prices come from the server. The order total cannot exceed 9999999999.99.
     OrderItemRequest:
       type: object
       required:
@@ -833,6 +929,10 @@ components:
           type: number
         subtotal:
           type: number
+        productName:
+          type: string
+        productSku:
+          type: string
     Order:
       type: object
       properties:
@@ -1010,6 +1110,13 @@ components:
         createdAt:
           type: string
           format: date-time
+        productIds: &id002
+          type: array
+          items: &id001
+            type: string
+            format: uuid
+          uniqueItems: true
+          maxItems: 500
     UserCreateRequest:
       type: object
       required:
@@ -1142,10 +1249,10 @@ components:
         totalInventoryValue:
           type: number
         warehouseStockCounts:
-          type: object
-          additionalProperties:
-            type: integer
-            format: int64
+          type: array
+          description: One entry per warehouse UUID. Names need not be unique.
+          items:
+            $ref: '#/components/schemas/WarehouseStock'
         topProducts:
           type: array
           items:
@@ -1176,6 +1283,7 @@ components:
           type: string
           enum:
           - UP
+          - DEGRADED
           - DOWN
         database:
           type: string
@@ -1183,6 +1291,87 @@ components:
           - HEALTHY
           - UNHEALTHY
           - UNEXPECTED_RESPONSE
+        events:
+          type: string
+          enum:
+          - KAFKA_UP
+          - KAFKA_DOWN
+          - REDIS_FALLBACK
+          - MEMORY_FALLBACK
+          - UNHEALTHY
+          - UNKNOWN
+        cache:
+          type: string
+          enum:
+          - UP
+          - DEGRADED
+          - UNKNOWN
+        eventsRequired:
+          type: boolean
+    SupplierCreateRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        contactPerson:
+          type: string
+          maxLength: 255
+          nullable: true
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          nullable: true
+        phone:
+          type: string
+          maxLength: 50
+          nullable: true
+        address:
+          type: string
+          maxLength: 255
+          nullable: true
+        leadTimeDays:
+          type: integer
+          minimum: 0
+          maximum: 3650
+          default: 3
+        isActive:
+          type: boolean
+          default: true
+        productIds:
+          type: array
+          items: *id001
+          uniqueItems: true
+          maxItems: 500
+          default: []
+    SupplierProducts:
+      type: object
+      required:
+      - productIds
+      properties:
+        productIds: *id002
+    WarehouseStock:
+      type: object
+      required:
+      - warehouseId
+      - warehouseName
+      - totalStock
+      properties:
+        warehouseId:
+          type: string
+          format: uuid
+        warehouseName:
+          type: string
+        warehouseLocation:
+          type: string
+          nullable: true
+        totalStock:
+          type: integer
+          format: int64
   responses:
     '400':
       description: Invalid request or disallowed state transition. Malformed transport input may use Spring’s

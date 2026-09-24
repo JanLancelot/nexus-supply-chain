@@ -7,6 +7,19 @@ import { renderAuthenticated } from '../test/render';
 import Dashboard from './Dashboard';
 
 describe('operations dashboard', () => {
+  it('keeps warehouses with equal names separate and shows their locations', async () => {
+    serveApi({ 'GET /analytics/dashboard': { data: { ...metrics, warehouseStockCounts: [
+      { warehouseId: 'east', warehouseName: 'Depot', warehouseLocation: 'East', totalStock: 3 },
+      { warehouseId: 'west', warehouseName: 'Depot', warehouseLocation: 'West', totalStock: 7 },
+    ] } } });
+    renderAuthenticated(<Dashboard />);
+    expect(await screen.findAllByText('Depot')).toHaveLength(2);
+    expect(screen.getByText('East')).toBeInTheDocument();
+    expect(screen.getByText('West')).toBeInTheDocument();
+    expect(screen.getByText('3 units')).toBeInTheDocument();
+    expect(screen.getByText('7 units')).toBeInTheDocument();
+  });
+
   it('presents monetary metrics, order proportions, product demand and warehouse stock', async () => {
     serveApi({ 'GET /analytics/dashboard': { data: metrics } });
     renderAuthenticated(<Dashboard />);
@@ -23,7 +36,7 @@ describe('operations dashboard', () => {
   it('handles empty data without displaying invalid totals or percentages', async () => {
     serveApi({ 'GET /analytics/dashboard': { data: {
       totalRevenue: 0, totalInventoryValue: 0, lowStockCount: 0,
-      orderStatusCounts: {}, warehouseStockCounts: {}, topProducts: [],
+      orderStatusCounts: {}, warehouseStockCounts: [], topProducts: [],
     } } });
     renderAuthenticated(<Dashboard />);
     expect(await screen.findByText('No products are below their reorder levels.')).toBeInTheDocument();

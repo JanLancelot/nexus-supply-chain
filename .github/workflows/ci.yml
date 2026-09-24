@@ -134,17 +134,34 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
       - name: Verify benchmark tooling
         run: python3 -m unittest discover -s load-tests -p 'test_*.py'
-      - name: Verify disposable test launcher
+      - name: Verify benchmark order fixtures
+        run: node --test load-tests/lib/order-fixtures.test.mjs
+      - name: Verify disposable test launcher and cloud script guards
         run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.15.6'
+      - name: Verify infrastructure without cloud access
+        run: |
+          terraform -chdir=terraform fmt -check -recursive
+          terraform -chdir=terraform init -backend=false -input=false
+          terraform -chdir=terraform validate
+          terraform -chdir=terraform test
       - name: Check harness shell syntax
-        run: bash -n bin/verify.sh bin/start-e2e-backend.sh bin/visual-tests.sh
+        run: bash -n bin/verify.sh bin/start-e2e-backend.sh bin/visual-tests.sh bin/resume.sh bin/suspend.sh
 
   deploy-to-staging:
     needs: [backend, frontend, e2e, visual, tooling]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    env:
+      AZURE_CONTAINER_REGISTRY: ${{ vars.AZURE_CONTAINER_REGISTRY || 'nexussupplyregistry' }}
     permissions:
       contents: read
       id-token: write # Required only for Azure deployment
@@ -156,22 +173,21 @@ jobs:
       - name: Log in to Azure via OIDC
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ vars.AZURE_CLIENT_ID || secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID || secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID || secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Log in to Azure Container Registry (ACR)
-        run: az acr login --name pgsupplyregistry
+        run: az acr login --name "$AZURE_CONTAINER_REGISTRY"
 
       - name: Build and Push Consolidated Docker Image
         run: |
-          docker build -t pgsupplyregistry.azurecr.io/backend:${{ github.sha }} -t pgsupplyregistry.azurecr.io/backend:latest -f backend/Dockerfile .
-          docker push pgsupplyregistry.azurecr.io/backend:${{ github.sha }}
-          docker push pgsupplyregistry.azurecr.io/backend:latest
+          docker build -t "$AZURE_CONTAINER_REGISTRY.azurecr.io/backend:${{ github.sha }}" -f backend/Dockerfile .
+          docker push "$AZURE_CONTAINER_REGISTRY.azurecr.io/backend:${{ github.sha }}"
 
       - name: Deploy Consolidated App to Azure App Service (Staging Slot)
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'pg-enterprise-supply-api'
+          app-name: ${{ vars.AZURE_WEBAPP_NAME || 'nexus-supply-api' }}
           slot-name: 'staging'
-          images: 'pgsupplyregistry.azurecr.io/backend:${{ github.sha }}'
+          images: '${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/backend:${{ github.sha }}'

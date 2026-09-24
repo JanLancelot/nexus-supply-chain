@@ -8,6 +8,7 @@ import Catalog from './pages/Catalog';
 import Orders from './pages/Orders';
 import AuditLogs from './pages/AuditLogs';
 import UserManagement from './pages/UserManagement';
+import ReferenceData from './pages/ReferenceData';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 
@@ -116,6 +117,10 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+
+      <Route path="/reference-data" element={
+        <ProtectedRoute adminOnly><LayoutWrapper title="Reference Data"><ReferenceData /></LayoutWrapper></ProtectedRoute>
+      } />
 
       {/* Root Path Redirection */}
       <Route

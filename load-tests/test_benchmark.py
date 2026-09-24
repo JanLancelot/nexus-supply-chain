@@ -13,6 +13,40 @@ spec.loader.exec_module(benchmark)
 
 
 class BenchmarkSafetyTests(unittest.TestCase):
+    def test_remote_load_target_does_not_implicitly_measure_local_prometheus(self):
+        with tempfile.TemporaryDirectory() as temp:
+            result_dir = Path(temp)
+
+            def fake_run(*args, **kwargs):
+                (result_dir / 'full-summary.json').write_text(json.dumps({'metrics': {}}))
+                return subprocess.CompletedProcess(args, 0)
+
+            with patch.dict(benchmark.os.environ, {'BASE_URL': 'https://load-target.example.test'}, clear=True), \
+                    patch.object(benchmark, 'RESULTS', result_dir), \
+                    patch.object(benchmark.subprocess, 'run', side_effect=fake_run), \
+                    patch.object(benchmark, 'query_prometheus', return_value=[]) as metrics:
+                self.assertEqual(benchmark.main([]), 0)
+                metrics.assert_not_called()
+                report = (result_dir / 'latest-benchmark-report.md').read_text()
+                self.assertIn('https://load-target.example.test', report)
+                self.assertIn('not selected', report)
+
+    def test_explicit_monitoring_source_is_used_and_recorded(self):
+        with tempfile.TemporaryDirectory() as temp:
+            result_dir = Path(temp)
+
+            def fake_run(*args, **kwargs):
+                (result_dir / 'full-summary.json').write_text(json.dumps({'metrics': {}}))
+                return subprocess.CompletedProcess(args, 0)
+
+            with patch.object(benchmark, 'RESULTS', result_dir), \
+                    patch.object(benchmark.subprocess, 'run', side_effect=fake_run), \
+                    patch.object(benchmark, 'query_prometheus', return_value=[]) as metrics:
+                self.assertEqual(benchmark.main(['--prometheus-url', 'https://metrics.example.test']), 0)
+                self.assertTrue(metrics.called)
+                self.assertEqual(metrics.call_args.args[3], 'https://metrics.example.test')
+                self.assertIn('https://metrics.example.test', (result_dir / 'latest-benchmark-report.md').read_text())
+
     def test_missing_measurements_are_not_reported_as_zero(self):
         self.assertEqual(benchmark.stats([]), (None, None))
         self.assertEqual(benchmark.formatted(None), 'N/A')

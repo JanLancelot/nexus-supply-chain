@@ -1,4 +1,5 @@
 import http from 'k6/http';
+import { selectOrderReferences } from './order-fixtures.mjs';
 import { check, group, sleep } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
@@ -444,15 +445,13 @@ export function adjustStock(baseUrl, token, productId) {
 }
 
 export function createOrder(baseUrl, token, role, suppliers, warehouses, products) {
-  const supplier = pickRandom(suppliers);
-  const warehouse = pickRandom(warehouses);
-  const product = pickRandom(products);
-  if (!supplier || !warehouse || !product) return null;
+  const references = selectOrderReferences(suppliers, warehouses, products, pickRandom);
+  if (!references) return null;
 
   const payload = JSON.stringify({
-    supplierId: supplier.id,
-    warehouseId: warehouse.id,
-    items: [{ productId: product.id, quantity: randomInt(5, 50) }],
+    supplierId: references.supplierId,
+    warehouseId: references.warehouseId,
+    items: [{ productId: references.productId, quantity: randomInt(5, 50) }],
   });
 
   const res = taggedRequest(

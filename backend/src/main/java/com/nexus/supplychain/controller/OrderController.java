@@ -1,0 +1,55 @@
+package com.nexus.supplychain.controller;
+
+import com.nexus.supplychain.dto.OrderCreateRequest;
+import com.nexus.supplychain.dto.OrderResponse;
+import com.nexus.supplychain.dto.OrderStatusUpdateRequest;
+import com.nexus.supplychain.dto.PagedResponse;
+import com.nexus.supplychain.service.OrderService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import com.nexus.supplychain.exception.BadRequestException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/v1/orders")
+@RequiredArgsConstructor
+public class OrderController {
+
+    private final OrderService orderService;
+
+    @GetMapping
+    public ResponseEntity<PagedResponse<OrderResponse>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        if (page < 0 || size < 1) {
+            throw new BadRequestException("Page must be non-negative and size must be positive");
+        }
+        int limitSize = Math.min(size, 50);
+        return ResponseEntity.ok(orderService.getAllOrders(page, limitSize));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable UUID id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderCreateRequest request) {
+        OrderResponse created = orderService.createOrder(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<OrderResponse> updateOrderStatus(
+            @PathVariable UUID id,
+            @Valid @RequestBody OrderStatusUpdateRequest request
+    ) {
+        OrderResponse updated = orderService.updateOrderStatus(id, request);
+        return ResponseEntity.ok(updated);
+    }
+}

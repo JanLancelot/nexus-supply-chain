@@ -14,7 +14,7 @@ const authenticatedResponses = {
 };
 
 describe('application routing and navigation', () => {
-  it.each(['/dashboard', '/catalog', '/orders', '/users', '/audit-logs'])('requires a session before rendering %s', async (path) => {
+  it.each(['/dashboard', '/catalog', '/orders', '/users', '/audit-logs', '/reference-data'])('requires a session before rendering %s', async (path) => {
     const requests = serveApi({});
     window.history.replaceState({}, '', path);
     render(<App />);
@@ -24,7 +24,7 @@ describe('application routing and navigation', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it.each(['/dashboard', '/users', '/audit-logs'])('redirects staff away from %s and hides administrator navigation', async (path) => {
+  it.each(['/dashboard', '/users', '/audit-logs', '/reference-data'])('redirects staff away from %s and hides administrator navigation', async (path) => {
     serveApi(authenticatedResponses);
     setSession(parseSession(sessionToken({ role: 'ROLE_STAFF' })));
     window.history.replaceState({}, '', path);
