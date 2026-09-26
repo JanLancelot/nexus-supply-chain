@@ -12,3 +12,4 @@ terraform/.terraform
 load-tests/results
 .secrets
 .backups
+.artifacts/diagnostics
