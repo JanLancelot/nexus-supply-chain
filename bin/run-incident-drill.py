@@ -23,7 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("monitoring_launcher", ROOT / "bin/verify-monitoring.py")
 MONITORING = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MONITORING)
-HTTP = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+class NoRedirects(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *_args, **_kwargs):
+        return None
+
+
+HTTP = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirects())
 SCENARIOS = {
     "backend": {"service": "backend", "alert": "NexusBackendDown",
                 "signal": 'up{job="spring-backend"} == 0', "labels": {}},
@@ -52,6 +57,10 @@ def local_docker(environment):
 
 
 def prepare_config(config, project, temporary):
+    # Renaming a bind-backed named volume would still write to its original host path.
+    for settings in config.get("volumes", {}).values():
+        if settings and (settings.get("driver_opts") or settings.get("driver") not in (None, "local")):
+            raise ValueError("Incident drills refuse custom or bind-backed volume drivers")
     config = MONITORING.isolate_config(config, project)
     # Grafana and its database do not participate in incident detection or recovery.
     for service in ("grafana", "grafana-db"):
@@ -80,16 +89,29 @@ def prepare_config(config, project, temporary):
     # Explicit resource labels let the diagnostic command identify an isolated lab.
     for service in config["services"].values():
         service.setdefault("labels", {})["io.nexus.disposable-drill"] = "true"
+        if service.get("privileged") or service.get("devices") or service.get("network_mode"):
+            raise ValueError("Incident drills refuse privileged devices or network modes")
+        for volume in service.get("volumes", []):
+            if volume["type"] == "bind":
+                source = Path(volume["source"]).resolve()
+                if not volume.get("read_only") or not any(
+                        source.is_relative_to(root.resolve()) for root in (ROOT, temporary)):
+                    raise ValueError("Incident drills only permit read-only repository or temporary bind mounts")
     return config
 
 
 def http_json(url, *, token=None, data=None, timeout=5):
+    target = urllib.parse.urlsplit(url)
+    if target.scheme != "http" or target.hostname != "127.0.0.1" or target.username or target.password:
+        raise ValueError("Incident HTTP requests require an uncredentialed loopback URL")
     headers = {"Content-Type": "application/json"}
     if token:
         headers["Authorization"] = "Bearer " + token
     request = urllib.request.Request(url, headers=headers,
                                      data=None if data is None else json.dumps(data).encode())
     with HTTP.open(request, timeout=timeout) as response:
+        if response.status != 200:
+            raise ValueError("Incident HTTP operation requires status 200")
         return json.load(response)
 
 
@@ -113,16 +135,24 @@ def wait_for(description, action, *, timeout, interval=2):
     raise TimeoutError(description)
 
 
-def matching_delivery(events, scenario, status):
+def timestamp(value):
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+
+
+def matching_delivery(events, scenario, status, *, not_before, fault_at, episode=None):
     for event in events:
-        if event.get("path") != "/operator":
+        if event.get("path") != "/operator" or timestamp(event["received_at"]) < timestamp(not_before):
             continue
         for alert in event.get("payload", {}).get("alerts", []):
             labels = alert.get("labels", {})
             if (labels.get("alertname") == scenario["alert"] and alert.get("status") == status
                     and all(labels.get(key) == value for key, value in scenario["labels"].items())):
+                identity = {"starts_at": alert["startsAt"], "fingerprint": alert["fingerprint"]}
+                if (not identity["fingerprint"] or timestamp(identity["starts_at"]) < timestamp(fault_at)
+                        or (episode is not None and identity != episode)):
+                    continue
                 # Never copy receiver payloads, URLs, labels or annotations to reports.
-                return {"received_at": event["received_at"], "status": status}
+                return {"received_at": event["received_at"], "status": status, "episode": identity}
     return None
 
 
@@ -181,6 +211,30 @@ class Traffic:
             raise RuntimeError("Traffic generator failed to stop")
 
 
+def observe_fault(query, scenario, traffic, timeline, fault_at, timeout=120):
+    """Observe internal signal and user symptom independently; neither delays the other."""
+    deadline = time.monotonic() + timeout
+    detected, impacted = False, False
+    while time.monotonic() < deadline:
+        if not impacted:
+            failed = next((sample for sample in traffic.samples if not sample["success"]
+                           and timestamp(sample["at"]) >= timestamp(fault_at)), None)
+            if failed:
+                timeline.mark("user_impact_observed", sample_completed_at=failed["at"])
+                impacted = True
+        if not detected:
+            try:
+                detected = bool(query(scenario["signal"]))
+            except (OSError, ValueError):
+                pass
+            if detected:
+                timeline.mark("signal_detected")
+        if detected and impacted:
+            return
+        time.sleep(min(2, max(0, deadline - time.monotonic())))
+    raise TimeoutError("independent outage signal and post-fault authenticated operation failure")
+
+
 def execute_scenario(name, compose, run, backend, prometheus, receiver, password, result):
     scenario = SCENARIOS[name]
     timeline = Timeline(name)
@@ -207,12 +261,15 @@ def execute_scenario(name, compose, run, backend, prometheus, receiver, password
         wait_for("healthy backend scrape", lambda: query('up{job="spring-backend"} == 1'), timeout=60)
         wait_for("fresh business snapshot", lambda: query(
             'nexus_observability_refresh_success{component="business"} == 1'), timeout=60)
+        baseline_labels = ",".join([f'alertname="{scenario["alert"]}"'] +
+                                   [f'{key}="{value}"' for key, value in scenario["labels"].items()])
+        wait_for("no pre-existing alert episode", lambda: not query("ALERTS{" + baseline_labels + "}"), timeout=60)
         wait_for("end-to-end watchdog", lambda: any(event.get("path") == "/watchdog"
                  for event in http_json(receiver + "/events")), timeout=90)
         traffic = Traffic(backend + "/api/v1/inventory/products", token)
         traffic.thread.start()
         timeline.mark("baseline_verified")
-        timeline.mark("fault_requested")
+        fault_at = timeline.mark("fault_requested")["at"]
         run([*compose, "stop", "--timeout", "10", scenario["service"]], timeout=30)
         timeline.mark("fault_active")
         # Inspect the real process state, not only the previously sampled up metric.
@@ -223,17 +280,15 @@ def execute_scenario(name, compose, run, backend, prometheus, receiver, password
             if state["State"] != "running":
                 raise AssertionError("Database drill requires a running backend")
             timeline.mark("backend_process_running")
-        wait_for("authenticated operation must fail", lambda: any(not sample["success"]
-                 for sample in traffic.samples), timeout=90)
-        timeline.mark("user_impact_observed")
-        wait_for("outage signal", lambda: query(scenario["signal"]), timeout=120)
-        timeline.mark("signal_detected")
+        observe_fault(query, scenario, traffic, timeline, fault_at)
         labels = ",".join([f'alertname="{scenario["alert"]}"', 'alertstate="firing"'] +
                           [f'{key}="{value}"' for key, value in scenario["labels"].items()])
         wait_for("production alert hold interval", lambda: query("ALERTS{" + labels + "}"), timeout=240)
         timeline.mark("alert_firing_observed")
         event = wait_for("local firing notification", lambda: matching_delivery(
-            http_json(receiver + "/events"), scenario, "firing"), timeout=150)
+            http_json(receiver + "/events"), scenario, "firing", not_before=fault_at, fault_at=fault_at), timeout=150)
+        episode = event["episode"]
+        timeline.result["alert_episode"] = episode
         timeline.mark("notification_observed", receiver_received_at=event["received_at"])
         if name == "database":
             if not query('up{job="spring-backend"} == 1'):
@@ -241,7 +296,7 @@ def execute_scenario(name, compose, run, backend, prometheus, receiver, password
             if query('ALERTS{alertname="NexusBackendDown",alertstate="firing"}'):
                 raise AssertionError("Database incident incorrectly reported a backend outage")
             timeline.mark("backend_scrape_verified_during_database_outage")
-        timeline.mark("recovery_started")
+        recovery_at = timeline.mark("recovery_started")["at"]
         recovery_epoch = time.time()
         run([*compose, "start", scenario["service"]], timeout=60)
         token = wait_for("fresh login after recovery", login, timeout=180, interval=5)
@@ -254,7 +309,8 @@ def execute_scenario(name, compose, run, backend, prometheus, receiver, password
                      + str(recovery_epoch)), timeout=120)
         timeline.mark("telemetry_restored")
         event = wait_for("local resolved notification with production grouping", lambda: matching_delivery(
-            http_json(receiver + "/events"), scenario, "resolved"), timeout=420)
+            http_json(receiver + "/events"), scenario, "resolved", not_before=recovery_at,
+            fault_at=fault_at, episode=episode), timeout=420)
         timeline.mark("resolution_observed", receiver_received_at=event["received_at"])
         timeline.result["status"] = "passed"
     finally:

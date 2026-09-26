@@ -4,11 +4,14 @@ import contextlib
 import copy
 import importlib.util
 import io
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from pathlib import Path
 import subprocess
 import tempfile
+import threading
 import unittest
+import urllib.error
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,8 +54,8 @@ class IncidentDrillTests(unittest.TestCase):
     def test_disposable_config_preserves_timings_and_replaces_notification_destinations(self):
         source = {"services": {
             "backend": {"ports": ["8080:8080"]}, "db": {}, "grafana": {}, "grafana-db": {},
-            "prometheus": {"volumes": [{"target": "/etc/prometheus", "source": "/configured"}]},
-            "alertmanager": {"volumes": [{"target": "/etc/alertmanager", "source": "/live-receiver"}]},
+            "prometheus": {"volumes": [{"type": "bind", "target": "/etc/prometheus", "source": "/configured", "read_only": True}]},
+            "alertmanager": {"volumes": [{"type": "bind", "target": "/etc/alertmanager", "source": "/live-receiver", "read_only": True}]},
         }, "networks": {"notification_egress": {}, "development_access": {}},
             "volumes": {"pg_data": {"name": "production-data"}}}
         with tempfile.TemporaryDirectory() as directory:
@@ -78,17 +81,99 @@ class IncidentDrillTests(unittest.TestCase):
                     self.assertEqual(port["published"], "0")
 
     def test_delivery_requires_correct_route_alert_status_and_component(self):
-        event = {"path": "/operator", "received_at": "2026-09-26T00:00:00Z", "payload": {"alerts": [
+        event = {"path": "/operator", "received_at": "2026-09-26T00:04:00Z", "payload": {"alerts": [
             {"labels": {"alertname": "NexusSnapshotFailed", "component": "business"},
+             "startsAt": "2026-09-26T00:02:00Z", "fingerprint": "episode-a",
              "status": "firing", "annotations": {"secret": "must not be copied"}}]}}
-        expected = {"received_at": event["received_at"], "status": "firing"}
-        self.assertEqual(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "firing"), expected)
-        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["backend"], "firing"))
-        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "resolved"))
+        boundaries = {"not_before": "2026-09-26T00:01:00Z", "fault_at": "2026-09-26T00:01:00Z"}
+        expected = {"received_at": event["received_at"], "status": "firing",
+                    "episode": {"starts_at": "2026-09-26T00:02:00Z", "fingerprint": "episode-a"}}
+        self.assertEqual(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "firing", **boundaries), expected)
+        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["backend"], "firing", **boundaries))
+        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "resolved", **boundaries))
         event["payload"]["alerts"][0]["labels"]["component"] = "dependencies"
-        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "firing"))
+        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "firing", **boundaries))
         event["path"] = "/watchdog"
-        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "firing"))
+        self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "firing", **boundaries))
+
+    def test_old_or_unrelated_episode_deliveries_cannot_complete_current_drill(self):
+        alert = {"labels": {"alertname": "NexusBackendDown"}, "status": "resolved",
+                 "startsAt": "2026-09-26T00:02:00Z", "fingerprint": "current"}
+        event = {"path": "/operator", "received_at": "2026-09-26T00:09:00Z", "payload": {"alerts": [alert]}}
+        boundaries = {"not_before": "2026-09-26T00:08:00Z", "fault_at": "2026-09-26T00:01:00Z",
+                      "episode": {"starts_at": alert["startsAt"], "fingerprint": "current"}}
+        self.assertIsNotNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["backend"], "resolved", **boundaries))
+        for mutation in ("old_receipt", "old_start", "wrong_fingerprint", "wrong_start"):
+            candidate = copy.deepcopy(event)
+            if mutation == "old_receipt":
+                candidate["received_at"] = "2026-09-26T00:07:00Z"
+            elif mutation == "old_start":
+                candidate["payload"]["alerts"][0]["startsAt"] = "2026-09-25T23:59:00Z"
+            elif mutation == "wrong_start":
+                candidate["payload"]["alerts"][0]["startsAt"] = "2026-09-26T00:03:00Z"
+            else:
+                candidate["payload"]["alerts"][0]["fingerprint"] = "other"
+            with self.subTest(mutation=mutation):
+                self.assertIsNone(DRILL.matching_delivery([candidate], DRILL.SCENARIOS["backend"], "resolved", **boundaries))
+
+    def test_signal_detection_does_not_wait_for_user_impact_and_ignores_pre_fault_failure(self):
+        clock = [0]
+        traffic = type("TrafficSamples", (), {"samples": [
+            {"success": False, "at": "2026-09-26T00:00:00Z"}]})()
+        def sleep(duration):
+            clock[0] += duration
+            traffic.samples.append({"success": False, "at": "2026-09-26T00:02:00Z"})
+        with patch.object(DRILL.time, "monotonic", side_effect=lambda: clock[0]), \
+                patch.object(DRILL.time, "sleep", side_effect=sleep), contextlib.redirect_stdout(io.StringIO()):
+            timeline = DRILL.Timeline("backend")
+            DRILL.observe_fault(lambda _expr: [{}], DRILL.SCENARIOS["backend"], traffic, timeline,
+                                "2026-09-26T00:01:00Z", timeout=5)
+        self.assertEqual([item["event"] for item in timeline.result["events"]], ["signal_detected", "user_impact_observed"])
+        self.assertEqual(timeline.result["events"][0]["elapsed_seconds"], 0)
+        self.assertEqual(timeline.result["events"][1]["elapsed_seconds"], 2)
+
+    def test_host_backed_storage_is_refused_before_startup(self):
+        for settings in ({"driver_opts": {"type": "none", "o": "bind", "device": "/live/data"}},
+                         {"driver": "remote-storage"}):
+            with self.subTest(settings=settings), tempfile.TemporaryDirectory() as directory, self.assertRaises(ValueError):
+                DRILL.prepare_config({"volumes": {"pg_data": settings}}, "nexus-drill-test", Path(directory))
+        for mount in ({"type": "bind", "source": str(ROOT / "docker/init.sql"), "target": "/live", "read_only": False},
+                      {"type": "bind", "source": "/var/run/docker.sock", "target": "/socket", "read_only": True}):
+            source = {"services": {"db": {"volumes": [mount]}, "prometheus": {"volumes": []}, "alertmanager": {"volumes": []}},
+                      "networks": {"notification_egress": {}}, "volumes": {}}
+            with self.subTest(mount=mount), tempfile.TemporaryDirectory() as directory, self.assertRaises(ValueError):
+                DRILL.prepare_config(source, "nexus-drill-test", Path(directory))
+
+    def test_http_rejects_redirects_and_non_200_before_accepting_application_success(self):
+        paths = []
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                paths.append(self.path)
+                if self.path == "/redirect":
+                    self.send_response(302)
+                    self.send_header("Location", "/forwarded-credentials")
+                else:
+                    self.send_response(201)
+                self.end_headers()
+                self.wfile.write(b'{}')
+            def log_message(self, *_args):
+                pass
+        with HTTPServer(("127.0.0.1", 0), Handler) as server:
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                base = f"http://127.0.0.1:{server.server_port}"
+                with self.assertRaises(urllib.error.HTTPError):
+                    DRILL.http_json(base + "/redirect", token="test-token")
+                with self.assertRaises(ValueError):
+                    DRILL.http_json(base + "/created")
+            finally:
+                server.shutdown()
+                thread.join(timeout=2)
+        self.assertEqual(paths, ["/redirect", "/created"])
+        with patch.object(DRILL.HTTP, "open") as request, self.assertRaises(ValueError):
+            DRILL.http_json("https://live.example.test")
+        request.assert_not_called()
 
     def test_inventory_recovery_checks_application_response_contract(self):
         # The actual inventory API uses Slice pagination and deliberately omits a total count.
