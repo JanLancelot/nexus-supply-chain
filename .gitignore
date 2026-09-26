@@ -24,3 +24,6 @@ __pycache__/
 *-logs/
 *-logs.zip
 __pycache__/
+
+# Private diagnostic reports
+.artifacts/diagnostics/
