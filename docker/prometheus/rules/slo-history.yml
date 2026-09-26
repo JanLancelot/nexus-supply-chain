@@ -1,0 +1,15 @@
+groups:
+- name: nexus-slo-history
+  interval: 1h
+  rules:
+  - record: nexus:slo_history_coverage:ratio30d
+    expr: clamp_max(sum_over_time(nexus:slo_recorded_minutes:count15m[30d]) / 43200, 1)
+  - record: nexus:slo_history_complete:bool30d
+    expr: (sum_over_time(nexus:slo_valid_minutes:count15m[30d]) >= bool 43200) * (count_over_time(nexus:slo_valid_minutes:count15m[30d])
+      >= bool 2880) * (nexus:slo_sample_valid == bool 1)
+  - record: nexus:slo_attainment:ratio30d
+    expr: (1 - (last_over_time(nexus:slo_bad:increase30d[65m]) / (last_over_time(nexus:slo_requests:increase30d[65m]) > 0)))
+      and (nexus:slo_history_complete:bool30d == 1)
+  - record: nexus:slo_budget_remaining:ratio30d
+    expr: (1 - (last_over_time(nexus:slo_bad:increase30d[65m]) / (last_over_time(nexus:slo_requests:increase30d[65m]) > 0))
+      / (1 - nexus:slo_objective)) and (nexus:slo_history_complete:bool30d == 1)

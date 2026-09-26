@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 import secrets
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -40,6 +42,24 @@ class MonitoringLauncherTests(unittest.TestCase):
         self.assertEqual(environment["APP_MONITORING_GRAFANA_URL"], "http://localhost:3000")
         self.assertGreaterEqual(len(environment["JWT_SECRET"]), 32)
         self.assertNotEqual(environment["JWT_SECRET"], LAUNCHER.isolated_environment({})["JWT_SECRET"])
+
+    def test_baseline_cannot_be_requested_in_config_only_mode(self):
+        result = subprocess.run([sys.executable, str(LAUNCHER.ROOT / "bin/verify-monitoring.py"),
+                                 "--config-only", "--baseline-report", "/unused/report.json"],
+                                capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("requires the live stack", result.stderr)
+
+    def test_existing_baseline_report_is_refused_before_starting_docker(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory) / "report.json"
+            report.write_text("existing evidence")
+            result = subprocess.run([sys.executable, str(LAUNCHER.ROOT / "bin/verify-monitoring.py"),
+                                     "--baseline-report", str(report)],
+                                    capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("new file", result.stderr)
+            self.assertEqual(report.read_text(), "existing evidence")
 
     def test_resolved_compose_gets_exclusive_resources_and_random_loopback_ports(self):
         source = {

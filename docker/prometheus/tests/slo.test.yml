@@ -1,0 +1,248 @@
+rule_files:
+- ../rules/slo.yml
+evaluation_interval: 1m
+group_eval_order:
+- nexus-slos
+- nexus-slo-alerts
+tests:
+- name: healthy traffic with absent error series
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+100x10
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-availability"}) * 1
+    eval_time: 5m
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0
+  - expr: (nexus:slo_requests:increase5m{slo="inventory-availability"}) * 1
+    eval_time: 5m
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 500
+- name: aggregate counts across unequal replicas
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: up{job="spring-backend",instance="b"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+900x10
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="b",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+100x10
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-availability"}) * 1
+    eval_time: 5m
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0.1
+- name: zero traffic is undefined not perfect
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+0x10
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-availability"}) * 1
+    eval_time: 5m
+    exp_samples: []
+  alert_rule_test:
+  - alertname: NexusSloFastBurn
+    eval_time: 5m
+    exp_alerts: []
+- name: no instrumentation is unknown
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-availability"}) * 1
+    eval_time: 5m
+    exp_samples: []
+  - expr: (nexus:slo_sample_valid) * 1
+    eval_time: 5m
+    exp_samples: []
+- name: missing exact bucket makes latency unknown
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+100x10
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-latency"}) * 1
+    eval_time: 5m
+    exp_samples: []
+- name: latency includes errors and exact 500ms boundary
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+90x10
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+10x10
+  - series: http_server_requests_seconds_bucket{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200",le="0.5"}
+    values: 0+80x10
+  - series: http_server_requests_seconds_bucket{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500",le="0.5"}
+    values: 0+10x10
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-latency"}) * 1
+    eval_time: 5m
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-latency"}'
+      value: 0.2
+- name: invalid requests excluded overload included
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+90x10
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="429"}
+    values: 0+10x10
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="401"}
+    values: 0+900x10
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-availability"}) * 1
+    eval_time: 5m
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0.1
+- name: resets are handled per instance
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+90x10 0+90x10
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+10x10 0+10x10
+  promql_expr_test:
+  - expr: (nexus:slo_bad:ratio5m{slo="inventory-availability"}) * 1
+    eval_time: 13m
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0.1
+- name: fast burn needs both windows
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+980x80
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+20x80
+  alert_rule_test:
+  - alertname: NexusSloFastBurn
+    eval_time: 1h
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        application: nexus-supply-chain
+        environment: test
+        slo: inventory-availability
+        severity: critical
+      exp_annotations:
+        summary: Service objective error budget is burning too quickly
+        description: The inventory-availability objective exceeds 14.4x burn in both 1h and 5m. Inspect eligible traffic and
+          dependency health; this measures completed API responses, not external reachability.
+        runbook_url: https://github.com/JanLancelot/nexus-supply-chain/blob/main/docs/runbooks/slo-burn.md
+- name: slow burn catches sustained lower rate
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+990x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+10x400
+  alert_rule_test:
+  - alertname: NexusSloFastBurn
+    eval_time: 6h
+    exp_alerts: []
+  - alertname: NexusSloSustainedBurn
+    eval_time: 6h
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        application: nexus-supply-chain
+        environment: test
+        slo: inventory-availability
+        severity: warning
+      exp_annotations:
+        summary: Service objective error budget is burning too quickly
+        description: The inventory-availability objective exceeds 6x burn in both 6h and 30m. Inspect eligible traffic and
+          dependency health; this measures completed API responses, not external reachability.
+        runbook_url: https://github.com/JanLancelot/nexus-supply-chain/blob/main/docs/runbooks/slo-burn.md
+- name: short window recovery clears old long-window failure
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+0x60 1000+1000x20
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+1000x60 60000+0x20
+  alert_rule_test:
+  - alertname: NexusSloFastBurn
+    eval_time: 1h
+    exp_alerts:
+    - exp_labels:
+        job: spring-backend
+        application: nexus-supply-chain
+        environment: test
+        slo: inventory-availability
+        severity: critical
+      exp_annotations:
+        summary: Service objective error budget is burning too quickly
+        description: The inventory-availability objective exceeds 14.4x burn in both 1h and 5m. Inspect eligible traffic and
+          dependency health; this measures completed API responses, not external reachability.
+        runbook_url: https://github.com/JanLancelot/nexus-supply-chain/blob/main/docs/runbooks/slo-burn.md
+  - alertname: NexusSloFastBurn
+    eval_time: 66m
+    exp_alerts: []
+- name: low traffic cannot page on single error
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x400
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+1x80
+  alert_rule_test:
+  - alertname: NexusSloFastBurn
+    eval_time: 1h
+    exp_alerts: []
+- name: failed scrape blocks response burn claims
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 0+0x80
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="500"}
+    values: 0+1000x80
+  promql_expr_test:
+  - expr: (nexus:slo_sample_valid{slo="inventory-availability"}) * 1
+    eval_time: 5m
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0
+  alert_rule_test:
+  - alertname: NexusSloFastBurn
+    eval_time: 1h
+    exp_alerts: []
+- name: removed instrumentation during a healthy scrape is unknown
+  interval: 1m
+  input_series:
+  - series: up{job="spring-backend",instance="a"}
+    values: 1+0x10
+  - series: http_server_requests_seconds_count{job="spring-backend",application="nexus-supply-chain",environment="test",instance="a",uri="/api/v1/inventory/products",method="GET",status="200"}
+    values: 0+100x5 stale 700+100x3
+  promql_expr_test:
+  - expr: nexus:slo_sample_valid{slo="inventory-availability"}
+    eval_time: 6m
+    exp_samples: []

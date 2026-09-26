@@ -1,0 +1,306 @@
+groups:
+- name: nexus-slos
+  interval: 1m
+  rules:
+  - record: nexus:slo_requests:increase5m
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[5m]))
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:increase5m
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[5m])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2.."}[5m])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[5m]))))),
+      0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:ratio5m
+    expr: nexus:slo_bad:increase5m{slo="inventory-availability"} / (nexus:slo_requests:increase5m{slo="inventory-availability"}
+      > 0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_requests:increase30m
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30m]))
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:increase30m
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30m])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2.."}[30m])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30m]))))),
+      0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:ratio30m
+    expr: nexus:slo_bad:increase30m{slo="inventory-availability"} / (nexus:slo_requests:increase30m{slo="inventory-availability"}
+      > 0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_requests:increase1h
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[1h]))
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:increase1h
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[1h])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2.."}[1h])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[1h]))))),
+      0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:ratio1h
+    expr: nexus:slo_bad:increase1h{slo="inventory-availability"} / (nexus:slo_requests:increase1h{slo="inventory-availability"}
+      > 0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_requests:increase6h
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[6h]))
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:increase6h
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[6h])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2.."}[6h])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[6h]))))),
+      0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:ratio6h
+    expr: nexus:slo_bad:increase6h{slo="inventory-availability"} / (nexus:slo_requests:increase6h{slo="inventory-availability"}
+      > 0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_objective
+    expr: 0 * nexus:slo_requests:increase5m{slo="inventory-availability"} + 0.999
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_requests:increase5m
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[5m]))
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:increase5m
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[5m])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2.."}[5m])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[5m]))))),
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:ratio5m
+    expr: nexus:slo_bad:increase5m{slo="order-availability"} / (nexus:slo_requests:increase5m{slo="order-availability"} >
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_requests:increase30m
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[30m]))
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:increase30m
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[30m])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2.."}[30m])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[30m]))))),
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:ratio30m
+    expr: nexus:slo_bad:increase30m{slo="order-availability"} / (nexus:slo_requests:increase30m{slo="order-availability"}
+      > 0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_requests:increase1h
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[1h]))
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:increase1h
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[1h])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2.."}[1h])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[1h]))))),
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:ratio1h
+    expr: nexus:slo_bad:increase1h{slo="order-availability"} / (nexus:slo_requests:increase1h{slo="order-availability"} >
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_requests:increase6h
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[6h]))
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:increase6h
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[6h])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2.."}[6h])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[6h]))))),
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:ratio6h
+    expr: nexus:slo_bad:increase6h{slo="order-availability"} / (nexus:slo_requests:increase6h{slo="order-availability"} >
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_objective
+    expr: 0 * nexus:slo_requests:increase5m{slo="order-availability"} + 0.999
+    labels:
+      slo: order-availability
+  - record: nexus:slo_requests:increase5m
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[5m]))
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:increase5m
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[5m])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..",le="0.5"}[5m])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[5m]))))),
+      0) and on (job, application, environment) sum by (job, application, environment) (http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5..",le="0.5"})
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:ratio5m
+    expr: nexus:slo_bad:increase5m{slo="inventory-latency"} / (nexus:slo_requests:increase5m{slo="inventory-latency"} > 0)
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_requests:increase30m
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30m]))
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:increase30m
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30m])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..",le="0.5"}[30m])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30m]))))),
+      0) and on (job, application, environment) sum by (job, application, environment) (http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5..",le="0.5"})
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:ratio30m
+    expr: nexus:slo_bad:increase30m{slo="inventory-latency"} / (nexus:slo_requests:increase30m{slo="inventory-latency"} >
+      0)
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_requests:increase1h
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[1h]))
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:increase1h
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[1h])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..",le="0.5"}[1h])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[1h]))))),
+      0) and on (job, application, environment) sum by (job, application, environment) (http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5..",le="0.5"})
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:ratio1h
+    expr: nexus:slo_bad:increase1h{slo="inventory-latency"} / (nexus:slo_requests:increase1h{slo="inventory-latency"} > 0)
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_requests:increase6h
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[6h]))
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:increase6h
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[6h])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..",le="0.5"}[6h])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[6h]))))),
+      0) and on (job, application, environment) sum by (job, application, environment) (http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5..",le="0.5"})
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:ratio6h
+    expr: nexus:slo_bad:increase6h{slo="inventory-latency"} / (nexus:slo_requests:increase6h{slo="inventory-latency"} > 0)
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_objective
+    expr: 0 * nexus:slo_requests:increase5m{slo="inventory-latency"} + 0.99
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_source_present
+    expr: (count by (job, application, environment) ((sum by (job, instance, application, environment) (http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}))
+      >= bool 0) == on (job) group_left () count by (job) (up{job="spring-backend"})) > bool 0
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_source_present
+    expr: (count by (job, application, environment) ((sum by (job, instance, application, environment) (http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}))
+      >= bool 0) == on (job) group_left () count by (job) (up{job="spring-backend"})) > bool 0
+    labels:
+      slo: order-availability
+  - record: nexus:slo_source_present
+    expr: (count by (job, application, environment) ((sum by (job, instance, application, environment) (http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."})
+      and sum by (job, instance, application, environment) (http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5..",le="0.5"}))
+      >= bool 0) == on (job) group_left () count by (job) (up{job="spring-backend"})) > bool 0
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_sample_valid
+    expr: (nexus:slo_requests:increase5m >= bool 0) * (nexus:slo_bad:increase5m >= bool 0) * on (job) group_left () (min by
+      (job) (up{job="spring-backend"}) == bool 1) * nexus:slo_source_present
+  - record: nexus:slo_burn:ratio5m
+    expr: nexus:slo_bad:ratio5m / (1 - nexus:slo_objective)
+  - record: nexus:slo_burn:ratio30m
+    expr: nexus:slo_bad:ratio30m / (1 - nexus:slo_objective)
+  - record: nexus:slo_burn:ratio1h
+    expr: nexus:slo_bad:ratio1h / (1 - nexus:slo_objective)
+  - record: nexus:slo_burn:ratio6h
+    expr: nexus:slo_bad:ratio6h / (1 - nexus:slo_objective)
+- name: nexus-slo-long-counts
+  interval: 1h
+  rules:
+  - record: nexus:slo_requests:increase30d
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30d]))
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:increase30d
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30d])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2.."}[30d])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30d]))))),
+      0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_bad:ratio30d
+    expr: nexus:slo_bad:increase30d{slo="inventory-availability"} / (nexus:slo_requests:increase30d{slo="inventory-availability"}
+      > 0)
+    labels:
+      slo: inventory-availability
+  - record: nexus:slo_requests:increase30d
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[30d]))
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:increase30d
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[30d])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2.."}[30d])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/orders",method="POST",status=~"2..|429|5.."}[30d]))))),
+      0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_bad:ratio30d
+    expr: nexus:slo_bad:increase30d{slo="order-availability"} / (nexus:slo_requests:increase30d{slo="order-availability"}
+      > 0)
+    labels:
+      slo: order-availability
+  - record: nexus:slo_requests:increase30d
+    expr: sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30d]))
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:increase30d
+    expr: clamp_min((sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30d])))
+      - ((sum by (job, application, environment) (increase(http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..",le="0.5"}[30d])))
+      or (0 * (sum by (job, application, environment) (increase(http_server_requests_seconds_count{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5.."}[30d]))))),
+      0) and on (job, application, environment) sum by (job, application, environment) (http_server_requests_seconds_bucket{job="spring-backend",uri="/api/v1/inventory/products",method="GET",status=~"2..|429|5..",le="0.5"})
+    labels:
+      slo: inventory-latency
+  - record: nexus:slo_bad:ratio30d
+    expr: nexus:slo_bad:increase30d{slo="inventory-latency"} / (nexus:slo_requests:increase30d{slo="inventory-latency"} >
+      0)
+    labels:
+      slo: inventory-latency
+- name: nexus-slo-alerts
+  interval: 1m
+  rules:
+  - alert: NexusSloFastBurn
+    expr: (nexus:slo_burn:ratio1h > 14.4) and (nexus:slo_burn:ratio5m > 14.4) and (nexus:slo_requests:increase5m >= 100) and
+      (nexus:slo_sample_valid == 1)
+    labels:
+      severity: critical
+    annotations:
+      summary: Service objective error budget is burning too quickly
+      description: The {{ $labels.slo }} objective exceeds 14.4x burn in both 1h and 5m. Inspect eligible traffic and dependency
+        health; this measures completed API responses, not external reachability.
+      runbook_url: https://github.com/JanLancelot/nexus-supply-chain/blob/main/docs/runbooks/slo-burn.md
+  - alert: NexusSloSustainedBurn
+    expr: (nexus:slo_burn:ratio6h > 6) and (nexus:slo_burn:ratio30m > 6) and (nexus:slo_requests:increase30m >= 100) and (nexus:slo_sample_valid
+      == 1)
+    labels:
+      severity: warning
+    annotations:
+      summary: Service objective error budget is burning too quickly
+      description: The {{ $labels.slo }} objective exceeds 6x burn in both 6h and 30m. Inspect eligible traffic and dependency
+        health; this measures completed API responses, not external reachability.
+      runbook_url: https://github.com/JanLancelot/nexus-supply-chain/blob/main/docs/runbooks/slo-burn.md

@@ -109,8 +109,8 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=15d'
-      - '--storage.tsdb.retention.size=2GB'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION_TIME:-32d}'
+      - '--storage.tsdb.retention.size=${PROMETHEUS_RETENTION_SIZE:-4GB}'
       - '--query.max-concurrency=10'
       - '--query.max-samples=5000000'
     ports:

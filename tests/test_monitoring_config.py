@@ -85,10 +85,16 @@ class MonitoringDashboardTests(unittest.TestCase):
                 variables = {variable["name"]: variable for variable in dashboard["templating"]["list"]}
                 self.assertFalse(variables["environment"]["multi"])
                 self.assertFalse(variables["environment"]["includeAll"])
-                self.assertIn('$environment', variables["instance"]["definition"])
-                # A wildcard All value would bypass the environment-scoped instance
-                # list for scrape/alert metrics, which do not all carry environment.
-                self.assertFalse(variables["instance"].get("allValue"))
+                if "instance" in variables:
+                    self.assertIn('$environment', variables["instance"]["definition"])
+                    # Scrape metrics without environment labels need scoped instances.
+                    self.assertFalse(variables["instance"].get("allValue"))
+                else:
+                    # Service objectives aggregate all replicas. Every query must
+                    # instead select its environment directly, including alert tables.
+                    for panel in dashboard["panels"]:
+                        for target in panel.get("targets", []):
+                            self.assertRegex(target["expr"], r'environment=~?"\$environment"')
                 for panel in dashboard["panels"]:
                     for target in panel.get("targets", []):
                         if re.search(r"nexus_(?:inventory|orders)", target["expr"]):

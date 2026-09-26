@@ -42,6 +42,8 @@ class MonitoringIntegrationTest extends BaseIntegrationTest {
                 .then().statusCode(200).extract().asString();
         assertTrue(scrape.contains("http_server_requests_seconds_bucket{"));
         assertTrue(scrape.contains("uri=\"/api/health\""));
+        assertTrue(scrape.lines().anyMatch(line -> line.startsWith("http_server_requests_seconds_bucket{")
+                && line.contains("le=\"0.5\"")), "The inventory latency objective needs an exact 500 ms bucket");
         assertTrue(scrape.contains("application=\"nexus-supply-chain\""));
         assertTrue(scrape.contains("environment=\"test\""));
         assertTrue(scrape.lines().anyMatch(line -> line.startsWith("nexus_inventory_products{") && !line.endsWith("NaN")));
