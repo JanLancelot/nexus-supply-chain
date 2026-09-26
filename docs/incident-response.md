@@ -190,3 +190,7 @@ action needs a verification condition; distinguish completed fixes from proposed
 work. Do not turn fabricated timestamps or synthetic fixtures into incident
 history. Sanitized completed drill evidence belongs in a reviewed case study;
 raw generated reports remain local.
+
+The [26 September 2026 completed local exercise](incidents/2026-09-26-local-drills.md)
+records measured timings, limitations, and verified follow-up actions for both
+scenarios.
