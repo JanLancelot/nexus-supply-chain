@@ -4,6 +4,8 @@ A supply-chain application with a React/TypeScript UI, a Spring Boot API, Postgr
 
 For local checks, test modes, and coverage reports, see the [development harness guide](docs/development.md).
 
+For the measured SRE exercises and their limits, see the [reliability case study](docs/reliability-case-study.md).
+
 ## Features
 
 - Staff can browse the catalog, create purchase orders, and submit drafts for approval.
