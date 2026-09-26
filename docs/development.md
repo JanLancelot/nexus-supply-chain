@@ -33,6 +33,7 @@ command can prepare Maven before starting the test harness.
 | `./bin/verify.sh frontend` | Lint, frontend tests/coverage, typecheck, production build |
 | `./bin/verify.sh backend` | All backend tests using H2 and the broker fallback paths |
 | `./bin/verify.sh containers` | Backend suite with PostgreSQL, Redis, and Kafka for the API/workflow integration tests |
+| `./bin/verify-monitoring.sh --baseline-report load-tests/results/baseline.json` | Monitoring verification plus a measured disposable inventory/order workload; output must be a new file |
 | `./bin/verify.sh monitoring` | Prometheus/Alertmanager fixtures, isolated live metrics and dashboards, permissions, network isolation, DB restore, watchdog and firing/resolved delivery |
 | `./bin/verify.sh e2e` | Real browser-to-API workflows in Chromium, Firefox, and WebKit |
 | `./bin/verify.sh visual` | Compare screenshots in the canonical Linux/amd64 Docker image |

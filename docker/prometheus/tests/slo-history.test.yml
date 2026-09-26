@@ -1,0 +1,136 @@
+rule_files:
+- ../rules/slo-history.yml
+evaluation_interval: 1h
+fuzzy_compare: true
+tests:
+- name: complete synthetic month
+  interval: 15m
+  input_series:
+  - series: nexus:slo_recorded_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x2880
+  - series: nexus:slo_valid_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x2880
+  - series: nexus:slo_sample_valid{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 1+0x2880
+  - series: nexus:slo_bad:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 25+0x2880
+  - series: nexus:slo_objective{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 0.999+0x2880
+  - series: nexus:slo_requests:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 50000+0x2880
+  promql_expr_test:
+  - expr: (nexus:slo_history_complete:bool30d) * 1
+    eval_time: 1h
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0
+  - expr: (nexus:slo_attainment:ratio30d) * 1
+    eval_time: 1h
+    exp_samples: []
+  - expr: (nexus:slo_history_complete:bool30d) * 1
+    eval_time: 30d
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 1
+  - expr: (nexus:slo_attainment:ratio30d) * 1
+    eval_time: 30d
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0.9995
+  - expr: round((nexus:slo_budget_remaining:ratio30d) * 1, 0.000000001)
+    eval_time: 30d
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0.5
+- name: scrape outage inside month
+  interval: 15m
+  input_series:
+  - series: nexus:slo_recorded_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x1439 14 15+0x1440
+  - series: nexus:slo_valid_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x1439 14 15+0x1440
+  - series: nexus:slo_sample_valid{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 1+0x2880
+  - series: nexus:slo_bad:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 25+0x2880
+  - series: nexus:slo_objective{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 0.999+0x2880
+  - series: nexus:slo_requests:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 50000+0x2880
+  promql_expr_test:
+  - expr: (nexus:slo_history_complete:bool30d) * 1
+    eval_time: 1h
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0
+  - expr: (nexus:slo_attainment:ratio30d) * 1
+    eval_time: 1h
+    exp_samples: []
+  - expr: (nexus:slo_history_complete:bool30d) * 1
+    eval_time: 30d
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0
+  - expr: (nexus:slo_attainment:ratio30d) * 1
+    eval_time: 30d
+    exp_samples: []
+  - expr: (nexus:slo_budget_remaining:ratio30d) * 1
+    eval_time: 30d
+    exp_samples: []
+- name: missing minute inside month
+  interval: 15m
+  input_series:
+  - series: nexus:slo_recorded_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x1439 _ 15+0x1440
+  - series: nexus:slo_valid_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x1439 _ 15+0x1440
+  - series: nexus:slo_sample_valid{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 1+0x2880
+  - series: nexus:slo_bad:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 25+0x2880
+  - series: nexus:slo_objective{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 0.999+0x2880
+  - series: nexus:slo_requests:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 50000+0x2880
+  promql_expr_test:
+  - expr: (nexus:slo_history_complete:bool30d) * 1
+    eval_time: 1h
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0
+  - expr: (nexus:slo_attainment:ratio30d) * 1
+    eval_time: 1h
+    exp_samples: []
+  - expr: (nexus:slo_history_complete:bool30d) * 1
+    eval_time: 30d
+    exp_samples:
+    - labels: '{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}'
+      value: 0
+  - expr: (nexus:slo_attainment:ratio30d) * 1
+    eval_time: 30d
+    exp_samples: []
+  - expr: (nexus:slo_budget_remaining:ratio30d) * 1
+    eval_time: 30d
+    exp_samples: []
+- name: traffic ages out of the monthly window
+  interval: 15m
+  input_series:
+  - series: nexus:slo_recorded_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x2880
+  - series: nexus:slo_valid_minutes:count15m{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 15+0x2880
+  - series: nexus:slo_sample_valid{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 1+0x2880
+  - series: nexus:slo_bad:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 25+0x2880
+  - series: nexus:slo_objective{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 0.999+0x2880
+  - series: nexus:slo_requests:increase30d{job="spring-backend",application="nexus-supply-chain",environment="test",slo="inventory-availability"}
+    values: 50000+0x2876 0+0x4
+  promql_expr_test:
+  - expr: nexus:slo_attainment:ratio30d
+    eval_time: 30d
+    exp_samples: []
+  - expr: nexus:slo_budget_remaining:ratio30d
+    eval_time: 30d
+    exp_samples: []

@@ -5,6 +5,9 @@ global:
 
 rule_files:
   - /etc/prometheus/rules/nexus.yml
+  - /etc/prometheus/rules/slo.yml
+  - /etc/prometheus/rules/slo-coverage.yml
+  - /etc/prometheus/rules/slo-history.yml
 
 # Local Alertmanager is the default target; production requires receiver configuration.
 alerting:

@@ -106,7 +106,7 @@ Snapshots are approximate operational views, not transactionally consistent fina
 reports. Failed business refreshes retain their previous values; initial values are
 unknown (`NaN`), not zero. Check freshness alongside every business chart.
 
-Prometheus retains at most 15 days or 2 GB of sample storage, whichever limits it first;
+Prometheus retains at most 32 days or 4 GB of sample storage, whichever limits it first;
 the volume needs extra space for its write-ahead log and temporary compaction data.
 Size the retention and disk to the real workload. Metrics reset on process restart;
 Prometheus `rate` handles counter resets. No host-level CPU/disk claim is made:
@@ -138,7 +138,9 @@ These are Prometheus-managed alerts, so edit the YAML and validate with `promtoo
 | `NexusNotificationFailures` | Notification failures in the last five minutes, held for 2 minutes |
 | `NexusRuleEvaluationFailures` | Rule evaluation failures in the last five minutes, held for 2 minutes |
 
-Thresholds are starting values, not contractual SLOs. Tune against measured production
+Infrastructure thresholds are starting values, not contractual SLOs. The separate
+[service objectives](service-objectives.md) define proposed request-based targets,
+error budgets and burn-rate alerts. Tune against measured production
 traffic. A quiet application should not page on one slow or failed request. A failed
 scrape means lost visibility and may be caused by a collector/network problem rather
 than a public-site outage. Use an independent external uptime check for that distinction.

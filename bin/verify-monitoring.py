@@ -1,5 +1,6 @@
 """Verify monitoring on an isolated Compose project, never a configured live target."""
 
+import argparse
 import base64
 import importlib.util
 import json
@@ -100,9 +101,15 @@ def eventually(description, action, timeout=120):
 
 
 def main():
-    if sys.argv[1:] not in ([], ["--config-only"]):
-        print("Usage: ./bin/verify-monitoring.sh [--config-only]", file=sys.stderr)
-        return 2
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config-only", action="store_true")
+    parser.add_argument("--baseline-report", type=Path,
+                        help="Run the disposable 60-second workload and write a new private JSON report")
+    options = parser.parse_args()
+    if options.config_only and options.baseline_report:
+        parser.error("--baseline-report requires the live stack")
+    if options.baseline_report and (options.baseline_report.exists() or options.baseline_report.is_symlink()):
+        parser.error("Baseline output must be a new file")
     environment = isolated_environment(os.environ)
     project = f"nexus-monitoring-test-{secrets.token_hex(5)}"
     status = 0
@@ -180,7 +187,8 @@ def main():
                     prom_image]
         # Run both syntax validation and executable alert/recording-rule regression cases.
         run([*promtool, "check", "config", "/etc/prometheus/prometheus.yml"])
-        run([*promtool, "test", "rules", "/etc/prometheus/tests/rules.test.yml"])
+        for fixture in sorted((prometheus_config / "tests").glob("*.test.yml")):
+            run([*promtool, "test", "rules", "/etc/prometheus/tests/" + fixture.name])
         run(["docker", "run", "--rm", "--network", "none", "--entrypoint", "/bin/amtool",
              "--mount", f"type=bind,source={alert_config},target=/etc/alertmanager,readonly",
              config["services"]["alertmanager"]["image"], "check-config", "/etc/alertmanager/alertmanager.yml"])
@@ -202,8 +210,16 @@ def main():
                        config["services"]["grafana"]["image"], "/start.sh"], check=False, capture=True)
         assert guarded.returncode == 1 and "Existing Grafana SQLite data found" in guarded.stderr
         print("PASS: existing SQLite storage cannot be silently replaced", flush=True)
-        if sys.argv[1:] == ["--config-only"]:
+        if options.config_only:
             return 0
+        # Production-cadence fixtures above validate accounting semantics. In the
+        # disposable smoke only, evaluate reporting groups each minute so every
+        # rule executes without waiting an hour. These overlapping smoke rollups
+        # must never be used as monthly reliability evidence. Alert windows stay unchanged.
+        for filename in ("slo.yml", "slo-coverage.yml", "slo-history.yml"):
+            rule_path = prometheus_config / "rules" / filename
+            rule_path.write_text(rule_path.read_text().replace("interval: 1h", "interval: 1m")
+                                 .replace("interval: 15m", "interval: 1m"))
         try:
             print(f"Starting disposable monitoring project {project}", flush=True)
             run([*compose, "up", "--build", "-d", "--wait", "--wait-timeout", "240"])
@@ -285,7 +301,7 @@ def main():
                 ("admin:" + environment["GRAFANA_ADMIN_PASSWORD"]).encode()).decode()}
             eventually("Grafana datasource reaches Prometheus", lambda:
                        request(grafana + "/api/datasources/uid/nexus-prometheus/health", headers=grafana_auth)["status"] == "OK")
-            for uid in ("nexus-overview", "nexus-supply-chain"):
+            for uid in ("nexus-overview", "nexus-supply-chain", "nexus-service-objectives"):
                 dashboard = request(grafana + "/api/dashboards/uid/" + uid, headers=grafana_auth)
                 assert dashboard["dashboard"]["panels"], f"Empty dashboard: {uid}"
                 assert dashboard["meta"]["provisioned"], f"Dashboard is not provisioned: {uid}"
@@ -294,12 +310,31 @@ def main():
                         expression = target.get("expr", "")
                         if expression:
                             expression = expression.replace("$instance", ".*").replace(
-                                "$environment", "monitoring-test").replace("$__rate_interval", "1m")
+                                "$environment", "monitoring-test").replace("$__rate_interval", "1m").replace("$slo", "inventory-availability")
                             assert "$" not in expression, "Unresolved dashboard query variable"
                             query(expression)  # Empty traffic/alert results are valid; invalid PromQL is not.
-            rules = request(prometheus + "/api/v1/rules")["data"]["groups"]
-            assert rules and all(rule["health"] == "ok" for group in rules for rule in group["rules"])
+            def rules_ready():
+                groups = request(prometheus + "/api/v1/rules")["data"]["groups"]
+                for group in groups:
+                    for rule in group["rules"]:
+                        if rule["health"] == "err":
+                            raise ValueError("Rule evaluation failed: " + rule["name"])
+                return bool(groups) and all(rule["health"] == "ok"
+                    for group in groups for rule in group["rules"])
+            eventually("all live rules evaluate successfully", rules_ready)
             print("PASS: admin authorization, private metrics, Grafana login, provisioned dashboards and live rules", flush=True)
+            assert query('http_server_requests_seconds_bucket{uri="/api/v1/inventory/products",le="0.5"}'), \
+                "Missing exact inventory latency bucket"
+            # A new installation must never display a complete month as healthy.
+            assert not query('nexus:slo_attainment:ratio30d'), "New stack reports a complete SLO month"
+            if options.baseline_report:
+                baseline_environment = {**environment, "LOAD_TEST_ADMIN_EMAIL": "admin@example.test",
+                                        "LOAD_TEST_ADMIN_PASSWORD": environment["APP_BOOTSTRAP_ADMIN_PASSWORD"]}
+                subprocess.run([sys.executable, str(ROOT / "load-tests/slo-baseline.py"),
+                                "--base-url", backend, "--disposable-project", project,
+                                "--output", str(options.baseline_report.resolve())],
+                               env=baseline_environment, check=True, timeout=120)
+                print("PASS: reproducible inventory/order baseline saved privately", flush=True)
             # Round-trip a logical backup into a new database on this disposable PostgreSQL instance.
             restored_password = secrets.token_hex(24)
             request(grafana + "/api/admin/users", headers=grafana_auth, data={
@@ -321,7 +356,7 @@ def main():
             restored_auth = {"Authorization": "Basic " + base64.b64encode(
                 ("restore-check:" + restored_password).encode()).decode()}
             assert request(grafana + "/api/user", headers=restored_auth)["login"] == "restore-check"
-            for uid in ("nexus-overview", "nexus-supply-chain"):
+            for uid in ("nexus-overview", "nexus-supply-chain", "nexus-service-objectives"):
                 assert request(grafana + "/api/dashboards/uid/" + uid, headers=grafana_auth)["dashboard"]["panels"]
             eventually("restored Grafana datasource is healthy", lambda:
                        request(grafana + "/api/datasources/uid/nexus-prometheus/health", headers=grafana_auth)["status"] == "OK")

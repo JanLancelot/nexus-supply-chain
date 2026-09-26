@@ -1,0 +1,993 @@
+{
+  "id": null,
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "graphTooltip": 1,
+  "tags": [
+    "nexus",
+    "provisioned"
+  ],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "15s",
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
+  "links": [
+    {
+      "title": "Nexus dashboards",
+      "type": "dashboards",
+      "tags": [
+        "nexus"
+      ],
+      "asDropdown": false,
+      "includeVars": true,
+      "keepTime": true
+    }
+  ],
+  "annotations": {
+    "list": []
+  },
+  "uid": "nexus-service-objectives",
+  "title": "Nexus \u00b7 Service objectives",
+  "description": "Proposed lab objectives for API responses. Partial observations are separate from complete 30-day results; no production or browser availability claim.",
+  "templating": {
+    "list": [
+      {
+        "name": "environment",
+        "label": "Environment",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "nexus-prometheus"
+        },
+        "query": {
+          "query": "label_values(nexus_observability_refresh_success{job=\"spring-backend\"}, environment)",
+          "refId": "environments"
+        },
+        "definition": "label_values(nexus_observability_refresh_success{job=\"spring-backend\"}, environment)",
+        "refresh": 1,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false,
+        "current": {},
+        "options": []
+      },
+      {
+        "name": "slo",
+        "label": "Objective",
+        "type": "custom",
+        "query": "inventory-availability,order-availability,inventory-latency",
+        "current": {
+          "text": "inventory-availability",
+          "value": "inventory-availability"
+        },
+        "options": [],
+        "multi": false,
+        "includeAll": false
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Interpretation",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 5
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "### Proposed engineering objectives \u2014 local lab\nInventory lookup and order creation: **99.9% successful eligible API responses**. Inventory lookup: **99% successful within 500 ms**. Eligible responses: 2xx, 429, 5xx on the selected route/method. No traffic gives no ratio; missing telemetry gives unknown. Complete 30-day results require an uninterrupted month of valid recorded observations; until then use the explicitly partial figures. Long-window figures update hourly. Requests that never reach the API are outside these objectives.\n\n[Contract and error-budget policy](https://github.com/JanLancelot/nexus-supply-chain/blob/main/docs/service-objectives.md) \u00b7 [Response runbook](https://github.com/JanLancelot/nexus-supply-chain/blob/main/docs/runbooks/slo-burn.md)"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Observed attainment \u00b7 last 5 minutes",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(1 - nexus:slo_bad:ratio5m{environment=\"$environment\",slo=\"$slo\"}) and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1)",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Eligible requests \u00b7 last 5 minutes",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 5,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nexus:slo_requests:increase5m{environment=\"$environment\",slo=\"$slo\"} and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1)",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Telemetry valid now (1 = valid)",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 5,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"}",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Observed attainment \u00b7 available part of 30 days",
+      "description": "Partial history can look healthy. This is not the complete monthly result. Updated hourly.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(1 - (last_over_time(nexus:slo_bad:increase30d{environment=\"$environment\",slo=\"$slo\"}[65m]) / (last_over_time(nexus:slo_requests:increase30d{environment=\"$environment\",slo=\"$slo\"}[65m]) > 0))) and (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1)",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Recorded minute coverage \u00b7 30 days",
+      "description": "Coverage counts observations; a recorded failed scrape still counts as present. Completeness additionally requires every sample valid.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 10,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "last_over_time(nexus:slo_history_coverage:ratio30d{environment=\"$environment\",slo=\"$slo\"}[65m])",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "Warming up",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Full history valid (1 = complete)",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 10,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "last_over_time(nexus:slo_history_complete:bool30d{environment=\"$environment\",slo=\"$slo\"}[65m]) and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1) and (min_over_time(nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"}[65m]) == 1) and (count_over_time(nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"}[65m]) >= 65)",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "Unknown / warming up",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Complete 30-day attainment",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "last_over_time(nexus:slo_attainment:ratio30d{environment=\"$environment\",slo=\"$slo\"}[65m]) and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1) and (last_over_time(nexus:slo_history_complete:bool30d{environment=\"$environment\",slo=\"$slo\"}[65m]) == 1) and (min_over_time(nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"}[65m]) == 1) and (count_over_time(nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"}[65m]) >= 65) and (last_over_time(nexus:slo_requests:increase30d{environment=\"$environment\",slo=\"$slo\"}[65m]) > 0)",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "Incomplete history / no traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Complete 30-day budget remaining",
+      "description": "Negative means exhausted. Never interpret an unavailable budget as 100%.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 15,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "last_over_time(nexus:slo_budget_remaining:ratio30d{environment=\"$environment\",slo=\"$slo\"}[65m]) and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1) and (last_over_time(nexus:slo_history_complete:bool30d{environment=\"$environment\",slo=\"$slo\"}[65m]) == 1) and (min_over_time(nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"}[65m]) == 1) and (count_over_time(nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"}[65m]) >= 65) and (last_over_time(nexus:slo_requests:increase30d{environment=\"$environment\",slo=\"$slo\"}[65m]) > 0)",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "Incomplete history / no traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Target",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 15,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nexus:slo_objective{environment=\"$environment\",slo=\"$slo\"}",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Burn rate \u00b7 5 minutes",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nexus:slo_burn:ratio5m{environment=\"$environment\",slo=\"$slo\"} and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1)",
+          "legendFormat": "{{slo}}",
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Burn rate \u00b7 1 hour",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 20,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nexus:slo_burn:ratio1h{environment=\"$environment\",slo=\"$slo\"} and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1)",
+          "legendFormat": "{{slo}}",
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Burn rate \u00b7 30 minutes",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nexus:slo_burn:ratio30m{environment=\"$environment\",slo=\"$slo\"} and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1)",
+          "legendFormat": "{{slo}}",
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Burn rate \u00b7 6 hours",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 27,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "nexus:slo_burn:ratio6h{environment=\"$environment\",slo=\"$slo\"} and on (job, application, environment, slo) (nexus:slo_sample_valid{environment=\"$environment\",slo=\"$slo\"} == 1)",
+          "legendFormat": "{{slo}}",
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "Unknown / insufficient traffic",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": "table",
+      "title": "Active objective alerts",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "nexus-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 24,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "ALERTS{environment=\"$environment\",slo=\"$slo\",alertstate=\"firing\",alertname=~\"NexusSlo.*\"}",
+          "legendFormat": "{{slo}}",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "nexus-prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No firing objective alerts",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "none",
+        "graphMode": "none",
+        "textMode": "auto",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    }
+  ]
+}

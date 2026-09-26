@@ -1,0 +1,8 @@
+groups:
+- name: nexus-slo-coverage
+  interval: 15m
+  rules:
+  - record: nexus:slo_recorded_minutes:count15m
+    expr: count_over_time(nexus:slo_sample_valid[15m])
+  - record: nexus:slo_valid_minutes:count15m
+    expr: sum_over_time(nexus:slo_sample_valid[15m])
