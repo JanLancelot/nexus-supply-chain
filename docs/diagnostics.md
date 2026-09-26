@@ -160,3 +160,6 @@ For a **human** baseline, use the same operator and a repeatable disposable faul
    the bottleneck before adding more automation.
 
 A separate controlled human study has not yet been performed. Machine elapsed measurements must be recorded with their sampling and scope limitations.
+
+The completed local machine benchmark and a real degraded collection are recorded
+with their limitations in [diagnostic collection measurements](diagnostic-measurements.md).
