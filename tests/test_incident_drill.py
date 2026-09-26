@@ -91,7 +91,8 @@ class IncidentDrillTests(unittest.TestCase):
         self.assertIsNone(DRILL.matching_delivery([event], DRILL.SCENARIOS["database"], "firing"))
 
     def test_inventory_recovery_checks_application_response_contract(self):
-        self.assertTrue(DRILL.inventory_present({"content": [{"id": "seeded"}], "totalElements": 1}))
+        # The actual inventory API uses Slice pagination and deliberately omits a total count.
+        self.assertTrue(DRILL.inventory_present({"content": [{"id": "seeded"}], "totalElements": -1}))
         for body in ({"content": [], "totalElements": 0}, {"status": "UP"}, [], b"ok"):
             self.assertFalse(DRILL.inventory_present(body))
 
@@ -135,6 +136,7 @@ class IncidentDrillTests(unittest.TestCase):
             self.assertIn("--project-name", cleanup[0])
             self.assertTrue(cleanup[0][cleanup[0].index("--project-name") + 1].startswith("nexus-drill-"))
             self.assertEqual(reports[0]["cleanup"], "passed")
+            self.assertTrue(any("container" in call and "ls" in call and "--all" in call for call in calls))
             self.assertNotIn("private-output", json.dumps(reports) + stderr.getvalue())
             self.assertNotIn("secret-command", json.dumps(reports) + stderr.getvalue())
 

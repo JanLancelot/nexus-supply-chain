@@ -94,11 +94,13 @@ def http_json(url, *, token=None, data=None, timeout=5):
 
 
 def inventory_present(body):
+    # This API returns a Slice: totalElements is intentionally -1 to avoid COUNT(*).
     return (isinstance(body, dict) and isinstance(body.get("content"), list)
-            and bool(body["content"]) and body.get("totalElements", 0) > 0)
+            and bool(body["content"]))
 
 
 def wait_for(description, action, *, timeout, interval=2):
+    print(f"Waiting for {description}", flush=True)
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         try:
@@ -346,7 +348,7 @@ def main(argv=None):
                 if cleanup.returncode == 0:
                     remaining = []
                     for resource in ("container", "volume", "network"):
-                        state = run([*docker, resource, "ls", "--quiet", "--filter",
+                        state = run([*docker, resource, "ls", *(["--all"] if resource == "container" else []), "--quiet", "--filter",
                                      f"label=com.docker.compose.project={project}"])
                         remaining.extend(state.stdout.split())
                     if not remaining:
@@ -358,6 +360,8 @@ def main(argv=None):
     except (OSError, ValueError, AssertionError, KeyError, subprocess.SubprocessError, KeyboardInterrupt) as error:
         # Do not print CalledProcessError command lines or HTTP bodies that might carry credentials.
         report["error_type"] = type(error).__name__
+        if isinstance(error, (TimeoutError, AssertionError)):
+            report["failed_check"] = str(error)
         report["status"] = "interrupted" if isinstance(error, KeyboardInterrupt) else "failed"
         exit_code = 130 if isinstance(error, KeyboardInterrupt) else 1
         print(f"Drill {report['status']}: {type(error).__name__}. See the last report event.", file=sys.stderr)
