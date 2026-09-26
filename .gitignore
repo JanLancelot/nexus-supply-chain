@@ -4,6 +4,7 @@ node_modules/
 __pycache__/
 .secrets/
 .backups/
+.artifacts/
 *.py[cod]
 .DS_Store
 .mvn/wrapper/maven-wrapper.jar

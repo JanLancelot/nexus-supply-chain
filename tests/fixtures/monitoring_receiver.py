@@ -1,5 +1,6 @@
 """Disposable local receiver. Never forwards alerts or contacts an external service."""
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from datetime import datetime, timezone
 import json
 
 EVENTS = []
@@ -8,7 +9,8 @@ EVENTS = []
 class Receiver(BaseHTTPRequestHandler):
     def do_POST(self):
         payload = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
-        EVENTS.append({"path": self.path, "payload": payload})
+        EVENTS.append({"path": self.path, "payload": payload,
+                       "received_at": datetime.now(timezone.utc).isoformat(timespec="milliseconds")})
         self.send_response(200)
         self.end_headers()
 
