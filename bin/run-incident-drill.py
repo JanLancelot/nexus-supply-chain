@@ -121,6 +121,21 @@ def inventory_present(body):
             and bool(body["content"]))
 
 
+def service_url(compose, run, service, port):
+    address = run([*compose, "port", service, str(port)]).stdout.strip()
+    if not address.startswith("127.0.0.1:") or not address[10:].isdigit():
+        raise ValueError("Drill port must be a random loopback binding")
+    return "http://" + address
+
+
+def restore_service(compose, run, service, traffic):
+    run([*compose, "start", service], timeout=60)
+    # Docker reallocates published port 0 when a stopped container starts again.
+    backend = service_url(compose, run, "backend", 8080)
+    traffic.url = backend + "/api/v1/inventory/products"
+    return backend
+
+
 def wait_for(description, action, *, timeout, interval=2):
     print(f"Waiting for {description}", flush=True)
     deadline = time.monotonic() + timeout
@@ -298,7 +313,7 @@ def execute_scenario(name, compose, run, backend, prometheus, receiver, password
             timeline.mark("backend_scrape_verified_during_database_outage")
         recovery_at = timeline.mark("recovery_started")["at"]
         recovery_epoch = time.time()
-        run([*compose, "start", scenario["service"]], timeout=60)
+        backend = restore_service(compose, run, scenario["service"], traffic)
         token = wait_for("fresh login after recovery", login, timeout=180, interval=5)
         wait_for("authenticated inventory recovery", lambda: operation(token), timeout=90)
         timeline.mark("user_operation_restored")
@@ -387,14 +402,10 @@ def main(argv=None):
             try:
                 print(f"Starting disposable project {project}; production alert timings may take 20 minutes.", flush=True)
                 run([*compose, "up", "--build", "-d", "--wait", "--wait-timeout", "240"], timeout=1200)
-                def url(service, port):
-                    address = run([*compose, "port", service, str(port)]).stdout.strip()
-                    if not address.startswith("127.0.0.1:") or not address[10:].isdigit():
-                        raise ValueError("Drill port must be a random loopback binding")
-                    return "http://" + address
                 for name in SCENARIOS if args.scenario == "all" else [args.scenario]:
-                    execute_scenario(name, compose, run, url("backend", 8080), url("prometheus", 9090),
-                                     url("receiver", 8080), environment["APP_BOOTSTRAP_ADMIN_PASSWORD"], report["scenarios"])
+                    execute_scenario(name, compose, run, service_url(compose, run, "backend", 8080),
+                                     service_url(compose, run, "prometheus", 9090), service_url(compose, run, "receiver", 8080),
+                                     environment["APP_BOOTSTRAP_ADMIN_PASSWORD"], report["scenarios"])
                 report["status"], exit_code = "passed", 0
             finally:
                 # Only this generated project is touched. Volumes contain disposable seeded data.

@@ -181,6 +181,18 @@ class IncidentDrillTests(unittest.TestCase):
         for body in ({"content": [], "totalElements": 0}, {"status": "UP"}, [], b"ok"):
             self.assertFalse(DRILL.inventory_present(body))
 
+    def test_recovery_rediscovers_random_port_and_updates_traffic_target(self):
+        traffic = type("TrafficTarget", (), {"url": "http://127.0.0.1:50001/api/v1/inventory/products"})()
+        calls = []
+        def run(command, **_kwargs):
+            calls.append(command)
+            return subprocess.CompletedProcess(command, 0, "127.0.0.1:50002\n" if "port" in command else "")
+        backend = DRILL.restore_service(["docker", "compose", "-p", "test"], run, "backend", traffic)
+        self.assertEqual(calls[0][-2:], ["start", "backend"])
+        self.assertEqual(calls[1][-3:], ["port", "backend", "8080"])
+        self.assertEqual(backend, "http://127.0.0.1:50002")
+        self.assertEqual(traffic.url, backend + "/api/v1/inventory/products")
+
     def test_report_intervals_measure_individual_drills_and_private_files(self):
         timeline = DRILL.Timeline("backend")
         timeline.result["events"] = [{"event": name, "at": "2026-09-26T00:00:00Z", "elapsed_seconds": elapsed}
